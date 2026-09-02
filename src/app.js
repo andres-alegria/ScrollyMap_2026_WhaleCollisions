@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import './app.scss';
 import Story from './components/story/story';
-import Map from './components/map/map';
 import Intro from './components/intro/intro';
 import Logos from './components/logos/logos';
 import ReadingProgress from './components/reading-progress/reading-progress';
@@ -11,7 +10,6 @@ const App = (props) => {
     chapters,
     accessToken,
     style,
-    showMarkers,
     theme,
     title,
     subtitle,
@@ -22,11 +20,11 @@ const App = (props) => {
     credits,
   } = props;
   const [currentChapterId, setCurrentChapter] = useState(chapters[0] && chapters[0].id);
-  const [currentAction, setCurrentAction] = useState();
+  const [, setCurrentAction] = useState();
 
-  // The map is the whole basemap now, so a missing token or style is not a
-  // degraded page, it is a blank one. Say which is missing rather than
-  // rendering nothing.
+  // The map lives inside the story's panel rather than behind the whole page,
+  // but a missing token or style still leaves that panel empty, so say which
+  // one is absent rather than rendering a blank frame.
   const renderError = (missing) => (
     <div className="flex justify-center items-center h-screen">
       Please add the missing {missing}. See the README.
@@ -57,14 +55,6 @@ const App = (props) => {
         credits={credits}
         setCurrentChapter={setCurrentChapter}
         setCurrentAction={setCurrentAction}
-      />
-      <Map
-        chapters={chapters}
-        currentAction={currentAction}
-        accessToken={accessToken}
-        mapStyle={style}
-        showMarkers={showMarkers}
-        currentChapterId={currentChapterId}
       />
     </div>
   );

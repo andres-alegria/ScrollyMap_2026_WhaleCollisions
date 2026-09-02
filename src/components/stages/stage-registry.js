@@ -12,7 +12,7 @@ import GalleryFilter from "./GalleryFilter";
 import GalleryFlipImage from "./GalleryFlipImage";
 import PlainText from "./PlainText";
 import PlainImage from "./PlainImage";
-import PinnedPanel from "../panel/pinned-panel";
+import MapPanel from "../panel/map-panel";
 
 export const STAGES = {
   // Horizontal image-strip scroller
@@ -30,8 +30,8 @@ export const STAGES = {
   // Full-width (or constrained) image stage
   PlainImage,
 
-  // Image panel pinned on the left, stepped text on the right. The panel holds
-  // still while the image inside it and the paragraph beside it change
-  // together. See src/components/panel/.
-  PinnedPanel,
+  // One pinned box holding a live map, with stepped text beside it. The box
+  // stays put and the camera moves inside it; the paragraph changes to match.
+  // See src/components/panel/.
+  MapPanel,
 };

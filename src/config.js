@@ -16,40 +16,18 @@
    in public/data, so nothing is lost if any of it is wanted back.
    ------------------------------------------------------------------ */
 
-// adjust legend swatch colors here - these mirror the ramps in globe.js
-const C = {
-  // cool: tints of the sea color, used where traffic is shown but not
-  // emphasized. One band per speed class. These mirror the ramps in globe.js.
-  slowCool: '#2C7583',
-  midCool: '#3C919F',
-  fastCool: '#59AFBF',
-  // Orange family, brand: the whale habitats, as on the printed map
-  habitat: '#E8A643',
-  // hot: two flat tones, one per fast band. Deliberately not a ramp - the
-  // reader is being asked to tell two speed classes apart, not to judge how
-  // many hours are in a cell.
-  mid: '#F6BCB3',
-  fast: '#530E0D',
-  track: '#BFECB1'
-};
-
 // The bands are 10-15 / 15-25 / >25 knots. There is no data below 10 knots at
 // all - the source has no such file - so "below 15 knots" would have promised
 // a class of slow, maneuvering vessels that was never in the export.
 //
-const trackLegend = {
-  title: 'Tracked whale movements',
-  color: C.track,
-  symbol: 'line'   // a path, so it reads as a line rather than an area
-};
+// The basemap style, and the token from .env - which is gitignored, so the
+// token never enters the repo. See .env.template for the variable name.
+const MAPBOX_STYLE = 'mapbox://styles/mongabay/cmtkharki000k01qydbisf6f0';
+const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
 
 const config = {
-  // The style carries the basemap and the story's own layers.
-  style: 'mapbox://styles/mongabay/cmtkharki000k01qydbisf6f0',
-  // Read from .env, which is gitignored, so the token never enters the repo.
-  // See .env.template for the variable name.
-  accessToken: process.env.REACT_APP_MAPBOX_ACCESS_TOKEN,
-  showMarkers: false,
+  style: MAPBOX_STYLE,
+  accessToken: MAPBOX_TOKEN,
 
   theme: 'mongabay',
 
@@ -97,168 +75,77 @@ const config = {
 
   chapters: [
 
-    /* --- 1. The sea itself -------------------------------------------- */
-    // The first pinned panel. The image holds still while the three steps
-    // beside it change: where this sea is, how heavily it is travelled, and
-    // how much of that traffic is fast.
+    /* --- The story, in one box ---------------------------------------- */
+    // A single pinned panel. The box never moves and the story never hands
+    // off to a second one: the camera travels inside the frame while the
+    // paragraph beside it changes to match. Each step carries both, so they
+    // cannot drift apart.
+    //
+    // Cameras are interpolated between steps rather than flown, so the map
+    // tracks the scroll exactly and reverses cleanly when the reader scrolls
+    // back up.
     {
-      id: 'mediterranean',
+      id: 'story-map',
       type: 'stage',
-      stage: 'PinnedPanel',
-      eyebrow: 'The Mediterranean',
-      title: 'An enclosed sea',
-      // 16:9, because the basin is far wider than it is tall and a square
-      // frame would crop it to a fragment.
-      aspect: '16 / 9',
-      locator: [15.25, 38.0],
-      place: 'Mediterranean Sea',
-      // Rendered from this project's own Mapbox style, so the bar is exact:
-      // 500 km is 5.5% of the panel's width at the zoom the image was made at.
-      // See Scripts/ for the renderer.
-      scale: { n: 500, kmFrac: 0.055, miFrac: 0.0885 },
+      stage: 'MapPanel',
+      accessToken: MAPBOX_TOKEN,
+      mapStyle: MAPBOX_STYLE,
+      aspect: '4 / 3',
+      dwell: 1.6,              // adjust: screen-heights of scroll per step
       steps: [
         {
-          image: '/panels/mediterranean.jpg',
+          center: [15.25, 38.0], zoom: 3.9,
+          place: 'Mediterranean Sea',
+          eyebrow: 'The Mediterranean',
           label: 'An enclosed sea',
           text: 'Nearly every ship moving between the Atlantic and the Suez Canal crosses the Mediterranean end to end.',
         },
         {
-          image: '/panels/mediterranean.jpg',
+          center: [15.25, 38.0], zoom: 4.1,
+          place: 'Mediterranean Sea',
+          eyebrow: 'The Mediterranean',
           label: 'A sea crossed by many ships',
           text: 'Almost none of the basin is empty. Of the roughly 25,200 patches of sea ten kilometers across that make up the Mediterranean, <strong>24,254</strong> carried vessel traffic during 2025.',
         },
         {
-          image: '/panels/mediterranean.jpg',
+          center: [15.25, 38.0], zoom: 4.1,
+          place: 'Mediterranean Sea',
+          eyebrow: 'The Mediterranean',
           label: 'High speed traffic',
-          text: 'In 2025 almost <strong>2,800 unique vessels</strong> traveled faster than 15 knots while navigating through the Mediterranean\u2019s key whale habitats.',
+          text: 'In 2025 almost <strong>2,800 unique vessels</strong> traveled faster than 15 knots while navigating through the Mediterranean\u2019s key whale habitats. Ship strikes are almost always fatal above that speed, about 28 kilometers per hour.',
+        },
+        {
+          center: [8.81, 42.625], zoom: 6.3,
+          place: 'France, Italy, Monaco',
+          eyebrow: 'Key whale habitat',
+          label: 'Pelagos Sanctuary',
+          text: 'France, Italy and Monaco manage the sanctuary together, under an agreement signed in 1999. It covers about <strong>96,500 km\u00b2</strong>. The heaviest shipping runs through the Piombino Channel off Elba, along the Ligurian coast off Nice, and through the Strait of Bonifacio.',
+        },
+        {
+          center: [25.2, 36.445], zoom: 5.7,
+          place: 'Greece',
+          eyebrow: 'Key whale habitat',
+          label: 'Hellenic Trench',
+          text: 'Off southern Greece, the trench is critical habitat for sperm whales, which rest at the surface where deep water comes close to shore. It covers about <strong>56,600 km\u00b2</strong>. Shipping concentrates where vessels round the southern Peloponnese, and in the Karpathos Strait.',
+        },
+        {
+          center: [2.45, 40.495], zoom: 6.4,
+          place: 'Spain',
+          eyebrow: 'Key whale habitat',
+          label: 'Cetacean Migration Corridor',
+          text: 'The corridor off eastern Spain protects a migration route between the Balearic Sea and the wider western Mediterranean. Spain declared it a marine protected area in 2018, covering about <strong>46,400 km\u00b2</strong>.',
+        },
+        {
+          center: [15.25, 38.5], zoom: 4.0,
+          place: 'Mediterranean Sea',
+          eyebrow: 'Tracked movements',
+          label: 'Twelve whales, four years',
+          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
         },
       ],
-      location: { center: [15.25, 38.0], zoom: 4.1, pitch: 0, bearing: 0 },
-      mapAnimation: 'easeTo',
     },
 
-    /* --- 2. Why speed matters ----------------------------------------- */
-    {
-      id: 'threshold',
-      type: 'stage',
-      stage: 'PlainText',
-      alignment: 'left',
-      title: '',
-      html: `
-  <p>
-    Ship strikes are almost always fatal when the vessel is traveling above
-    15 knots (28 kilometers per hour).
-  </p>
-`,
-      location: { center: [15.25, 38.0], zoom: 4.1, pitch: 0, bearing: 0 },
-      mapAnimation: 'easeTo',
-    },
-
-    /* --- 3. The three habitats ---------------------------------------- */
-    {
-      id: 'habitats',
-      alignment: 'left',
-      card: true,
-      title: 'Key whale habitats',
-      description:
-        'Three areas hold the basin\u2019s most important whale habitat: the Pelagos Sanctuary in the northwest, the Hellenic Trench off southern Greece and the Cetacean Migration Corridor off eastern Spain.',
-      location: { center: [15.25, 38.5], zoom: 4.3, pitch: 0, bearing: 0 },
-      mapAnimation: 'flyTo',
-    },
-
-    /* --- 4-6. Each habitat in turn ------------------------------------ */
-    {
-      id: 'pelagos',
-      type: 'stage',
-      stage: 'PinnedPanel',
-      eyebrow: 'Key whale habitat',
-      title: 'Pelagos Sanctuary',
-      aspect: '4 / 3',
-      locator: [8.81, 42.625],
-      place: 'France, Italy, Monaco',
-      scale: { n: 100, kmFrac: 0.0765, miFrac: 0.1231 },
-      steps: [
-        {
-          image: '/panels/pelagos.jpg',
-          label: 'Jointly managed',
-          text: 'France, Italy and Monaco manage the sanctuary together, under an agreement signed in 1999. It covers about <strong>96,500 km\u00b2</strong>, or 9.65 million hectares.',
-        },
-        {
-          image: '/panels/pelagos.jpg',
-          label: 'Where the ships run',
-          text: 'The heaviest shipping runs through the Piombino Channel off Elba, along the Ligurian coast off Nice, and through the Strait of Bonifacio between Corsica and Sardinia.',
-        },
-      ],
-      location: { center: [8.81, 42.625], zoom: 6.4, pitch: 0, bearing: 0 },
-      mapAnimation: 'flyTo',
-    },
-
-    {
-      id: 'hellenic',
-      type: 'stage',
-      stage: 'PinnedPanel',
-      eyebrow: 'Key whale habitat',
-      title: 'Hellenic Trench',
-      aspect: '4 / 3',
-      locator: [25.2, 36.445],
-      place: 'Greece',
-      scale: { n: 200, kmFrac: 0.088, miFrac: 0.1417 },
-      steps: [
-        {
-          image: '/panels/hellenic.jpg',
-          label: 'Critical for sperm whales',
-          text: 'Off southern Greece, the trench is critical habitat for sperm whales, which rest at the surface where deep water comes close to shore. It lies in Greek waters and covers about <strong>56,600 km\u00b2</strong>, or 5.66 million hectares.',
-        },
-        {
-          image: '/panels/hellenic.jpg',
-          label: 'Where the ships run',
-          text: 'Shipping concentrates where vessels round the southern Peloponnese at Cape Malea and Cape Tainaron, and in the Karpathos Strait between Crete and Rhodes.',
-        },
-      ],
-      location: { center: [25.2, 36.445], zoom: 5.8, pitch: 0, bearing: 0 },
-      mapAnimation: 'flyTo',
-    },
-
-    {
-      id: 'corridor',
-      type: 'stage',
-      stage: 'PinnedPanel',
-      eyebrow: 'Key whale habitat',
-      title: 'Cetacean Migration Corridor',
-      aspect: '4 / 3',
-      locator: [2.45, 40.495],
-      place: 'Spain',
-      scale: { n: 100, kmFrac: 0.0757, miFrac: 0.1218 },
-      steps: [
-        {
-          image: '/panels/corridor.jpg',
-          label: 'A protected route',
-          text: 'The corridor off eastern Spain protects a migration route between the Balearic Sea and the wider western Mediterranean. Spain declared it a marine protected area in 2018, covering about <strong>46,400 km\u00b2</strong>, or 4.64 million hectares.',
-        },
-        {
-          image: '/panels/corridor.jpg',
-          label: 'Where the ships run',
-          text: 'The heaviest traffic runs off Cape de la Nao, where the mainland comes closest to Ibiza, and on the approaches to Valencia and Barcelona.',
-        },
-      ],
-      location: { center: [2.45, 40.495], zoom: 6.5, pitch: 0, bearing: 0 },
-      mapAnimation: 'flyTo',
-    },
-
-    /* --- 7. The whales ------------------------------------------------ */
-    {
-      id: 'whales',
-      alignment: 'left',
-      card: true,
-      title: 'Twelve whales, four years',
-      description:
-        'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
-      legend: [trackLegend],
-      location: { center: [15.25, 38.5], zoom: 4.3, pitch: 0, bearing: 0 },
-      mapAnimation: 'flyTo',
-    },
-
-    /* --- 8. The closing note ------------------------------------------ */
+    /* --- The closing note --------------------------------------------- */
     {
       id: 'closing',
       type: 'stage',
@@ -268,8 +155,6 @@ const config = {
       html: `
   <p>Placeholder for a short ending text of this visualization.</p>
 `,
-      location: { center: [15.25, 38.0], zoom: 4.1, pitch: 0, bearing: 0 },
-      mapAnimation: 'easeTo',
     },
 
   ]
