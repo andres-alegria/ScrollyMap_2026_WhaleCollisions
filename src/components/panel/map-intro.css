@@ -14,19 +14,21 @@
   inset: 0;
 }
 
-/* Short and full width, sitting on the bottom edge: the map keeps most of the
-   screen, and the card reads as a caption to it rather than a page of its
-   own. */
+/* Short and full width, sitting on the TOP edge: the map keeps the rest of
+   the screen and the card reads as a header to it rather than a page of its
+   own. The extra top padding clears the reading-progress bar, which is 6px
+   and sits above everything. */
 .map-intro__card {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 0;
+  top: 0;
   background-color: rgba(24, 24, 24, 0.94);   /* adjust card ground */
-  border-top: 1px solid rgba(252, 252, 252, 0.12);
+  border-bottom: 1px solid rgba(252, 252, 252, 0.12);
   color: #EEF0F0;
-  padding: clamp(18px, 3.4vh, 34px) 4vw;      /* adjust card depth */
+  padding: clamp(24px, 4vh, 40px) 4vw clamp(18px, 3.4vh, 34px);  /* adjust card depth */
   box-sizing: border-box;
+  text-align: center;
 }
 
 .map-intro__inner {
@@ -34,6 +36,7 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+  align-items: center;                   /* centred as a block, not just as text */
   gap: clamp(6px, 1vh, 12px);
 }
 
@@ -60,9 +63,10 @@
   font-size: clamp(15px, 1.2vw, 18px);
   line-height: 1.6;
   max-width: 46rem;
+  text-align: center;
 }
 
 @media (max-width: 820px) {
-  .map-intro__card { padding: 16px 5vw 22px; }
+  .map-intro__card { padding: 20px 5vw 18px; }
   .map-intro__text { font-size: 14px; }
 }

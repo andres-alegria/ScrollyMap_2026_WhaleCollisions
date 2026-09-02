@@ -7,6 +7,11 @@ import './map-intro.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Tuning handle, alongside window.__MAP__ and window.__MAPINTRO__. Useful in
+// the console, and the only way to step this piece frame by frame in a browser
+// whose rAF is throttled: ScrollTrigger.update() runs synchronously.
+if (typeof window !== 'undefined') window.__ST__ = ScrollTrigger;
+
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 const lerp = (a, b, t) => a + (b - a) * t;
 // Decelerating: the descent should arrive rather than stop dead, and the last
@@ -15,8 +20,12 @@ const easeOut = (t) => 1 - (1 - t) * (1 - t);
 
 /**
  * The locating section: a full-screen map that starts on the world and closes
- * on the Mediterranean as the section is entered, then hands a short
- * full-width card up from the bottom once it has arrived.
+ * on the Mediterranean, then brings a short full-width card down from the top
+ * edge once the camera has arrived.
+ *
+ * The descent begins the moment the section appears at the bottom of the
+ * viewport, not when it reaches the top, so the map is already moving as the
+ * section arrives rather than waiting a whole screen-height to start.
  *
  * Deliberately the only full-screen map in the piece. Everything after this
  * happens inside the panel's frame, so this section is what establishes where
@@ -34,15 +43,21 @@ const MapIntro = ({
   eyebrow,
   label,
   text,
-  arriveBy = 0.62,     // adjust: progress at which the camera has landed
-  cardFrom = 0.52,     // adjust: progress at which the card starts rising
-  cardBy = 0.78,       // adjust: progress at which the card is fully up
+  // How much of the descent happens while the section is still travelling up
+  // the screen, before it pins. The rest finishes just after it lands.
+  enterShare = 0.6,    // adjust: share of the zoom spent on the way in
+  arriveBy = 0.30,     // adjust: pinned progress at which the camera has landed
+  cardFrom = 0.34,     // adjust: pinned progress at which the card starts moving
+  cardBy = 0.58,       // adjust: pinned progress at which the card is in place
   dwell = 1.8,         // adjust: screen-heights the section holds
 }) => {
   const sectionRef = useRef(null);
   const mapNodeRef = useRef(null);
   const mapRef = useRef(null);
   const cardRef = useRef(null);
+  // Two triggers drive one camera, so each keeps its own share of the
+  // progress here and the camera is recomputed whenever either moves.
+  const phaseRef = useRef({ enter: 0, pinned: 0 });
 
   useEffect(() => {
     if (!mapNodeRef.current || !accessToken || !mapStyle) return undefined;
@@ -70,7 +85,39 @@ const MapIntro = ({
     section.style.marginBottom = `${dwell * 100}vh`;
 
     let promoted = false;
-    const st = ScrollTrigger.create({
+
+    // One camera, two phases. Waiting for the pin to begin the descent means
+    // the map sits still for the whole screen-height it takes the section to
+    // arrive, which reads as nothing happening; this starts it the moment the
+    // section appears at the bottom of the viewport.
+    const applyCamera = () => {
+      const { enter, pinned } = phaseRef.current;
+      const k = easeOut(clamp01(
+        enter * enterShare
+        + clamp01(pinned / arriveBy) * (1 - enterShare)
+      ));
+      const map = mapRef.current;
+      if (!map) return;
+      map.jumpTo({
+        center: [lerp(from.center[0], to.center[0], k),
+                 lerp(from.center[1], to.center[1], k)],
+        zoom: lerp(from.zoom, to.zoom, k),
+      });
+    };
+
+    // Phase one: the section travelling from the bottom of the viewport to
+    // the top. No pin here, it only reads scroll.
+    const enterST = ScrollTrigger.create({
+      trigger: section,
+      start: 'top bottom',
+      end: 'top top',
+      scrub: true,
+      invalidateOnRefresh: true,
+      onUpdate: (self) => { phaseRef.current.enter = self.progress; applyCamera(); },
+    });
+
+    // Phase two: pinned. Finishes the descent, then brings the card down.
+    const pinST = ScrollTrigger.create({
       trigger: section,
       start: 'top top',
       end: () => `+=${window.innerHeight * (dwell + 1)}`,
@@ -80,20 +127,12 @@ const MapIntro = ({
       scrub: true,
       invalidateOnRefresh: true,
       onUpdate: (self) => {
-        const p = self.progress;
-        const k = easeOut(clamp01(p / arriveBy));
-        const map = mapRef.current;
-        if (map) {
-          map.jumpTo({
-            center: [lerp(from.center[0], to.center[0], k),
-                     lerp(from.center[1], to.center[1], k)],
-            zoom: lerp(from.zoom, to.zoom, k),
-          });
-        }
-        // the card rises from the bottom edge once the camera is nearly there
-        const c = clamp01((p - cardFrom) / (cardBy - cardFrom));
+        phaseRef.current.pinned = self.progress;
+        applyCamera();
+        // the card comes DOWN from the top edge once the camera has landed
+        const c = clamp01((self.progress - cardFrom) / (cardBy - cardFrom));
         if (cardRef.current) {
-          cardRef.current.style.transform = `translateY(${(1 - c) * 100}%)`;
+          cardRef.current.style.transform = `translateY(${(c - 1) * 100}%)`;
           cardRef.current.style.opacity = String(c);
         }
         const wantsLayer = c > 0 && c < 1;
@@ -105,8 +144,9 @@ const MapIntro = ({
         }
       },
     });
-    return () => { st.kill(); };
-  }, [from, to, arriveBy, cardFrom, cardBy, dwell]);
+
+    return () => { enterST.kill(); pinST.kill(); };
+  }, [from, to, enterShare, arriveBy, cardFrom, cardBy, dwell]);
 
   return (
     <section className="map-intro" ref={sectionRef}>
@@ -114,7 +154,7 @@ const MapIntro = ({
       <div
         className="map-intro__card"
         ref={cardRef}
-        style={{ opacity: 0, transform: 'translateY(100%)' }}
+        style={{ opacity: 0, transform: 'translateY(-100%)' }}
       >
         <div className="map-intro__inner">
           {eyebrow && <p className="map-intro__eyebrow">{eyebrow}</p>}
