@@ -21,20 +21,16 @@ body {
   background-color: #181818;
 }
 
-/* The Mapbox container. This rule went missing when version 1 dropped Mapbox
-   for the D3 globe: without it the map has no height and collapses to
-   whatever the canvas happens to report, which was 150px.
-   lvh, not vh, for the same reason the globe used it: a mobile browser's
-   toolbar sliding in must not resize the map mid-scroll. */
-.mapboxgl-map {
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  height: 100lvh;
-  position: fixed;
-  z-index: -5;                 /* behind the story, which sits at z-index 100 */
-}
+/* Mapbox stamps `mapboxgl-map` on every container it creates. Version 1 used
+   that as the hook for its one full-screen map, sizing it to the viewport and
+   pushing it to z-index -5 so the story could scroll over it.
+
+   There is no full-screen map any more: both maps now live inside boxes that
+   size themselves (.map-panel__frame, .map-intro). Left in place, the old rule
+   pinned them to the viewport and dropped them behind the panel frame's own
+   background, which is why the boxes rendered solid black. Nothing global
+   should style this class; each map's own CSS owns its box.
+   ---- adjust map box size in map-panel.css / map-intro.css ---- */
 
 .mapboxgl-ctrl-attrib {
   font-size: 8px;

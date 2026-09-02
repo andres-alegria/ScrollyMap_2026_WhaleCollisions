@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { addTrafficLayers, setTraffic } from './traffic-layers';
+import { loadStoryData, addStoryLayers, setHabitats, setTracks } from './story-layers';
 import ScaleBar from './scale-bar';
 import LocatorGlobe from './locator-globe';
 import './map-panel.css';
@@ -36,6 +37,15 @@ const refreshWhenSettled = () => {
  * Pick a round distance for the scale bar that lands near a target share of
  * the frame, so the bar keeps a sensible length as the camera zooms.
  */
+// The tracks are revealed against a clock; month and year is as fine as the
+// reveal is honest, given how irregularly the tags reported.
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const monthYear = (ms) => {
+  const d = new Date(ms);
+  return `${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+};
+
 const NICE = [10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000];
 const scaleFor = (map, widthPx, target = 0.22) => {
   if (!map || !widthPx) return null;
@@ -80,6 +90,10 @@ const MapPanel = ({
   const [scale, setScale] = useState(null);
   const [locator, setLocator] = useState(steps[0] ? steps[0].center : null);
   const [place, setPlace] = useState(steps[0] ? steps[0].place : '');
+  // the moment the whale-track clock is showing, or null when it is not running
+  const [stamp, setStamp] = useState(null);
+  // habitats and tracks arrive over the network; scroll may already be running
+  const dataRef = useRef(null);
 
   // --- the map itself, created once ---------------------------------
   useEffect(() => {
@@ -99,12 +113,24 @@ const MapPanel = ({
     mapRef.current = map;
     if (typeof window !== 'undefined') window.__MAP__ = map;
 
+    let alive = true;
     const onLoad = () => {
       map.resize();
       addTrafficLayers(map);
       // the layers start invisible, so paint the first step's state at once
       // rather than waiting for the first scroll
       if (steps[0] && steps[0].traffic) setTraffic(map, steps[0].traffic);
+      // The habitats and the tracks are fetched, so they land after the first
+      // scroll frames have already run. Nothing is drawn until they do; the
+      // next frame picks them up.
+      loadStoryData().then((data) => {
+        if (!alive || !mapRef.current) return;
+        dataRef.current = data;
+        addStoryLayers(map, data);
+        const s0 = steps[0] || {};
+        setHabitats(map, s0.habitats || 0, s0.habitat || null);
+        setTracks(map, data, { amount: s0.tracks || 0, clock: s0.clock || 0 });
+      });
       setScale(scaleFor(map, frameRef.current ? frameRef.current.clientWidth : 0));
       // the section's height depends on nothing the map does, but its
       // measurements were taken before the frame had content
@@ -119,6 +145,7 @@ const MapPanel = ({
     if (frameRef.current) ro.observe(frameRef.current);
 
     return () => {
+      alive = false;
       ro.disconnect();
       map.off('load', onLoad);
       map.remove();
@@ -167,6 +194,19 @@ const MapPanel = ({
           const tb = b.traffic || {};
           const at = (k) => lerp(ta[k] || 0, tb[k] || 0, f);
           setTraffic(map, { slow: at('slow'), mid: at('mid'), fast: at('fast') });
+
+          // The habitat outlines and the whale tracks ride the same
+          // interpolation. `clock` is how much of the tagging record has been
+          // revealed; two steps sharing a camera turn that into a reveal that
+          // plays out while the map holds still.
+          const between = (k) => lerp(a[k] || 0, b[k] || 0, f);
+          // The focused outline is the nearer step's, so it swaps once rather
+          // than crossfading through a filter change mid-move.
+          setHabitats(map, between('habitats'), (f < 0.5 ? a : b).habitat || null);
+          setStamp(setTracks(map, dataRef.current, {
+            amount: between('tracks'),
+            clock: between('clock'),
+          }));
         }
 
         // Text: each step fades in AND out again. Fading in only would leave
@@ -216,6 +256,11 @@ const MapPanel = ({
           <div className="map-panel__frame" ref={frameRef} style={{ aspectRatio: aspect }}>
             <div className="map-panel__map" ref={mapNodeRef} />
             {scale && <ScaleBar {...scale} />}
+            {/* Only on screen while the tracks are being revealed, so the
+                frame is not carrying furniture it does not need. */}
+            {stamp !== null && (
+              <p className="map-panel__stamp">{monthYear(stamp)}</p>
+            )}
             <LocatorGlobe center={locator} place={place} />
           </div>
         </div>

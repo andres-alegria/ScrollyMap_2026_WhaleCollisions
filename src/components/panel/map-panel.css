@@ -119,3 +119,22 @@
     max-width: none;
   }
 }
+
+/* The clock readout for the whale-track reveal. Sits in the corner opposite
+   the locator globe, on the same furniture scale as the scale bar. */
+.map-panel__stamp {
+  position: absolute;
+  top: 10px;
+  right: 12px;                           /* adjust readout position */
+  margin: 0;
+  z-index: 2;
+  font-family: 'Open Sans', sans-serif;
+  font-size: var(--fs-furniture);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #FCFCFC;                        /* adjust readout color */
+  background: rgba(24, 24, 24, 0.72);    /* adjust readout ground */
+  padding: 3px 8px;
+  border-radius: 3px;
+  pointer-events: none;
+}
