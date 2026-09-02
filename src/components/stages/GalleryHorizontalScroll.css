@@ -1,0 +1,66 @@
+/* Stage wrapper */
+.stage-combo {
+  font-family: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+
+  background:  transparent !important;   /* background color */
+  color: #1a1a1a !important;        /* default text color */
+}
+
+/* Optional: serif headings */
+.stage-combo h1,
+.stage-combo h2,
+.stage-combo h3,
+.stage-combo h4,
+.stage-combo h5,
+.stage-combo h6 {
+  font-family: "Rowan", ui-serif, Georgia, "Times New Roman", Times, serif;
+  color: inherit;
+}
+
+/* If your JSX uses a full-width bootstrap-ish wrapper */
+.stage-combo .container-fluid {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* Horizontal scroll wrapper/strip (GSAP translates this) */
+.horiz-gallery-wrapper,
+.horiz-gallery-strip {
+  display: flex;
+  flex-wrap: nowrap;
+  position: relative;
+  will-change: transform;
+}
+
+/* Each “card” */
+/* Card: make the black (or dark) area only slightly bigger than the image */
+.project-wrap{
+  flex: 0 0 auto;
+  width: 33vw;
+
+  background: #1c6572;     /* area behind photos */
+  padding: 0.6rem;         /* tight padding all around */
+  border-radius: 0px;     /* optional */
+  box-sizing: border-box;
+}
+
+/* Kill the default inline-image baseline gap */
+.project-wrap img{
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  border-radius: 0px;      /* optional: slightly smaller than card radius */
+}
+
+/* Mobile: keep it tight (this is where your “too large below” usually shows) */
+@media (max-width: 768px){
+  .project-wrap{
+    width: 70vw;
+    padding: 0.35rem;      /* even tighter on phones */
+  }
+}

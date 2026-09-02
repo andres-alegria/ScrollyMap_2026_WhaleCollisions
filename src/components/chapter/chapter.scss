@@ -1,0 +1,33 @@
+.legendItem {
+  min-width: 2rem;
+  min-height: 2rem;
+}
+
+.step {
+  padding-bottom: 50vh;
+  min-height: 120vh; 
+}
+
+/* Stages should stack flush with each other */
+.step.step-stage {
+  padding-bottom: 0;
+  min-height: auto;
+}
+
+/* Optional: remove the built-in scroll spacer for specific chapters */
+.step.step--tight {
+  padding-bottom: 0;
+  min-height: auto;
+}
+
+.step.active {
+  opacity: 0.95;
+}
+
+.m-left-chapter {
+  margin-left: 5vw;
+}
+
+.m-right-chapter {
+  margin-right: 5vw;
+}

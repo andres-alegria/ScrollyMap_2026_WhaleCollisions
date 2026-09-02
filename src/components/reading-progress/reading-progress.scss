@@ -1,0 +1,38 @@
+/* =========================================================
+   Reading progress bar
+   Sits above everything (intro, story, map) and tracks scroll.
+   ========================================================= */
+
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* height is set inline via the `height` prop so it stays
+     trivial to tweak per-story without editing this file */
+  z-index: 1000;            /* above Intro (which can be full-bleed) */
+  background: transparent;
+  pointer-events: none;
+}
+
+.reading-progress__bar {
+  height: 100%;
+  width: 0%;
+  /* Short transition so quick scroll bursts still look smooth.
+     If you prefer a perfectly linear feel, drop this. */
+  transition: width 80ms linear;
+  will-change: width;
+}
+
+/* Theme-aware default colors. These mirror the link / accent
+   choices already in app.scss so the bar reads as part of the
+   same design system. Override with the `color` prop if a
+   particular story needs something different. */
+.reading-progress--mongabay .reading-progress__bar { background: #e6a444; }
+.reading-progress--light    .reading-progress__bar { background: #e6a444; }
+.reading-progress--dark     .reading-progress__bar { background: #f8f8f8; }
+
+/* Respect users who asked for less motion */
+@media (prefers-reduced-motion: reduce) {
+  .reading-progress__bar { transition: none; }
+}

@@ -1,0 +1,54 @@
+{
+  "name": "react-js",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": "24.x"
+  },
+  "dependencies": {
+    "classnames": "^2.2.6",
+    "d3-geo": "^3.1.1",
+    "gsap": "^3.14.2",
+    "i18next": "^19.8.3",
+    "i18next-browser-languagedetector": "^6.0.1",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "react-i18next": "^11.7.3",
+    "react-scripts": "5.0.1",
+    "react-waypoint": "^9.0.3",
+    "tailwindcss": "^1.9.6",
+    "topojson-client": "^3.1.0",
+    "world-atlas": "^2.0.2"
+  },
+  "scripts": {
+    "build:tailwind": "tailwindcss build src/tailwind.css -o src/tailwind.output.css",
+    "prestart": "yarn build:tailwind",
+    "prebuild": "yarn build:tailwind",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all",
+      "not safari < 10",
+      "not chrome < 51",
+      "not android < 5",
+      "not ie < 12"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "sass": "^1.79.5"
+  }
+}

@@ -1,0 +1,282 @@
+/* GalleryFlipImage stage (scoped)
+   Adapted from https://codepen.io/piupiupiu/pen/YyxWpd
+
+   IMPORTANT:
+   - Do not apply any global html/body rules here.
+   - Keep everything scoped under .stage-flip-gallery so it can't break the scrolly.
+*/
+
+.stage-flip-gallery {
+  width: 100%;
+  min-height: auto;
+  padding: 20px 0; /* optional */
+  background: var(--color-just-black, #ffffff);
+  color: var(--color-just-white, #f0f3f4);
+}
+
+/* Typography: match scrolly */
+.stage-flip-gallery {
+  font-family: var(--font-sans, "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif);
+}
+
+/* Headings use Rowan */
+.stage-flip-gallery h1,
+.stage-flip-gallery h2,
+.stage-flip-gallery h3,
+.stage-flip-gallery h4 {
+  font-family: var(--font-serif, "Rowan", ui-serif, Georgia, "Times New Roman", Times, serif);
+  font-weight: 500;
+}
+
+/* Paragraphs use Public Sans */
+.stage-flip-gallery p,
+.stage-flip-gallery .text,
+.stage-flip-gallery .content {
+  font-family: var(--font-sans, "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif);
+  font-weight: 400;
+}
+
+
+.stage-flip-gallery * {
+  box-sizing: border-box;
+}
+
+.flip-card {
+  will-change: transform;
+  transform: translateZ(0);
+}
+.flip-card-face {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+
+.flip-gallery-container {
+  height: auto;              /* was 100vh */
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+
+.flip-gallery-container::-webkit-scrollbar {
+  display: none;
+}
+
+.flip-gallery {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  height: auto;              /* was 100% */
+  display: flex;
+  align-items: stretch;      /* optional */
+}
+
+
+.flip-gallery-item {
+  flex: 0 0 var(--cardWidth, 400px);
+  width: var(--cardWidth, 400px);
+  height: auto;              /* was 100% */
+  background: transparent;   /* remove the tall colored block */
+  padding: 12px;             /* optional: gives some breathing room */
+}
+
+
+.flip {
+  height: 420px;
+  width: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  perspective: 2000px;
+}
+
+.flip-gallery-item:hover .front-side {
+  opacity: 0;
+  transform: rotateY(180deg);
+}
+
+.flip-gallery-item:hover .back-side {
+  background: #1c6572;
+  opacity: 1;
+  transform: rotateY(0deg);
+}
+
+.front-side,
+.back-side {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  transition: transform 0.4s ease-out, opacity 0.3s ease-out;
+}
+
+.front-side {
+  opacity: 1;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  transform: rotateY(0deg);
+}
+
+.back-side {
+  opacity: 0;
+  transform: rotateY(-180deg);
+}
+
+.back-side > a {
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+  pointer-events: none;    /* remove this line to enable link on click */
+
+}
+
+.content {
+  text-align: center;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 25px 20px;
+}
+
+.flip-gallery-item:hover .text {
+  opacity: 1;
+  visibility: visible;
+  max-height: 2000px;
+  transition: opacity 0.2s ease-out, max-height 0.1s ease-out;
+}
+
+.flip-gallery-item:hover .loader {
+  display: none;
+}
+
+.text {
+  opacity: 0;
+  visibility: hidden;
+  max-height: 0;
+}
+
+.content h3 {
+  position: relative;
+  color: #ffffff;
+  font-size: 30px;
+  line-height: 1.25;
+  margin-bottom: 25px;
+}
+
+.content h3:after {
+  content: "";
+  position: absolute;
+  width: 50px;
+  height: 3px;
+  bottom: -10px;
+  left: 50%;
+  margin-left: -25px;
+  background: #f0f3f4;
+}
+
+.content p {
+  margin: 10px 0;
+  color: #d6dbdf;
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.loader {
+  display: none;
+}
+
+
+.flip-gallery-empty {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+  opacity: 0.9;
+}
+
+.flip-gallery-empty p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+
+/* If there are only a few items, stretch them to fill the full width (no empty space at right) */
+.flip-gallery-container.is-short {
+  overflow-x: hidden;
+}
+
+.flip-gallery.is-short {
+  width: 100%;
+  justify-content: space-between;
+  gap: clamp(12px, 2vw, 24px);
+  padding: 0 clamp(12px, 2vw, 24px);
+  box-sizing: border-box;
+}
+
+.flip-gallery.is-short .flip-gallery-item {
+  flex: 1 1 0;
+  width: auto;
+  max-width: none;
+}
+
+/* Mobile: stack cards vertically instead of squeezing them in a row */
+@media (max-width: 768px) {
+  /* Let the stage grow with stacked cards */
+  .stage-flip-gallery {
+    min-height: auto;
+    height: auto;
+    overflow: visible;
+    padding: 16px 0;
+  }
+
+  /* IMPORTANT: stop any viewport-based sizing/centering that clips content */
+  .flip-gallery-container {
+    height: auto;
+    min-height: auto;
+    overflow: visible;
+    display: block;
+  }
+
+  /* Stack cards */
+  .flip-gallery {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 16px;
+    padding: 0 16px;
+    box-sizing: border-box;
+  }
+
+  /* Each card full width */
+  .flip-gallery-item {
+    width: 100%;
+    max-width: none;
+    flex: 0 0 auto;
+  }
+
+  /* Give each card a sensible height, but NOT tied to viewport in a way that traps you */
+  .flip {
+    width: 100%;
+    height: 420px;      /* fixed height is safest for stacked layout */
+    min-height: 420px;
+  }
+
+  /* Ensure the “few items fill width” mode doesn’t fight stacking */
+  .flip-gallery.is-short {
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 0 16px;
+  }
+
+  .flip-gallery.is-short .flip-gallery-item {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+}
+

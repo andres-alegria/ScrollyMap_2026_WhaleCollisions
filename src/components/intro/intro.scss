@@ -1,0 +1,108 @@
+/* ---- adjust intro background here ----
+   Neutral flat ground, matching the globe's space color so the intro
+   reads as the same world the story continues in. */
+.intro {
+  background-color: #0B1C1F;
+  /* A definite height, not just a cap. Without one, the percentage heights
+     below resolve against an indefinite parent and the SVG falls back to
+     sizing itself from its viewBox aspect ratio - which made this element
+     taller than the viewport and pushed the artwork off the bottom edge. */
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+.intro-splash {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Bathymetry plate. Sits below the tracks, icons and grain; the flat
+   background color on .intro shows through if the image fails to load. */
+.intro-splash__bg {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;      /* adjust framing here */
+}
+
+.intro-splash__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ---- adjust track colors and weight here ----
+   Mint for the whale and warm red for the ship, echoing the data colors
+   used later in the story. */
+.intro-track {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* Width is in viewBox units, NOT non-scaling-stroke: the dash animation
+     measures the path with getTotalLength(), which is also in user units.
+     Mixing the two spaces puts the visible stroke inside the dash gap. */
+  stroke-width: 2.4;   /* adjust track weight here */
+}
+
+.intro-track--whale {
+  stroke: #BFECB1;
+  opacity: 0.85;
+}
+
+.intro-track--boat {
+  stroke: #E86D6D;
+  opacity: 0.85;
+}
+
+/* ---- adjust grain strength here ---- */
+.intro-grain {
+  opacity: 0.16;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.intro-content {
+  position: relative;
+  z-index: 2;
+  /* Keep the centred type off the screen edges. On a 390px phone the
+     subheading was running to within 13px of both sides, because Tailwind's
+     `container` carries no horizontal padding here and max-w-xl (576px) is
+     wider than the screen. Desktop is unaffected: there max-w-xl is the
+     binding constraint and the text stops far short of the edge.
+     Absolutely positioned children, the social icons, sit against the padding
+     box and do not move. adjust the intro side margin here */
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.title {
+  font-size: 40px;
+  line-height: 40px;
+}
+
+@media (min-width: 640px) and (min-height: 700px) {
+  .title {
+    font-size: 120px;
+    line-height: 120px;
+  }
+}
+
+.arrow-animate {
+  animation: arrow-animate 1s ease-in-out infinite;
+}
+
+@keyframes arrow-animate {
+  from { opacity: 1; }
+  to { transform: translate(0, 6px); opacity: 0.5; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arrow-animate { animation: none; }
+}

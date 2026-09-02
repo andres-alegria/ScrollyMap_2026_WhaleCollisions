@@ -1,0 +1,76 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.font-lora {
+  font-family: 'Lora', serif;
+}
+
+a,
+a:hover,
+a:visited {
+  color: #1c6572;
+}
+
+/* The globe canvas paints its own backdrop, but the page behind it needs to
+   match so there is no flash of white before the geometry loads.
+   Charcoal, brand. adjust page background here */
+body {
+  background-color: #181818;
+}
+
+#header {
+  margin: 3vh auto;
+  width: 90vw;
+  padding: 2vh;
+  text-align: center;
+}
+
+#footer {
+  min-height: 5vh;
+}
+
+#features {
+  padding-top: 10vh;
+  padding-bottom: 0vh;
+  z-index: 100;
+}
+
+@media (max-width: 750px) {
+  #features {
+    width: 90vw;
+    margin: 0 auto;
+  }
+}
+
+.light {
+  color: #d5d5d5;
+  background-color: #f8f8f8;
+}
+
+.mongabay {
+  color: #181818;
+  background-color: #f8f8f8;
+}
+
+.dark {
+  color: #f8f8f8;
+  background-color: #d5d5d5;
+}
+
+.footer-mongabay {
+  color: #f8f8f8;
+  background-color: #181818;
+}
+
+.footer-light {
+  color: #f8f8f8;
+  background-color: #181818;
+}
+
+.footer-dark {
+  color: #f8f8f8;
+  background-color: #181818;
+}

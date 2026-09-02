@@ -1,0 +1,15 @@
+/* Sits behind the story text (z-index 100) and fills the viewport. */
+.story-globe {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  /* lvh = the LARGE viewport: the height the page gets with the mobile
+     browser's toolbar collapsed. Unlike vh/dvh it does not change when that
+     toolbar slides in on a scroll-up, so the globe stays put instead of
+     being resized and re-centered mid-scroll. */
+  height: 100vh;
+  height: 100lvh;
+  z-index: -4;
+  pointer-events: none;
+}

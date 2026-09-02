@@ -1,0 +1,178 @@
+.stage-combo {
+  --font-sans: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  --font-serif: "Rowan", ui-serif, Georgia, "Times New Roman", Times, serif;
+
+}
+
+.stage-combo {
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  margin: 0;
+  background: #181818;   
+  color: #FCFCFC;        
+  min-height: 100vh;    
+}
+
+
+
+/* Headings (matches Mongabay's general look: sans body, serif headers) */
+.stage-combo h1,
+.stage-combo h2,
+.stage-combo h3,
+.stage-combo h4,
+.stage-combo h5,
+.stage-combo h6 
+{
+  font-family: var(--font-serif);
+}
+.row,
+.section,
+section {
+  position: relative;
+  overflow: hidden;
+}
+.section,
+section {
+  text-align: center;
+}
+
+.stage-combo .container-fluid {
+  width: 100%;
+  padding-right: 0;
+  padding-left: 0;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.horiz-gallery-strip,
+.horiz-gallery-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  will-change: transform;
+  position: relative;
+}
+
+.project-wrap {
+  width: 33vw;
+  padding: 2rem;
+  box-sizing: content-box;
+}
+.project-wrap img {
+  width: 100%;
+  aspect-ratio: 1/1;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+/* Filter galerry */
+.stage-combo .container {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 9px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  height: auto;
+  max-height: none;
+  min-height: 700px;
+}
+
+.checkboxes {
+  width: 100%;
+  padding: 2rem 0;
+  display: flex;
+  text-align: left;
+  flex-wrap: wrap;
+  justify-content:center
+}
+
+label {
+  display: block;
+}
+
+.box-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: flex-start;
+  flex-wrap: wrap;
+  height: auto;
+  padding-bottom: 100px;  /* optional: breathing room if it still feels tight */
+
+}
+
+.item {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  color: yellow;
+  width: 200px;
+  height: 150px;
+  margin: 5px;
+  border-radius: 10px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+@media screen and (max-width: 300px) {
+  .tag-button {
+    width: 100%
+  }
+}
+
+@media (max-width: 768px) {
+  .project-wrap {
+    width: 70vw;        /* optional: makes each card wider on phones */
+    padding: 0.25rem;    /* reduce top/bottom space */
+  }
+}
+
+
+.tag-button {
+  align-items: center;
+  border: 1.5px solid red;
+  border-radius: 99px;
+  cursor: pointer;
+  display: flex;
+  flex: 0 0 auto;
+  font-size: 13px;
+  gap: 8px;
+  justify-content: center;
+  margin: 5px;
+  max-width: 130px;
+  padding: 0.3rem 2rem;
+  position: relative;
+  white-space: nowrap;
+}
+
+.tag-button input {
+  opacity: 0;
+  position: absolute;
+}
+
+.tag-button .checked {
+  opacity: 0;
+  border: 1.5px solid red;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: red;
+  border-radius: 99px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tag-button input:checked + .checked {
+  opacity: 1;
+}
+
+.tag-button input:checked {
+}
