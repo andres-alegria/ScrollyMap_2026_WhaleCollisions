@@ -29,6 +29,9 @@
   padding: clamp(24px, 4vh, 40px) 4vw clamp(18px, 3.4vh, 34px);  /* adjust card depth */
   box-sizing: border-box;
   text-align: center;
+  /* the type rises from below and is masked by this box on the way up, which
+     is what makes it read as arriving rather than fading on the spot */
+  overflow: hidden;
 }
 
 .map-intro__inner {

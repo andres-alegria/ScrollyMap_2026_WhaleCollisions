@@ -57,6 +57,14 @@ body {
   z-index: 100;
 }
 
+/* With an intro above it, that 10vh reads as a black band between the intro
+   and the first section, because both are full-bleed and the gap between them
+   is page ground. The padding is only there to give the story air when it
+   starts cold, so it goes when an intro has already done that job. */
+.withIntro #features {
+  padding-top: 0;
+}
+
 @media (max-width: 750px) {
   #features {
     width: 90vw;

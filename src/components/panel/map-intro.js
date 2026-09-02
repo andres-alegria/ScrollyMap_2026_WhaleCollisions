@@ -20,8 +20,8 @@ const easeOut = (t) => 1 - (1 - t) * (1 - t);
 
 /**
  * The locating section: a full-screen map that starts on the world and closes
- * on the Mediterranean, then brings a short full-width card down from the top
- * edge once the camera has arrived.
+ * on the Mediterranean. Once the camera has arrived, a short full-width band
+ * appears on the top edge and the copy rises up into it from below.
  *
  * The descent begins the moment the section appears at the bottom of the
  * viewport, not when it reaches the top, so the map is already moving as the
@@ -47,14 +47,15 @@ const MapIntro = ({
   // the screen, before it pins. The rest finishes just after it lands.
   enterShare = 0.6,    // adjust: share of the zoom spent on the way in
   arriveBy = 0.30,     // adjust: pinned progress at which the camera has landed
-  cardFrom = 0.34,     // adjust: pinned progress at which the card starts moving
-  cardBy = 0.58,       // adjust: pinned progress at which the card is in place
+  cardFrom = 0.34,     // adjust: pinned progress at which the type starts rising
+  cardBy = 0.58,       // adjust: pinned progress at which it has arrived
   dwell = 1.8,         // adjust: screen-heights the section holds
 }) => {
   const sectionRef = useRef(null);
   const mapNodeRef = useRef(null);
   const mapRef = useRef(null);
   const cardRef = useRef(null);
+  const innerRef = useRef(null);
   // Two triggers drive one camera, so each keeps its own share of the
   // progress here and the camera is recomputed whenever either moves.
   const phaseRef = useRef({ enter: 0, pinned: 0 });
@@ -129,18 +130,23 @@ const MapIntro = ({
       onUpdate: (self) => {
         phaseRef.current.pinned = self.progress;
         applyCamera();
-        // the card comes DOWN from the top edge once the camera has landed
+        // The card holds its place on the top edge; the TEXT rises into it
+        // from below, clipped by the card, so the motion is upward rather
+        // than the whole band dropping in.
         const c = clamp01((self.progress - cardFrom) / (cardBy - cardFrom));
         if (cardRef.current) {
-          cardRef.current.style.transform = `translateY(${(c - 1) * 100}%)`;
-          cardRef.current.style.opacity = String(c);
+          // the ground arrives ahead of the type, so the text rises into
+          // something rather than floating over the map
+          cardRef.current.style.opacity = String(clamp01(c * 2.5));
+        }
+        if (innerRef.current) {
+          innerRef.current.style.transform = `translateY(${(1 - c) * 100}%)`;
         }
         const wantsLayer = c > 0 && c < 1;
         if (wantsLayer !== promoted) {
           promoted = wantsLayer;
-          if (cardRef.current) {
-            cardRef.current.style.willChange = wantsLayer ? 'transform, opacity' : '';
-          }
+          if (cardRef.current) cardRef.current.style.willChange = wantsLayer ? 'opacity' : '';
+          if (innerRef.current) innerRef.current.style.willChange = wantsLayer ? 'transform' : '';
         }
       },
     });
@@ -151,12 +157,12 @@ const MapIntro = ({
   return (
     <section className="map-intro" ref={sectionRef}>
       <div className="map-intro__map" ref={mapNodeRef} />
-      <div
-        className="map-intro__card"
-        ref={cardRef}
-        style={{ opacity: 0, transform: 'translateY(-100%)' }}
-      >
-        <div className="map-intro__inner">
+      <div className="map-intro__card" ref={cardRef} style={{ opacity: 0 }}>
+        <div
+          className="map-intro__inner"
+          ref={innerRef}
+          style={{ transform: 'translateY(100%)' }}
+        >
           {eyebrow && <p className="map-intro__eyebrow">{eyebrow}</p>}
           {label && <h3 className="map-intro__label font-lora">{label}</h3>}
           {text && (
