@@ -293,7 +293,9 @@ const Globe = ({ chapters }) => {
       // Where the story sits in the tagging record, from April 2021 to
       // August 2024. Scrubbed by scroll like everything else on the globe.
       const p = clamp01(s.trackProgress);
-      const clock = d.span ? d.span.t0 + (d.span.t1 - d.span.t0) * p : 0;
+      // not a straight interpolation: the clock skips quickly through the
+      // months when no whale was transmitting. See trackSpan in globe-utils.
+      const clock = d.span ? d.span.at(p) : 0;
 
       // sphere
       ctx.beginPath(); path({ type: 'Sphere' });

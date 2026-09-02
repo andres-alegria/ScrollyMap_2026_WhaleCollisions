@@ -75,18 +75,69 @@ export const partialLineByTime = (coords, times, clock) => {
   return lo < 1 ? null : { type: 'LineString', coordinates: coords.slice(0, lo + 1) };
 };
 
-// Earliest and latest timestamp across every track: the span the clock runs.
+/**
+ * The clock the track reveal runs on.
+ *
+ * A straight t0..t1 clock does not work with real tagging data. The twelve
+ * whales transmit on 167 of the 1,234 days the record spans, in four short
+ * summer bursts with year-long silences between them, so a linear reveal sits
+ * frozen for 86% of the chapter and then lurches.
+ *
+ * So the clock is piecewise: the windows where a whale is actually
+ * transmitting share most of the progress in proportion to their length, and
+ * each silence gets a small fixed slice. The reveal stays continuous and the
+ * date readout stays truthful; it simply sweeps through each winter quickly
+ * instead of stopping dead. `GAP_SHARE` is that slice.
+ *
+ * Returns { t0, t1, at(progress) -> ms }.
+ */
+const GAP_SHARE = 0.04;   // adjust how fast the quiet months pass here
+
 export const trackSpan = (fc) => {
-  let t0 = Infinity;
-  let t1 = -Infinity;
+  const spans = [];
   (fc.features || []).forEach((f) => {
     const t = f.properties && f.properties.coordinateProperties
       && f.properties.coordinateProperties.times;
-    if (!t || !t.length) return;
-    if (t[0] < t0) t0 = t[0];
-    if (t[t.length - 1] > t1) t1 = t[t.length - 1];
+    if (t && t.length) spans.push([t[0], t[t.length - 1]]);
   });
-  return Number.isFinite(t0) ? { t0, t1 } : null;
+  if (!spans.length) return null;
+  spans.sort((a, b) => a[0] - b[0]);
+
+  // merge overlapping transmission windows
+  const live = [spans[0].slice()];
+  spans.slice(1).forEach(([s, e]) => {
+    const last = live[live.length - 1];
+    if (s <= last[1]) last[1] = Math.max(last[1], e);
+    else live.push([s, e]);
+  });
+
+  const t0 = live[0][0];
+  const t1 = live[live.length - 1][1];
+
+  // one segment per window and per silence, each with a share of the progress
+  const segs = [];
+  live.forEach(([s, e], i) => {
+    if (i > 0) segs.push({ t0: live[i - 1][1], t1: s, gap: true });
+    segs.push({ t0: s, t1: e, gap: false });
+  });
+  const liveMs = live.reduce((n, [s, e]) => n + (e - s), 0) || 1;
+  const gaps = segs.filter((x) => x.gap).length;
+  const gapTotal = Math.min(0.5, gaps * GAP_SHARE);
+  segs.forEach((x) => {
+    x.w = x.gap ? gapTotal / gaps : (1 - gapTotal) * ((x.t1 - x.t0) / liveMs);
+  });
+  let acc = 0;
+  segs.forEach((x) => { x.p0 = acc; acc += x.w; x.p1 = acc; });
+
+  const at = (p) => {
+    if (p <= 0) return t0;
+    if (p >= 1) return t1;
+    const seg = segs.find((x) => p <= x.p1) || segs[segs.length - 1];
+    const k = seg.w > 0 ? (p - seg.p0) / seg.w : 1;
+    return seg.t0 + (seg.t1 - seg.t0) * k;
+  };
+
+  return { t0, t1, at };
 };
 
 const centroidOf = (geometry) => {
@@ -185,7 +236,7 @@ export const loadStoryData = async () => {
   const [traffic, habitats, tracks, mediterranean] = await Promise.all([
     get('/data/traffic_by_speed.geojson'),
     get('/data/habitats.geojson'),
-    get('/data/whale_tracks_PLACEHOLDER.geojson'),
+    get('/data/whale_tracks.geojson'),
     // the basin cut out of the global ocean polygon - see
     // Scripts/export_mediterranean.py in the project folder
     get('/data/mediterranean.geojson')
