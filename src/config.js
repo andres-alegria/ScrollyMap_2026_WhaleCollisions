@@ -75,6 +75,24 @@ const config = {
 
   chapters: [
 
+    /* --- Locating the sea --------------------------------------------- */
+    // The only full-screen map in the piece. It opens on the world and closes
+    // on the basin as the section is entered; once the camera has arrived the
+    // card rises from the bottom edge. Short and full width on purpose, so
+    // the map keeps the screen and the card reads as a caption to it.
+    {
+      id: 'locator',
+      type: 'stage',
+      stage: 'MapIntro',
+      accessToken: MAPBOX_TOKEN,
+      mapStyle: MAPBOX_STYLE,
+      from: { center: [15, 30], zoom: 1.5 },
+      to: { center: [15.25, 38], zoom: 3.5 },
+      eyebrow: 'The Mediterranean',
+      label: 'A sea crossed by many ships',
+      text: 'Nearly every ship moving between the Atlantic and the Suez Canal crosses this sea end to end, and almost none of it is empty: of the roughly 25,200 patches of water ten kilometers across that make up the Mediterranean, <strong>24,254</strong> carried vessel traffic during 2025.',
+    },
+
     /* --- The story, in one box ---------------------------------------- */
     // A single pinned panel. The box never moves and the story never hands
     // off to a second one: the camera travels inside the frame while the
@@ -93,20 +111,6 @@ const config = {
       aspect: '4 / 3',
       dwell: 1.6,              // adjust: screen-heights of scroll per step
       steps: [
-        {
-          center: [15.25, 38.0], zoom: 3.9,
-          place: 'Mediterranean Sea',
-          eyebrow: 'The Mediterranean',
-          label: 'An enclosed sea',
-          text: 'Nearly every ship moving between the Atlantic and the Suez Canal crosses the Mediterranean end to end.',
-        },
-        {
-          center: [15.25, 38.0], zoom: 4.1,
-          place: 'Mediterranean Sea',
-          eyebrow: 'The Mediterranean',
-          label: 'A sea crossed by many ships',
-          text: 'Almost none of the basin is empty. Of the roughly 25,200 patches of sea ten kilometers across that make up the Mediterranean, <strong>24,254</strong> carried vessel traffic during 2025.',
-        },
         {
           center: [15.25, 38.0], zoom: 4.1,
           place: 'Mediterranean Sea',
