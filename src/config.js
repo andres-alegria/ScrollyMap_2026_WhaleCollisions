@@ -39,7 +39,7 @@ const speedLegend = [
 ];
 
 const trackLegend = {
-  title: 'Whale tracks (placeholder)',
+  title: 'Tracked whale movements',
   color: C.track,
   symbol: 'line'   // a path, so it reads as a line rather than an area
 };
@@ -73,7 +73,7 @@ const config = {
 
   alignment: 'left',
   footer:
-    'Vessel data: Global Fishing Watch (2025) | Habitat boundaries: IUCN IMMA / Pelagos Sanctuary / ACCOBAMS | Whale tracks shown are PLACEHOLDER data',
+    'Vessel data: Global Fishing Watch (2025) | Habitat boundaries: IUCN IMMA / Pelagos Sanctuary / ACCOBAMS | Whale tracks: Argos satellite telemetry, 2021 to 2024',
 
   chapters: [
 
@@ -211,7 +211,7 @@ const config = {
       alignment: 'left',
       title: 'Twelve whales, four years',
       description:
-        'Twelve whales were tracked in the Mediterranean between 2021 and 2024. Their routes run through the same water as the fast traffic. <em>The tracks shown here are placeholders while the real tagging records are cleared for release.</em>',
+        'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
       legend: [trackLegend],
 
       // The habitats were named in the chapter before this one, so their
