@@ -14,11 +14,30 @@ a:visited {
   color: #1c6572;
 }
 
-/* The globe canvas paints its own backdrop, but the page behind it needs to
-   match so there is no flash of white before the geometry loads.
+/* The map paints its own ground, but the page behind it needs to match so
+   there is no flash of white before the style loads.
    Charcoal, brand. adjust page background here */
 body {
   background-color: #181818;
+}
+
+/* The Mapbox container. This rule went missing when version 1 dropped Mapbox
+   for the D3 globe: without it the map has no height and collapses to
+   whatever the canvas happens to report, which was 150px.
+   lvh, not vh, for the same reason the globe used it: a mobile browser's
+   toolbar sliding in must not resize the map mid-scroll. */
+.mapboxgl-map {
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100lvh;
+  position: fixed;
+  z-index: -5;                 /* behind the story, which sits at z-index 100 */
+}
+
+.mapboxgl-ctrl-attrib {
+  font-size: 8px;
 }
 
 #header {

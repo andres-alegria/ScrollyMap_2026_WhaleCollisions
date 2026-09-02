@@ -1,0 +1,37 @@
+/* Sits bottom-left inside the panel, drawn straight onto the imagery. The two
+   lines carry the measurement, so their length has to be exact. */
+.scalebar {
+  position: absolute;
+  left: 2.4%;
+  bottom: 2.4%;
+  /* MUST stay 100%. The bar lengths are percentages of this element, and they
+     are computed as a fraction of the PANEL's ground width — so anything less
+     than 100% silently shortens every scale bar by that factor. It was 30%,
+     which drew every bar at a third of its true length. Nothing is painted at
+     the right-hand end, so the box simply spans the frame. */
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;                    /* sections centre their text; opt out */
+  pointer-events: none;
+}
+
+/* wider gap between the two pairs than within one, so each label reads as
+   belonging to the line directly beneath it */
+.scalebar__row + .scalebar__row { margin-top: 9px; }
+
+.scalebar__label {
+  display: block;
+  /* the smallest text in the section: furniture, not content */
+  font-family: 'Open Sans', sans-serif;
+  font-size: var(--fs-furniture, 12px);
+  font-weight: 400;
+  line-height: 1.25;
+  color: #f7f4ee;                      /* adjust scale bar colour */
+}
+
+.scalebar__line {
+  display: block;
+  height: 1px;                         /* adjust line weight */
+  background: #f7f4ee;                 /* adjust scale bar colour */
+  margin-top: 3px;
+}

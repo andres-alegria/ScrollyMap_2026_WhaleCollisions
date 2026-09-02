@@ -1,0 +1,153 @@
+/* Each panel is a full-viewport section. They pin with pinSpacing:false and
+   stack, so each must paint its own ground or the one beneath shows through.
+   Adapted from AreaReveal.css in the isolated-peoples scrolly; the ground here
+   is the story's charcoal rather than that piece's paper. */
+.panel-section {
+  /* Type ramp for the whole section, in one place. The display end steps by
+     roughly 2x and the text end by 1.15x, so the block reads as one family of
+     sizes. Furniture (scale bar, locator caption) is deliberately the smallest
+     thing on screen. Adjust the ramp here rather than on the rules below. */
+  --fs-eyebrow: clamp(0.8rem, 1vw, 0.95rem);
+  --fs-name: clamp(1.5rem, 2.4vw, 2.25rem);
+  --fs-body: clamp(15px, 1.2vw, 18px);
+  --fs-label: clamp(13px, 1.06vw, 15px);
+  --fs-furniture: clamp(12px, 0.93vw, 14px);
+
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.4vh;
+  padding: 2.6vh 4vw;
+  box-sizing: border-box;
+  background-color: #181818;            /* adjust section ground (Charcoal) */
+  transform-origin: 50% 40%;
+  /* No will-change here on purpose: it would hold a full-viewport compositor
+     layer per section for the whole page. pinned-panel.js sets it only while a
+     section is actually receding, and clears it straight after. */
+  overflow: hidden;
+}
+
+.panel-section__title {
+  margin: 0 0 clamp(10px, 2.2vh, 24px);  /* adjust title-to-frame gap */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 0 0 auto;
+}
+
+.panel-section__eyebrow {
+  font-family: 'Open Sans', sans-serif;
+  font-size: var(--fs-eyebrow);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #74ADB3;                        /* adjust eyebrow colour (Blue mid) */
+  margin-bottom: 0.4em;
+}
+
+.panel-section__name {
+  font-size: var(--fs-name);
+  font-weight: 400;
+  line-height: 1.15;
+  color: #FCFCFC;                        /* adjust title colour */
+}
+
+.panel-section__body {
+  display: flex;
+  align-items: flex-start;               /* card top-aligns with the frame */
+  justify-content: center;
+  gap: 3vw;
+  width: 100%;
+  min-height: 0;
+}
+
+/* The image column. On wide screens it holds only the frame. */
+.panel-section__panel {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  width: min(50vw, 74vh);                /* adjust panel size */
+}
+
+.panel-section__frame {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 5.5pt;                  /* adjust corner radius (~7.3px) */
+  background: #0e0e0e;
+}
+
+.panel-section__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: inherit;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Right-hand column: the steps sit level with the top of the frame. */
+.panel-section__card {
+  flex: 0 1 clamp(320px, 30vw, 480px);   /* adjust text column width */
+  max-width: clamp(320px, 30vw, 480px);
+  color: #EEF0F0;
+}
+
+/* Steps are stacked, so the column keeps one height as they swap. */
+.panel-section__steps {
+  display: grid;
+}
+
+.panel-section__step {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 1.6vh, 18px);
+}
+
+.panel-section__label {
+  margin: 0;
+  font-family: 'Open Sans', sans-serif;
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #92A3A0;                        /* adjust step label colour */
+}
+
+.panel-section__text {
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  text-align: left;
+}
+
+@media (max-width: 820px) {
+  .panel-section {
+    --fs-body: 14px;
+    --fs-label: 11px;
+    --fs-furniture: 11px;
+    gap: 1vh;
+    padding: 2.2vh 5vw;
+  }
+
+  .panel-section__title { margin-bottom: 0.8vh; }
+
+  /* stacked: frame, then the text beneath it */
+  .panel-section__body { flex-direction: column; align-items: center; gap: 1.6vh; }
+  .panel-section__panel { width: min(90vw, 46vh); }
+  /* matching the frame's width keeps the text flush with the image above it */
+  .panel-section__card {
+    flex: 0 0 auto;
+    width: min(90vw, 46vh);
+    max-width: none;
+  }
+}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './app.scss';
 import Story from './components/story/story';
-import Globe from './components/globe/globe';
+import Map from './components/map/map';
 import Intro from './components/intro/intro';
 import Logos from './components/logos/logos';
 import ReadingProgress from './components/reading-progress/reading-progress';
@@ -9,6 +9,9 @@ import ReadingProgress from './components/reading-progress/reading-progress';
 const App = (props) => {
   const {
     chapters,
+    accessToken,
+    style,
+    showMarkers,
     theme,
     title,
     subtitle,
@@ -16,9 +19,21 @@ const App = (props) => {
     footer,
     intro,
     logos,
+    credits,
   } = props;
-  const [currentChapterId, setCurrentChapter] = useState(chapters[0]);
-  const [, setCurrentAction] = useState();
+  const [currentChapterId, setCurrentChapter] = useState(chapters[0] && chapters[0].id);
+  const [currentAction, setCurrentAction] = useState();
+
+  // The map is the whole basemap now, so a missing token or style is not a
+  // degraded page, it is a blank one. Say which is missing rather than
+  // rendering nothing.
+  const renderError = (missing) => (
+    <div className="flex justify-center items-center h-screen">
+      Please add the missing {missing}. See the README.
+    </div>
+  );
+  if (!style || style === 'ADD YOUR MAPBOX STYLE HERE') return renderError('Mapbox map style');
+  if (!accessToken) return renderError('Mapbox access token');
 
   return (
     <div>
@@ -39,10 +54,18 @@ const App = (props) => {
         theme={theme}
         currentChapterId={currentChapterId}
         footer={footer}
+        credits={credits}
         setCurrentChapter={setCurrentChapter}
         setCurrentAction={setCurrentAction}
       />
-      <Globe chapters={chapters} />
+      <Map
+        chapters={chapters}
+        currentAction={currentAction}
+        accessToken={accessToken}
+        mapStyle={style}
+        showMarkers={showMarkers}
+        currentChapterId={currentChapterId}
+      />
     </div>
   );
 };

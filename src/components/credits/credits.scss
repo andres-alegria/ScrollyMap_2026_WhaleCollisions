@@ -1,0 +1,115 @@
+// Full-bleed dark band closing the story, matching the footer beneath it.
+.credits {
+  background-color: #181818;              // adjust credits ground (Charcoal)
+  color: #f7f4ee;                         // adjust credits text colour
+  padding: 6rem 0 3.5rem;                 // adjust band depth
+  // The last ranked section is still pinned here, and a pinned element is
+  // position:fixed — without its own stacking context this band would sit
+  // underneath it. Same reason the footer carries one.
+  position: relative;
+  z-index: 30;
+}
+
+// Sits at the top of the band, centred, above the left-aligned content below.
+.credits__back-wrap {
+  text-align: center;
+  margin-bottom: 3.5rem;                  // adjust space below the control
+}
+
+.credits__back {
+  display: inline-block;
+  padding: 0.7rem 1.5rem;                 // adjust control size
+  border: 1px solid rgba(247, 244, 238, 0.35);
+  border-radius: 5.5pt;                   // same corner as the panels
+  background: transparent;
+  color: #f7f4ee;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 13px;                        // adjust control text size
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.credits__back:hover,
+.credits__back:focus-visible {
+  background-color: rgba(247, 244, 238, 0.1);
+  border-color: rgba(247, 244, 238, 0.65);
+}
+
+.credits__inner {
+  max-width: 41rem;                       // same measure as the intro chapters
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  text-align: left;
+}
+
+.credits__title {
+  margin: 0 0 2rem;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;                        // adjust heading size
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #92a3a0;                         // adjust muted label colour
+}
+
+.credits__list {
+  margin: 0 0 2.75rem;
+}
+
+// One credit per line: role, then name.
+.credits__row {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.45rem 0;
+  border-top: 1px solid rgba(247, 244, 238, 0.12);   // adjust rule colour
+}
+
+.credits__row:last-child {
+  border-bottom: 1px solid rgba(247, 244, 238, 0.12);
+}
+
+.credits__role {
+  flex: 0 0 11rem;                        // adjust label column width
+  font-family: 'Open Sans', sans-serif;
+  font-size: 13px;
+  color: #92a3a0;
+}
+
+.credits__name {
+  margin: 0;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 15px;
+  color: #f7f4ee;
+}
+
+.credits__subtitle {
+  margin: 0 0 0.75rem;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #92a3a0;
+}
+
+// Continuous prose rather than one line per source.
+.credits__sources {
+  margin: 0;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 13px;                        // adjust sources size
+  line-height: 1.7;
+  color: rgba(247, 244, 238, 0.78);       // adjust sources colour
+}
+
+.credits__sources a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .credits { padding: 4rem 0 2.5rem; }
+  .credits__row { display: block; padding: 0.6rem 0; }
+  .credits__role { display: block; margin-bottom: 0.1rem; font-size: 12px; }
+}
