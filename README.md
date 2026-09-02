@@ -47,7 +47,7 @@ function of scroll offset, so it tracks the reader exactly.
 | `trafficSlow` / `trafficMid` / `trafficFast` | `traffic_by_speed.geojson` | 0.1° grid, three speed bands, 25,155 cells |
 | `mediterranean` / `medOutline` | `mediterranean.geojson` | the basin, cut from the same land layer the globe draws |
 | `habitats` | `habitats.geojson` | Pelagos, Hellenic Trench, Cetacean Migration Corridor |
-| `whaleTracks` | `whale_tracks_PLACEHOLDER.geojson` | **synthetic placeholder data** |
+| `whaleTracks` | `whale_tracks.geojson` | 12 Argos-tagged whales, 2021 to 2024, trimmed at the Strait of Gibraltar |
 
 Every data layer is clipped to the Mediterranean polygon, so nothing bleeds into
 the Atlantic, the Black Sea or the Red Sea. Anything drawn inside that clip
