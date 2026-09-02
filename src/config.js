@@ -64,7 +64,11 @@ const config = {
   },
 
   logos: [
-    { name: 'mongabay', src: 'mongabaylogo.png', width: '140', href: 'https://news.mongabay.com' }
+    // SVG, not the old 136x20 PNG: at width 140 on a retina screen that
+    // bitmap was drawn at half the resolution it needed and read as blurry.
+    // 140 keeps the same apparent size, because the SVG's ink fills about
+    // 81% of its viewBox height and lands back at the PNG's 20px.
+    { name: 'mongabay', src: 'mongabaylogo.svg', width: '140', href: 'https://news.mongabay.com' }
   ],
 
   alignment: 'left',
