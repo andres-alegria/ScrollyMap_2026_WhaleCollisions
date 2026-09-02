@@ -82,17 +82,21 @@ const VARIANTS = {
       // (viewBox x 296-324, y 678-757) instead of running through it - the
       // diagonal sits around x 395-455 crossing that band.
       //
-      // Contact point is (310, 872), just below the cue block. Icons are
-      // centered on their path endpoints, so each endpoint is set back along
-      // its own heading by half the icon's length:
-      //   ship  heading 126 deg, 68 long -> endpoint (330, 845)
-      //   whale heading -54 deg, 52 long -> endpoint (288, 903), set back a
+      // Contact point is (310, 907), just below the cue block. It sat 35 units
+      // higher until the phone headline went to 56px: the taller title pushes
+      // the whole centred block down, and the ship's nose ended up flush
+      // against the bottom of "Scroll down, but not too fast".
+      //
+      // Icons are centered on their path endpoints, so each endpoint is set
+      // back along its own heading by half the icon's length:
+      //   ship  heading 126 deg, 68 long -> endpoint (330, 880)
+      //   whale heading -54 deg, 52 long -> endpoint (288, 938), set back a
       //     further ~12 units so the silhouettes meet nose to nose rather
       //     than the hull overlapping the whale's body
       whale:
-        'M 110 1400 C 176 1310, 206 1240, 212 1150 C 219 1058, 236 990, 262 954 C 272 940, 274 922, 288 903',
+        'M 110 1400 C 176 1330, 206 1270, 212 1185 C 219 1093, 236 1025, 262 989 C 272 975, 274 957, 288 938',
       boat:
-        'M 470 -40 L 470 300 Q 470 336, 496 358 L 540 396 Q 562 416, 556 448 L 534 552 Q 528 584, 508 604 L 330 845'
+        'M 470 -40 L 470 300 Q 470 336, 496 358 L 540 396 Q 562 416, 556 448 L 534 570 Q 528 606, 508 630 L 330 880'
     }
   }
 };

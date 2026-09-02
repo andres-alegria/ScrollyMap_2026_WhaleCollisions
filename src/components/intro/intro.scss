@@ -87,6 +87,18 @@
   line-height: 40px;
 }
 
+/* Phones only. At 40px the headline was reading small against a 390px
+   screen and sat below the 48px the brand asks of a headline, while the
+   subhead next to it is 18px. Leading stays equal to the size, matching the
+   desktop treatment, which already sets this two lines deep.
+   adjust the mobile headline size here */
+@media (max-width: 767px) {
+  .title {
+    font-size: 56px;
+    line-height: 56px;
+  }
+}
+
 @media (min-width: 640px) and (min-height: 700px) {
   .title {
     font-size: 120px;
