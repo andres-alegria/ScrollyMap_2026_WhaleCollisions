@@ -110,15 +110,16 @@ const config = {
       mapStyle: MAPBOX_STYLE,
       aspect: '4 / 3',
       dwell: 1.6,              // adjust: screen-heights of scroll per step
-      // Each step's `traffic` block says how present each speed band is and
-      // how far its colour has moved from the sea's own tints toward the reds
-      // (hot: 0 cool, 1 full red). Values interpolate between steps with the
-      // camera, so a band fades in over the same stretch the camera travels.
+      // Each step's `traffic` block says how present each speed band is, as a
+      // fraction of the strength the Mapbox style gives it. Colour, radius and
+      // stroke are Studio's; this only decides what the reader is looking at.
+      // Values interpolate between steps with the camera, so a band fades in
+      // over the same stretch the camera travels.
       steps: [
         {
           center: [15.25, 38.0], zoom: 4.1,
           place: 'Mediterranean Sea',
-          traffic: { slow: 0.75, mid: 1, fast: 1, hot: 1 },
+          traffic: { slow: 0.75, mid: 1, fast: 1 },
           eyebrow: 'The Mediterranean',
           label: 'High speed traffic',
           text: 'In 2025 almost <strong>2,800 unique vessels</strong> traveled faster than 15 knots while navigating through the Mediterranean\u2019s key whale habitats. Ship strikes are almost always fatal above that speed, about 28 kilometers per hour.',
@@ -126,7 +127,7 @@ const config = {
         {
           center: [8.81, 42.625], zoom: 6.3,
           place: 'France, Italy, Monaco',
-          traffic: { slow: 0.35, mid: 1, fast: 1, hot: 1 },
+          traffic: { slow: 0.35, mid: 1, fast: 1 },
           eyebrow: 'Key whale habitat',
           label: 'Pelagos Sanctuary',
           text: 'France, Italy and Monaco manage the sanctuary together, under an agreement signed in 1999. It covers about <strong>96,500 km\u00b2</strong>. The heaviest shipping runs through the Piombino Channel off Elba, along the Ligurian coast off Nice, and through the Strait of Bonifacio.',
@@ -134,7 +135,7 @@ const config = {
         {
           center: [25.2, 36.445], zoom: 5.7,
           place: 'Greece',
-          traffic: { slow: 0.35, mid: 1, fast: 1, hot: 1 },
+          traffic: { slow: 0.35, mid: 1, fast: 1 },
           eyebrow: 'Key whale habitat',
           label: 'Hellenic Trench',
           text: 'Off southern Greece, the trench is critical habitat for sperm whales, which rest at the surface where deep water comes close to shore. It covers about <strong>56,600 km\u00b2</strong>. Shipping concentrates where vessels round the southern Peloponnese, and in the Karpathos Strait.',
@@ -142,7 +143,7 @@ const config = {
         {
           center: [2.45, 40.495], zoom: 6.4,
           place: 'Spain',
-          traffic: { slow: 0.35, mid: 1, fast: 1, hot: 1 },
+          traffic: { slow: 0.35, mid: 1, fast: 1 },
           eyebrow: 'Key whale habitat',
           label: 'Cetacean Migration Corridor',
           text: 'The corridor off eastern Spain protects a migration route between the Balearic Sea and the wider western Mediterranean. Spain declared it a marine protected area in 2018, covering about <strong>46,400 km\u00b2</strong>.',
@@ -151,7 +152,7 @@ const config = {
           center: [15.25, 38.5], zoom: 4.0,
           place: 'Mediterranean Sea',
           // the traffic drops back so the tracks can be seen against it
-          traffic: { slow: 0.2, mid: 0.4, fast: 0.7, hot: 1 },
+          traffic: { slow: 0.2, mid: 0.4, fast: 0.7 },
           eyebrow: 'Tracked movements',
           label: 'Twelve whales, four years',
           text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',

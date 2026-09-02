@@ -166,7 +166,7 @@ const MapPanel = ({
           const ta = a.traffic || {};
           const tb = b.traffic || {};
           const at = (k) => lerp(ta[k] || 0, tb[k] || 0, f);
-          setTraffic(map, { slow: at('slow'), mid: at('mid'), fast: at('fast'), hot: at('hot') });
+          setTraffic(map, { slow: at('slow'), mid: at('mid'), fast: at('fast') });
         }
 
         // Text: each step fades in AND out again. Fading in only would leave

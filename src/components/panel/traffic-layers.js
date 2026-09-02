@@ -1,84 +1,75 @@
 /**
- * The vessel-traffic layers, shared by both maps in the piece.
+ * The vessel-traffic layers.
  *
- * One vector tileset carries all three speed bands as attributes on a single
- * layer, so the three style layers below are filters on the same source
- * rather than three sources:
+ * These are defined in the Mapbox style, not here. Studio owns how they look:
+ * circle layers on the `composite` source, filtered on the three speed-band
+ * attributes that the tileset carries on every cell:
  *
- *   s   10-15 knots, every cell with any traffic at all
- *   m   15-25 knots, above 100 vessel-hours
- *   f   above 25 knots, above 20 vessel-hours
+ *   s   10-15 knots, every cell with any traffic at all   -> Slow_traffic
+ *   m   15-25 knots, above 100 vessel-hours               -> Medium_traffic
+ *   f   above 25 knots, above 20 vessel-hours             -> Fast_traffic
  *
- * Because it is vector, the colour is a style property rather than something
- * baked into an image, which is what lets a chapter blend the fast bands from
- * the basin's own tints up to the reds. The raster route would have fixed
- * those colours at export.
+ * This module only decides how PRESENT each band is at a given point in the
+ * story. Colour, radius and stroke stay in Studio, so they can be judged by
+ * eye and changed without touching the code. Each layer's published opacity is
+ * read once and treated as its full strength; a chapter's value scales that,
+ * so a band never renders stronger than the style says it should.
  */
 
-export const TRAFFIC_SOURCE = 'whale-traffic';
-export const TRAFFIC_TILESET = 'mapbox://mongabay.whale_traffic_2025';
-const SOURCE_LAYER = 'traffic';
-
-// Two palettes per band. `cool` is a tint of the sea, for showing traffic
-// without emphasising it; `hot` is the Mongabay red family, for the chapters
-// about speed. adjust traffic colours here
+// Layer ids as they are named in the style. Rename them there and these must
+// follow, or the traffic silently stops responding to the story.
 const BANDS = [
-  { id: 'traffic-slow', key: 's', cool: '#2C7583', hot: '#2C7583' },
-  { id: 'traffic-mid',  key: 'm', cool: '#3C919F', hot: '#F6BCB3' },
-  { id: 'traffic-fast', key: 'f', cool: '#59AFBF', hot: '#530E0D' },
+  { key: 'slow', id: 'Slow_traffic' },
+  { key: 'mid', id: 'Medium_traffic' },
+  { key: 'fast', id: 'Fast_traffic' },
 ];
 
-const hexToRgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
-const mix = (a, b, t) => {
-  const [r1, g1, b1] = hexToRgb(a);
-  const [r2, g2, b2] = hexToRgb(b);
-  const c = (u, v) => Math.round(u + (v - u) * t);
-  return `rgb(${c(r1, r2)},${c(g1, g2)},${c(b1, b2)})`;
-};
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 
-/**
- * Add the source and the three layers. Safe to call more than once.
- *
- * `beneath` is the id of a style layer to insert below, so the basemap's own
- * labels stay on top of the data rather than being buried by it.
- */
-export const addTrafficLayers = (map, beneath) => {
-  if (!map || !map.getStyle()) return;
-  if (!map.getSource(TRAFFIC_SOURCE)) {
-    map.addSource(TRAFFIC_SOURCE, { type: 'vector', url: TRAFFIC_TILESET });
-  }
-  // put the data under the first symbol layer, which is where the place names
-  // start in this style
-  const firstSymbol = beneath || (map.getStyle().layers.find((l) => l.type === 'symbol') || {}).id;
+// full strength per layer, taken from the style the first time it is seen
+const baseOpacity = new WeakMap();
+let warned = false;
 
-  BANDS.forEach(({ id, key, cool }) => {
-    if (map.getLayer(id)) return;
-    map.addLayer({
-      id,
-      type: 'fill',
-      source: TRAFFIC_SOURCE,
-      'source-layer': SOURCE_LAYER,
-      filter: ['has', key],
-      paint: {
-        'fill-color': cool,
-        'fill-opacity': 0,          // chapters raise this; nothing shows by default
-        'fill-antialias': false,    // cells butt against each other; seams otherwise
-      },
-    }, firstSymbol);
+const readBase = (map) => {
+  if (baseOpacity.has(map)) return baseOpacity.get(map);
+  const base = {};
+  let missing = [];
+  BANDS.forEach(({ key, id }) => {
+    if (!map.getLayer(id)) { missing.push(id); return; }
+    const o = map.getPaintProperty(id, 'circle-opacity');
+    base[key] = typeof o === 'number' ? o : 1;
   });
+  if (missing.length && !warned) {
+    warned = true;
+    // Not thrown: the story should still run with a plain basemap rather than
+    // dying because a layer was renamed in Studio.
+    console.warn('[traffic] layers missing from the style:', missing.join(', '));
+  }
+  baseOpacity.set(map, base);
+  return base;
 };
 
 /**
- * Set what the reader sees. `hot` blends each band's colour from its cool tint
- * to its red, and the three opacities say how present each band is.
+ * Called once the style has loaded. There is nothing to add any more, since
+ * the layers ship with the style; this just takes their published opacities
+ * and then hides them, so the story decides when each one appears.
  */
-export const setTraffic = (map, { slow = 0, mid = 0, fast = 0, hot = 0 } = {}) => {
-  if (!map || !map.getLayer('traffic-slow')) return;
-  const o = { s: slow, m: mid, f: fast };
-  const h = clamp01(hot);
-  BANDS.forEach(({ id, key, cool, hot: hotColor }) => {
-    map.setPaintProperty(id, 'fill-opacity', clamp01(o[key]));
-    map.setPaintProperty(id, 'fill-color', mix(cool, hotColor, h));
+export const addTrafficLayers = (map) => {
+  if (!map || !map.getStyle()) return;
+  readBase(map);
+  setTraffic(map, {});
+};
+
+/**
+ * Set how present each band is, 0 to 1, as a fraction of the strength Studio
+ * gave it.
+ */
+export const setTraffic = (map, { slow = 0, mid = 0, fast = 0 } = {}) => {
+  if (!map || !map.getStyle()) return;
+  const base = readBase(map);
+  const want = { slow, mid, fast };
+  BANDS.forEach(({ key, id }) => {
+    if (!map.getLayer(id)) return;
+    map.setPaintProperty(id, 'circle-opacity', clamp01(want[key]) * (base[key] ?? 1));
   });
 };
