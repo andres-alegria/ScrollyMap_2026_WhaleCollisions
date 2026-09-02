@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { addTrafficLayers, setTraffic } from './traffic-layers';
 import ScaleBar from './scale-bar';
 import LocatorGlobe from './locator-globe';
 import './map-panel.css';
@@ -100,6 +101,10 @@ const MapPanel = ({
 
     const onLoad = () => {
       map.resize();
+      addTrafficLayers(map);
+      // the layers start invisible, so paint the first step's state at once
+      // rather than waiting for the first scroll
+      if (steps[0] && steps[0].traffic) setTraffic(map, steps[0].traffic);
       setScale(scaleFor(map, frameRef.current ? frameRef.current.clientWidth : 0));
       // the section's height depends on nothing the map does, but its
       // measurements were taken before the frame had content
@@ -156,6 +161,12 @@ const MapPanel = ({
             pitch: lerp(a.pitch || 0, b.pitch || 0, f),
             bearing: lerp(a.bearing || 0, b.bearing || 0, f),
           });
+          // the data layers travel with the camera, interpolated the same way,
+          // so a band fades in over the same stretch the camera moves
+          const ta = a.traffic || {};
+          const tb = b.traffic || {};
+          const at = (k) => lerp(ta[k] || 0, tb[k] || 0, f);
+          setTraffic(map, { slow: at('slow'), mid: at('mid'), fast: at('fast'), hot: at('hot') });
         }
 
         // Text: each step fades in AND out again. Fading in only would leave

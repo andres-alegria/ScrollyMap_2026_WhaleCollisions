@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { addTrafficLayers, setTraffic } from './traffic-layers';
 import './map-intro.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -75,7 +76,11 @@ const MapIntro = ({
     // Exposed for tuning from the console, as the panel's map is via
     // window.__MAP__:  __MAPINTRO__.getZoom()
     if (typeof window !== 'undefined') window.__MAPINTRO__ = map;
-    const onLoad = () => { map.resize(); ScrollTrigger.refresh(); };
+    const onLoad = () => {
+      map.resize();
+      addTrafficLayers(map);
+      ScrollTrigger.refresh();
+    };
     map.on('load', onLoad);
     return () => { map.off('load', onLoad); map.remove(); mapRef.current = null; };
   }, [accessToken, mapStyle, from.center, from.zoom]);
@@ -130,10 +135,18 @@ const MapIntro = ({
       onUpdate: (self) => {
         phaseRef.current.pinned = self.progress;
         applyCamera();
+
         // The card holds its place on the top edge; the TEXT rises into it
         // from below, clipped by the card, so the motion is upward rather
         // than the whole band dropping in.
         const c = clamp01((self.progress - cardFrom) / (cardBy - cardFrom));
+
+        // The slow band comes up slightly ahead of the type: it is the
+        // evidence for the claim the card makes, so it is already there when
+        // the sentence arrives.
+        if (mapRef.current) {
+          setTraffic(mapRef.current, { slow: clamp01(c * 1.6) * 0.85 });
+        }
         if (cardRef.current) {
           // the ground arrives ahead of the type, so the text rises into
           // something rather than floating over the map
