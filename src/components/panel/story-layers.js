@@ -52,13 +52,55 @@ const clamp01 = (v) => Math.min(1, Math.max(0, v));
  */
 const GAP_SHARE = 0.04;   // adjust how fast the quiet months pass
 
+// When a pass is focused on one habitat, the share of the scroll spent inside
+// that habitat's window. The rest winds forward through everything before and
+// after it, quickly but visibly, so the reader still watches the whales arrive
+// rather than finding them already there.
+const FOCUS_SHARE = 0.78;   // adjust how much of a pass is spent in the window
+
 const timesOf = (f) => (
   f.properties
   && f.properties.coordinateProperties
   && f.properties.coordinateProperties.times
 ) || null;
 
-export const trackSpan = (fc) => {
+// cut a segment at a boundary that falls inside it
+const splitAt = (segs, t) => {
+  const out = [];
+  segs.forEach((x) => {
+    if (t > x.t0 && t < x.t1) {
+      out.push({ ...x, t1: t }, { ...x, t0: t });
+    } else {
+      out.push(x);
+    }
+  });
+  return out;
+};
+
+/**
+ * The clock that drives the reveal.
+ *
+ * A straight t0..t1 clock does not work with real tagging data. The twelve
+ * whales transmit on 167 of the 1,234 days the record spans, in four short
+ * summer bursts with year-long silences between them, so a linear reveal sits
+ * frozen for most of the chapter and then lurches.
+ *
+ * So the clock is piecewise. Silences get a small fixed slice each; the
+ * windows where a whale is actually transmitting share the rest. The reveal
+ * stays continuous and the date readout stays truthful - it simply sweeps
+ * through each winter quickly instead of stopping dead.
+ *
+ * `focus` narrows that further. The tracks are replayed once per habitat, and
+ * the whales were not in all three at the same time: one reached the Hellenic
+ * Trench, and only in the last weeks of a record spanning three years. Played
+ * on the same clock as the rest, that pass is an empty sea for 95% of its
+ * length. Given a focus window, most of the scroll goes to the stretch when
+ * whales were actually inside that habitat, and the rest winds through the
+ * years on either side.
+ *
+ * Returns { t0, t1, at(progress) -> ms }.
+ */
+export const trackSpan = (fc, focus = null) => {
   const spans = [];
   (fc.features || []).forEach((f) => {
     const t = timesOf(f);
@@ -78,18 +120,48 @@ export const trackSpan = (fc) => {
   const t0 = live[0][0];
   const t1 = live[live.length - 1][1];
 
-  // one segment per window and per silence, each with a share of the progress
-  const segs = [];
+  // one segment per transmitting window and per silence
+  let segs = [];
   live.forEach(([s, e], i) => {
     if (i > 0) segs.push({ t0: live[i - 1][1], t1: s, gap: true });
     segs.push({ t0: s, t1: e, gap: false });
   });
-  const liveMs = live.reduce((n, [s, e]) => n + (e - s), 0) || 1;
-  const gaps = segs.filter((x) => x.gap).length;
-  const gapTotal = Math.min(0.5, gaps * GAP_SHARE);
-  segs.forEach((x) => {
-    x.w = x.gap ? gapTotal / gaps : (1 - gapTotal) * ((x.t1 - x.t0) / liveMs);
-  });
+
+  // A focus boundary can fall in the middle of a segment, so cut there first
+  // and every segment is then wholly inside the window or wholly outside it.
+  const [f0, f1] = focus || [];
+  if (focus) {
+    segs = splitAt(splitAt(segs, f0), f1);
+    segs.forEach((x) => { x.hot = x.t0 >= f0 && x.t1 <= f1; });
+  }
+
+  // Silences cost a fixed slice each; the transmitting windows share what is
+  // left, in proportion to their length. With a focus, that remainder is split
+  // again between the window and everything outside it, so a short stretch
+  // inside the habitat still gets most of the scroll.
+  const gaps = segs.filter((x) => x.gap);
+  const gapTotal = Math.min(0.5, gaps.length * GAP_SHARE);
+  const liveSegs = segs.filter((x) => !x.gap);
+  const liveTotal = 1 - gapTotal;
+
+  const shareOf = (pool) => {
+    const ms = pool.reduce((n, x) => n + (x.t1 - x.t0), 0);
+    return (x) => (ms > 0 ? (x.t1 - x.t0) / ms : 1 / Math.max(1, pool.length));
+  };
+
+  if (focus && liveSegs.some((x) => x.hot) && liveSegs.some((x) => !x.hot)) {
+    const hot = liveSegs.filter((x) => x.hot);
+    const cold = liveSegs.filter((x) => !x.hot);
+    const hotShare = shareOf(hot);
+    const coldShare = shareOf(cold);
+    hot.forEach((x) => { x.w = liveTotal * FOCUS_SHARE * hotShare(x); });
+    cold.forEach((x) => { x.w = liveTotal * (1 - FOCUS_SHARE) * coldShare(x); });
+  } else {
+    const share = shareOf(liveSegs);
+    liveSegs.forEach((x) => { x.w = liveTotal * share(x); });
+  }
+  gaps.forEach((x) => { x.w = gaps.length ? gapTotal / gaps.length : 0; });
+
   let acc = 0;
   segs.forEach((x) => { x.p0 = acc; acc += x.w; x.p1 = acc; });
 
@@ -102,6 +174,23 @@ export const trackSpan = (fc) => {
   };
 
   return { t0, t1, at };
+};
+
+/**
+ * A clock per focus window, built once and kept. A pass asks for its own on
+ * every scroll frame, and rebuilding the segment list each time would be
+ * wasteful for something that only depends on two numbers.
+ */
+const clockCache = new WeakMap();
+
+export const clockFor = (data, window) => {
+  if (!data || !data.tracks) return null;
+  if (!window) return data.clock;
+  let byWindow = clockCache.get(data);
+  if (!byWindow) { byWindow = new Map(); clockCache.set(data, byWindow); }
+  const key = `${window[0]}-${window[1]}`;
+  if (!byWindow.has(key)) byWindow.set(key, trackSpan(data.tracks, window));
+  return byWindow.get(key);
 };
 
 // ---- clipping a track at a moment ----------------------------------
@@ -267,7 +356,7 @@ export const addStoryLayers = (map, data) => {
     paint: {
       'line-color': TRACK,
       // adjust whale track weight
-      'line-width': ['interpolate', ['linear'], ['zoom'], 3, 1.1, 7, 2.4],
+      'line-width': ['interpolate', ['linear'], ['zoom'], 3, 0.83, 7, 1.8],
       'line-opacity': 0,
     },
   }, labels);
@@ -278,7 +367,8 @@ export const addStoryLayers = (map, data) => {
     source: `${SRC_TRACKS}-heads`,
     paint: {
       'circle-color': TRACK,
-      'circle-radius': ['interpolate', ['linear'], ['zoom'], 3, 2, 7, 4],
+      // adjust whale position dot size
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 3, 3.5, 7, 7],
       'circle-stroke-color': '#181818',
       'circle-stroke-width': 0.6,
       'circle-opacity': 0,
@@ -305,7 +395,7 @@ export const setHabitats = (map, amount = 0, focus = null) => {
  * Returns the moment the clock is showing, in ms, so the caller can put a date
  * on screen; null when there is nothing to show.
  */
-export const setTracks = (map, data, { amount = 0, clock = 0 } = {}) => {
+export const setTracks = (map, data, { amount = 0, clock = 0, window = null } = {}) => {
   if (!map || !map.getLayer(LYR.trackLine)) return null;
   const a = clamp01(amount);
   map.setPaintProperty(LYR.trackLine, 'line-opacity', a);
@@ -324,7 +414,8 @@ export const setTracks = (map, data, { amount = 0, clock = 0 } = {}) => {
     return null;
   }
 
-  const ms = data.clock.at(clamp01(clock));
+  const span = clockFor(data, window) || data.clock;
+  const ms = span.at(clamp01(clock));
   const { lines, heads } = tracksAt(data.tracks, ms);
   src.setData(lines);
   headSrc.setData(heads);

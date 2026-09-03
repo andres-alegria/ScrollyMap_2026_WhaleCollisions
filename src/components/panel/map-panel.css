@@ -151,3 +151,14 @@
   border-radius: 3px;
   pointer-events: none;
 }
+
+/* The line that says what a particular pass is showing, under the standing
+   paragraph. Set apart so the reader can see which half changed. */
+.map-panel__note {
+  margin: 0;
+  padding-top: clamp(4px, 0.8vh, 10px);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  text-align: left;
+  color: #BFECB1;                        /* adjust note color; matches the tracks */
+}

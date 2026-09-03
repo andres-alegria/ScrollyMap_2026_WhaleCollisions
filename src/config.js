@@ -176,17 +176,15 @@ const config = {
         /* --- The whale chapter, run three times ---------------------
            The same twelve tracks, replayed once in each habitat rather than
            once across the whole basin, where at that zoom they are a tangle of
-           threads too fine to follow. The paragraph does not change; the map
-           does.
+           threads too fine to follow. The standing paragraph does not change;
+           the map does, and a second line says what each pass is showing.
 
            Each pass is a pair of steps sharing one camera, so the map holds
            still while the clock runs. Between two passes the clock runs
            backwards as the camera travels, which retracts the paths and leaves
            the next habitat clear to fill again.
 
-           Ordered by how much there is to see: nine of the twelve whales enter
-           the corridor, two reach Pelagos, one the Hellenic Trench. */
-        // Cetacean Migration Corridor: the camera holds while the clock runs the whole record.
+           Ordered by how much there is to see. */
         {
           center: [2.45, 40.495], zoom: 6.4,
           place: 'Spain',
@@ -194,11 +192,16 @@ const config = {
           habitats: 1,
           habitat: 'Cetacean Migration Corridor',
           legend: 'tracks',
+          // The whales were not in all three habitats at the same time, so each
+          // pass spends most of its scroll on the weeks its own animals were
+          // actually inside it, and winds quickly through the years either side.
+          clockWindow: ['2021-05-10', '2023-07-29'],
           tracks: 1, clock: 0,
           span: 1.4,               // adjust: length of this replay
           eyebrow: 'Tracked movements',
           label: 'Twelve whales, four years',
           text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
+          note: 'Nine of the twelve tracked whales passed through the corridor, between May 2021 and July 2023.',
         },
         {
           center: [2.45, 40.495], zoom: 6.4,
@@ -207,25 +210,16 @@ const config = {
           habitats: 1,
           habitat: 'Cetacean Migration Corridor',
           legend: 'tracks',
+          // The whales were not in all three habitats at the same time, so each
+          // pass spends most of its scroll on the weeks its own animals were
+          // actually inside it, and winds quickly through the years either side.
+          clockWindow: ['2021-05-10', '2023-07-29'],
           tracks: 1, clock: 1,
           span: 0.7,               // adjust: length of the move to the next habitat
           eyebrow: 'Tracked movements',
           label: 'Twelve whales, four years',
           text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
-        },
-        // Hellenic Trench: the camera holds while the clock runs the whole record.
-        {
-          center: [25.2, 36.445], zoom: 5.7,
-          place: 'Greece',
-          traffic: { slow: 0.2, mid: 0.4, fast: 0.7 },
-          habitats: 1,
-          habitat: 'Hellenic Trench',
-          legend: 'tracks',
-          tracks: 1, clock: 0,
-          span: 1.4,               // adjust: length of this replay
-          eyebrow: 'Tracked movements',
-          label: 'Twelve whales, four years',
-          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
+          note: 'Nine of the twelve tracked whales passed through the corridor, between May 2021 and July 2023.',
         },
         {
           center: [25.2, 36.445], zoom: 5.7,
@@ -234,25 +228,34 @@ const config = {
           habitats: 1,
           habitat: 'Hellenic Trench',
           legend: 'tracks',
-          tracks: 1, clock: 1,
-          span: 0.7,               // adjust: length of the move to the next habitat
-          eyebrow: 'Tracked movements',
-          label: 'Twelve whales, four years',
-          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
-        },
-        // Pelagos Sanctuary: the camera holds while the clock runs the whole record.
-        {
-          center: [8.81, 42.625], zoom: 6.3,
-          place: 'France, Italy, Monaco',
-          traffic: { slow: 0.2, mid: 0.4, fast: 0.7 },
-          habitats: 1,
-          habitat: 'Pelagos Sanctuary',
-          legend: 'tracks',
+          // The whales were not in all three habitats at the same time, so each
+          // pass spends most of its scroll on the weeks its own animals were
+          // actually inside it, and winds quickly through the years either side.
+          clockWindow: ['2024-07-27', '2024-08-23'],
           tracks: 1, clock: 0,
           span: 1.4,               // adjust: length of this replay
           eyebrow: 'Tracked movements',
           label: 'Twelve whales, four years',
           text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
+          note: 'One of the twelve tracked whales passed through the Hellenic Trench, between July and August 2024.',
+        },
+        {
+          center: [25.2, 36.445], zoom: 5.7,
+          place: 'Greece',
+          traffic: { slow: 0.2, mid: 0.4, fast: 0.7 },
+          habitats: 1,
+          habitat: 'Hellenic Trench',
+          legend: 'tracks',
+          // The whales were not in all three habitats at the same time, so each
+          // pass spends most of its scroll on the weeks its own animals were
+          // actually inside it, and winds quickly through the years either side.
+          clockWindow: ['2024-07-27', '2024-08-23'],
+          tracks: 1, clock: 1,
+          span: 0.7,               // adjust: length of the move to the next habitat
+          eyebrow: 'Tracked movements',
+          label: 'Twelve whales, four years',
+          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
+          note: 'One of the twelve tracked whales passed through the Hellenic Trench, between July and August 2024.',
         },
         {
           center: [8.81, 42.625], zoom: 6.3,
@@ -261,10 +264,33 @@ const config = {
           habitats: 1,
           habitat: 'Pelagos Sanctuary',
           legend: 'tracks',
+          // The whales were not in all three habitats at the same time, so each
+          // pass spends most of its scroll on the weeks its own animals were
+          // actually inside it, and winds quickly through the years either side.
+          clockWindow: ['2023-06-13', '2023-07-24'],
+          tracks: 1, clock: 0,
+          span: 1.4,               // adjust: length of this replay
+          eyebrow: 'Tracked movements',
+          label: 'Twelve whales, four years',
+          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
+          note: 'Two of the twelve tracked whales passed through the sanctuary, between June and July 2023.',
+        },
+        {
+          center: [8.81, 42.625], zoom: 6.3,
+          place: 'France, Italy, Monaco',
+          traffic: { slow: 0.2, mid: 0.4, fast: 0.7 },
+          habitats: 1,
+          habitat: 'Pelagos Sanctuary',
+          legend: 'tracks',
+          // The whales were not in all three habitats at the same time, so each
+          // pass spends most of its scroll on the weeks its own animals were
+          // actually inside it, and winds quickly through the years either side.
+          clockWindow: ['2023-06-13', '2023-07-24'],
           tracks: 1, clock: 1,
           eyebrow: 'Tracked movements',
           label: 'Twelve whales, four years',
           text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
+          note: 'Two of the twelve tracked whales passed through the sanctuary, between June and July 2023.',
         },
       ],
     },

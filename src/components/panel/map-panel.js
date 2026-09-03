@@ -14,6 +14,17 @@ import './map-panel.css';
 gsap.registerPlugin(ScrollTrigger);
 
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
+
+// Config writes clock windows as dates, which are readable; the clock wants
+// milliseconds. Parsed once per step, not per frame.
+const windowCache = new WeakMap();
+const windowOf = (step) => {
+  if (!step || !step.clockWindow) return null;
+  if (!windowCache.has(step)) {
+    windowCache.set(step, step.clockWindow.map((d) => Date.parse(d)));
+  }
+  return windowCache.get(step);
+};
 const lerp = (a, b, t) => a + (b - a) * t;
 // never spin the long way round
 const lerpLon = (a, b, t) => {
@@ -161,7 +172,9 @@ const MapPanel = ({
         addStoryLayers(map, data);
         const s0 = steps[0] || {};
         setHabitats(map, s0.habitats || 0, s0.habitat || null);
-        setTracks(map, data, { amount: s0.tracks || 0, clock: s0.clock || 0 });
+        setTracks(map, data, {
+          amount: s0.tracks || 0, clock: s0.clock || 0, window: windowOf(s0),
+        });
       });
       setScale(scaleFor(map, frameRef.current ? frameRef.current.clientWidth : 0));
       // the section's height depends on nothing the map does, but its
@@ -250,9 +263,14 @@ const MapPanel = ({
           // The focused outline is the nearer step's, so it swaps once rather
           // than crossfading through a filter change mid-move.
           setHabitats(map, between('habitats'), (f < 0.5 ? a : b).habitat || null);
+          // The window belongs to whichever step the reader is nearer. It
+          // cannot be interpolated - a clock is built from one - and the two
+          // steps of a pass share theirs, so it only changes on a transit,
+          // where the tracks have retracted and nothing is on screen to jump.
           const ms = setTracks(map, dataRef.current, {
             amount: between('tracks'),
             clock: between('clock'),
+            window: windowOf(f < 0.5 ? a : b),
           });
           const label = ms === null ? null : monthYear(ms);
           setStamp((prev) => (prev === label ? prev : label));
@@ -361,6 +379,12 @@ const MapPanel = ({
                 {s.text && (
                   <p className="map-panel__text"
                      dangerouslySetInnerHTML={{ __html: s.text }} />
+                )}
+                {/* What this particular pass is showing. The paragraph above
+                    holds across all three; this is the line that changes. */}
+                {s.note && (
+                  <p className="map-panel__note"
+                     dangerouslySetInnerHTML={{ __html: s.note }} />
                 )}
               </div>
             ))}
