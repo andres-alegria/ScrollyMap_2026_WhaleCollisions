@@ -216,7 +216,7 @@ const config = {
           tracks: 1, clock: 0,
           span: 1.4,            // adjust: length of this replay
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, four years',
+          label: 'Twelve whales, three years and a half',
           text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
           note: 'One of the twelve tracked whales passed through the Hellenic Trench, between July and August 2024.',
         },
