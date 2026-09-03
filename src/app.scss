@@ -46,6 +46,16 @@ body {
   color: rgba(20, 34, 38, 0.62);   /* adjust attribution ink */
 }
 
+/* Mapbox's feedback link, dropped at the client's request. It is part of the
+   attribution string Mapbox asks for on OSM-based styles - the route by which
+   a reader reports bad basemap data upstream - so this is a terms question to
+   settle with Mapbox, not a styling one. Delete this rule to restore it.
+   The copyright credits either side of it stay: "© OpenStreetMap
+   contributors" is required by ODbL, which is a licence, not an agreement. */
+.mapboxgl-ctrl-attrib a.mapbox-improve-map {
+  display: none;
+}
+
 /* adjust the wordmark's presence; it must stay visible, per Mapbox's terms */
 .mapboxgl-ctrl-logo {
   opacity: 0.6;
