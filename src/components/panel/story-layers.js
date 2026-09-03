@@ -315,7 +315,8 @@ export const loadStoryData = () => {
 // The first symbol layer in the style; place lines beneath it so place names
 // stay readable on top of them.
 const firstSymbol = (map) => {
-  const layers = (map.getStyle() || {}).layers || [];
+  let layers = [];
+  try { layers = (map.getStyle() || {}).layers || []; } catch (e) { layers = []; }
   const s = layers.find((l) => l.type === 'symbol');
   return s && s.id;
 };
@@ -325,7 +326,10 @@ const firstSymbol = (map) => {
  * style change would otherwise throw on the second source of the same name.
  */
 export const addStoryLayers = (map, data) => {
-  if (!map || !map.isStyleLoaded()) return;
+  // Not isStyleLoaded(): see the note in label-layers. Adding a layer only
+  // needs the style itself, which addLayer will complain about if it is not
+  // there yet - and this is called once, from the load handler.
+  if (!map) return;
   const labels = firstSymbol(map);
   const add = (spec, before) => {
     if (map.getLayer(spec.id)) return;

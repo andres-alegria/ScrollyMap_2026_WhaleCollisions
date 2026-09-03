@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { addTrafficLayers, setTraffic, trafficColors } from './traffic-layers';
+import { addLabelLayers, setLabels } from './label-layers';
 import { TRACK } from './story-layers';
 import Legend from './panel-legend';
 import {
@@ -203,9 +204,11 @@ const MapPanel = ({
     const onLoad = () => {
       map.resize();
       addTrafficLayers(map);
+      addLabelLayers(map);
       // the layers start invisible, so paint the first step's state at once
       // rather than waiting for the first scroll
       if (steps[0] && steps[0].traffic) setTraffic(map, steps[0].traffic);
+      setLabels(map, (steps[0] && steps[0].labels) || 0);
       setBandColors(trafficColors(map));
       const k0 = steps[0] && steps[0].legend;
       setLegend({ speed: k0 === 'speed' ? 1 : 0, tracks: k0 === 'tracks' ? 1 : 0 });
@@ -363,6 +366,7 @@ const MapPanel = ({
           // The focused outline is the nearer step's, so it swaps once rather
           // than crossfading through a filter change mid-move.
           setHabitats(map, between('habitats'), (f < 0.5 ? a : b).habitat || null);
+          setLabels(map, between('labels'));
           // The window belongs to whichever step the reader is nearer. It
           // cannot be interpolated - a clock is built from one - and the two
           // steps of a pass share theirs, so it only changes on a transit,

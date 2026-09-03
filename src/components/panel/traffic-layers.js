@@ -55,7 +55,7 @@ const readBase = (map) => {
  * and then hides them, so the story decides when each one appears.
  */
 export const addTrafficLayers = (map) => {
-  if (!map || !map.isStyleLoaded()) return;
+  if (!map) return;
   readBase(map);
   setTraffic(map, {});
 };
@@ -68,9 +68,10 @@ export const addTrafficLayers = (map) => {
  * Returns null until the style has loaded.
  */
 export const trafficColors = (map) => {
-  // getStyle() throws outright while the style is still loading, which took
-  // the whole panel down with it; isStyleLoaded() just answers the question.
-  if (!map || !map.isStyleLoaded()) return null;
+  // Not isStyleLoaded(): it also waits on every source, and a source that is
+  // rewritten each frame keeps it false. The layer being there is the only
+  // thing this needs.
+  if (!map || !map.getLayer(BANDS[0].id)) return null;
   const out = {};
   let found = false;
   BANDS.forEach(({ key, id }) => {
@@ -86,7 +87,7 @@ export const trafficColors = (map) => {
  * gave it.
  */
 export const setTraffic = (map, { slow = 0, mid = 0, fast = 0 } = {}) => {
-  if (!map || !map.isStyleLoaded()) return;
+  if (!map) return;
   const base = readBase(map);
   const want = { slow, mid, fast };
   BANDS.forEach(({ key, id }) => {

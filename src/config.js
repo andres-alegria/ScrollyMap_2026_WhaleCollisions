@@ -147,6 +147,7 @@ const config = {
           place: 'Spain',
           traffic: { slow: 0.35, mid: 1, fast: 1 },
           habitats: 1,
+          labels: 1,
           habitat: 'Cetacean Migration Corridor',
           legend: 'speed',
           // only the text and the key change into the first replay; the camera
@@ -160,6 +161,7 @@ const config = {
           place: 'France, Italy, Monaco',
           traffic: { slow: 0.35, mid: 1, fast: 1 },
           habitats: 1,
+          labels: 1,
           habitat: 'Pelagos Sanctuary',
           legend: 'speed',
           eyebrow: 'Key whale habitat',
@@ -171,6 +173,7 @@ const config = {
           place: 'Greece',
           traffic: { slow: 0.35, mid: 1, fast: 1 },
           habitats: 1,
+          labels: 1,
           habitat: 'Hellenic Trench',
           legend: 'speed',
           span: 0.8,            // adjust: the handover into the first replay
@@ -202,6 +205,7 @@ const config = {
           place: 'Greece',
           traffic: { slow: 0.2, mid: 0.4, fast: 0.7 },
           habitats: 1,
+          labels: 1,
           habitat: 'Hellenic Trench',
           legend: 'tracks',
           // The whales were not in all three habitats at the same time, so each
@@ -220,6 +224,7 @@ const config = {
           place: 'Greece',
           traffic: { slow: 0.2, mid: 0.4, fast: 0.7 },
           habitats: 1,
+          labels: 1,
           habitat: 'Hellenic Trench',
           legend: 'tracks',
           // The whales were not in all three habitats at the same time, so each
@@ -238,6 +243,7 @@ const config = {
           place: 'France, Italy, Monaco',
           traffic: { slow: 0.2, mid: 0.4, fast: 0.7 },
           habitats: 1,
+          labels: 1,
           habitat: 'Pelagos Sanctuary',
           legend: 'tracks',
           // The whales were not in all three habitats at the same time, so each
@@ -256,6 +262,7 @@ const config = {
           place: 'France, Italy, Monaco',
           traffic: { slow: 0.2, mid: 0.4, fast: 0.7 },
           habitats: 1,
+          labels: 1,
           habitat: 'Pelagos Sanctuary',
           legend: 'tracks',
           // The whales were not in all three habitats at the same time, so each
@@ -274,6 +281,7 @@ const config = {
           place: 'Spain',
           traffic: { slow: 0.2, mid: 0.4, fast: 0.7 },
           habitats: 1,
+          labels: 1,
           habitat: 'Cetacean Migration Corridor',
           legend: 'tracks',
           // The whales were not in all three habitats at the same time, so each
@@ -292,6 +300,7 @@ const config = {
           place: 'Spain',
           traffic: { slow: 0.2, mid: 0.4, fast: 0.7 },
           habitats: 1,
+          labels: 1,
           habitat: 'Cetacean Migration Corridor',
           legend: 'tracks',
           // The whales were not in all three habitats at the same time, so each

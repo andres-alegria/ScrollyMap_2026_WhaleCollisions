@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { addTrafficLayers, setTraffic } from './traffic-layers';
+import { addLabelLayers } from './label-layers';
 import './map-intro.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -126,6 +127,10 @@ const MapIntro = ({
     const onLoad = () => {
       map.resize();
       addTrafficLayers(map);
+      // The locating section names the sea in its own card; the basemap's
+      // place labels would only compete with it, and this far out they are a
+      // scatter of city names over the subject.
+      addLabelLayers(map);
       ScrollTrigger.refresh();
     };
     map.on('load', onLoad);
