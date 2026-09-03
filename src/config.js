@@ -138,6 +138,19 @@ const config = {
           text: 'In 2025 almost <strong>2,800 unique vessels</strong> traveled faster than 15 knots while navigating through the Mediterranean\u2019s key whale habitats. Ship strikes are almost always fatal above that speed, about 28 kilometers per hour.',
         },
         {
+          center: [2.45, 40.495], zoom: 6.4,
+          place: 'Spain',
+          traffic: { slow: 0.35, mid: 1, fast: 1 },
+          habitats: 1,
+          habitat: 'Cetacean Migration Corridor',
+          legend: 'speed',
+          // only the text and the key change into the first replay; the camera
+          // is already where it needs to be
+          eyebrow: 'Key whale habitat',
+          label: 'Cetacean Migration Corridor',
+          text: 'The corridor off eastern Spain protects a migration route between the Balearic Sea and the wider western Mediterranean. Spain declared it a marine protected area in 2018, covering about <strong>46,400 km\u00b2</strong>.',
+        },
+        {
           center: [8.81, 42.625], zoom: 6.3,
           place: 'France, Italy, Monaco',
           traffic: { slow: 0.35, mid: 1, fast: 1 },
@@ -155,23 +168,10 @@ const config = {
           habitats: 1,
           habitat: 'Hellenic Trench',
           legend: 'speed',
+          span: 0.8,            // adjust: the handover into the first replay
           eyebrow: 'Key whale habitat',
           label: 'Hellenic Trench',
           text: 'Off southern Greece, the trench is critical habitat for sperm whales, which rest at the surface where deep water comes close to shore. It covers about <strong>56,600 km\u00b2</strong>. Shipping concentrates where vessels round the southern Peloponnese, and in the Karpathos Strait.',
-        },
-        {
-          center: [2.45, 40.495], zoom: 6.4,
-          place: 'Spain',
-          traffic: { slow: 0.35, mid: 1, fast: 1 },
-          habitats: 1,
-          habitat: 'Cetacean Migration Corridor',
-          legend: 'speed',
-          // only the text and the key change into the first replay; the camera
-          // is already where it needs to be
-          span: 0.8,
-          eyebrow: 'Key whale habitat',
-          label: 'Cetacean Migration Corridor',
-          text: 'The corridor off eastern Spain protects a migration route between the Balearic Sea and the wider western Mediterranean. Spain declared it a marine protected area in 2018, covering about <strong>46,400 km\u00b2</strong>.',
         },
         /* --- The whale chapter, run three times ---------------------
            The same twelve tracks, replayed once in each habitat rather than
@@ -184,43 +184,14 @@ const config = {
            backwards as the camera travels, which retracts the paths and leaves
            the next habitat clear to fill again.
 
-           Ordered by how much there is to see. */
-        {
-          center: [2.45, 40.495], zoom: 6.4,
-          place: 'Spain',
-          traffic: { slow: 0.2, mid: 0.4, fast: 0.7 },
-          habitats: 1,
-          habitat: 'Cetacean Migration Corridor',
-          legend: 'tracks',
-          // The whales were not in all three habitats at the same time, so each
-          // pass spends most of its scroll on the weeks its own animals were
-          // actually inside it, and winds quickly through the years either side.
-          clockWindow: ['2021-05-10', '2023-07-29'],
-          tracks: 1, clock: 0,
-          span: 1.4,               // adjust: length of this replay
-          eyebrow: 'Tracked movements',
-          label: 'Twelve whales, four years',
-          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
-          note: 'Nine of the twelve tracked whales passed through the corridor, between May 2021 and July 2023.',
-        },
-        {
-          center: [2.45, 40.495], zoom: 6.4,
-          place: 'Spain',
-          traffic: { slow: 0.2, mid: 0.4, fast: 0.7 },
-          habitats: 1,
-          habitat: 'Cetacean Migration Corridor',
-          legend: 'tracks',
-          // The whales were not in all three habitats at the same time, so each
-          // pass spends most of its scroll on the weeks its own animals were
-          // actually inside it, and winds quickly through the years either side.
-          clockWindow: ['2021-05-10', '2023-07-29'],
-          tracks: 1, clock: 1,
-          span: 0.7,               // adjust: length of the move to the next habitat
-          eyebrow: 'Tracked movements',
-          label: 'Twelve whales, four years',
-          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
-          note: 'Nine of the twelve tracked whales passed through the corridor, between May 2021 and July 2023.',
-        },
+           The habitats are introduced west to east, and the replays come back
+           east to west, so the camera sweeps out along the basin and returns
+           along it rather than jumping about. The last habitat chapter and the
+           first replay share the Hellenic camera, so that handover is a change
+           of text and key over a map that does not move.
+
+           It also builds: one whale reached the Hellenic Trench, two Pelagos,
+           and nine the corridor, which is where the sequence ends. */
         {
           center: [25.2, 36.445], zoom: 5.7,
           place: 'Greece',
@@ -233,7 +204,7 @@ const config = {
           // actually inside it, and winds quickly through the years either side.
           clockWindow: ['2024-07-27', '2024-08-23'],
           tracks: 1, clock: 0,
-          span: 1.4,               // adjust: length of this replay
+          span: 1.4,            // adjust: length of this replay
           eyebrow: 'Tracked movements',
           label: 'Twelve whales, four years',
           text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
@@ -251,7 +222,7 @@ const config = {
           // actually inside it, and winds quickly through the years either side.
           clockWindow: ['2024-07-27', '2024-08-23'],
           tracks: 1, clock: 1,
-          span: 0.7,               // adjust: length of the move to the next habitat
+          span: 0.7,            // adjust: length of the move to the next habitat
           eyebrow: 'Tracked movements',
           label: 'Twelve whales, four years',
           text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
@@ -269,7 +240,7 @@ const config = {
           // actually inside it, and winds quickly through the years either side.
           clockWindow: ['2023-06-13', '2023-07-24'],
           tracks: 1, clock: 0,
-          span: 1.4,               // adjust: length of this replay
+          span: 1.4,            // adjust: length of this replay
           eyebrow: 'Tracked movements',
           label: 'Twelve whales, four years',
           text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
@@ -287,10 +258,46 @@ const config = {
           // actually inside it, and winds quickly through the years either side.
           clockWindow: ['2023-06-13', '2023-07-24'],
           tracks: 1, clock: 1,
+          span: 0.7,            // adjust: length of the move to the next habitat
           eyebrow: 'Tracked movements',
           label: 'Twelve whales, four years',
           text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
           note: 'Two of the twelve tracked whales passed through the sanctuary, between June and July 2023.',
+        },
+        {
+          center: [2.45, 40.495], zoom: 6.4,
+          place: 'Spain',
+          traffic: { slow: 0.2, mid: 0.4, fast: 0.7 },
+          habitats: 1,
+          habitat: 'Cetacean Migration Corridor',
+          legend: 'tracks',
+          // The whales were not in all three habitats at the same time, so each
+          // pass spends most of its scroll on the weeks its own animals were
+          // actually inside it, and winds quickly through the years either side.
+          clockWindow: ['2021-05-10', '2023-07-29'],
+          tracks: 1, clock: 0,
+          span: 1.4,            // adjust: length of this replay
+          eyebrow: 'Tracked movements',
+          label: 'Twelve whales, four years',
+          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
+          note: 'Nine of the twelve tracked whales passed through the corridor, between May 2021 and July 2023.',
+        },
+        {
+          center: [2.45, 40.495], zoom: 6.4,
+          place: 'Spain',
+          traffic: { slow: 0.2, mid: 0.4, fast: 0.7 },
+          habitats: 1,
+          habitat: 'Cetacean Migration Corridor',
+          legend: 'tracks',
+          // The whales were not in all three habitats at the same time, so each
+          // pass spends most of its scroll on the weeks its own animals were
+          // actually inside it, and winds quickly through the years either side.
+          clockWindow: ['2021-05-10', '2023-07-29'],
+          tracks: 1, clock: 1,
+          eyebrow: 'Tracked movements',
+          label: 'Twelve whales, four years',
+          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
+          note: 'Nine of the twelve tracked whales passed through the corridor, between May 2021 and July 2023.',
         },
       ],
     },
