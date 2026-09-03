@@ -141,7 +141,7 @@ const config = {
           legend: 'speed',
           eyebrow: 'The Mediterranean',
           label: 'High speed traffic',
-          text: 'In 2025 almost <strong>2,800 unique vessels</strong> traveled faster than 15 knots while navigating through the Mediterranean\u2019s key whale habitats. Ship strikes are almost always fatal above that speed, about 28 kilometers per hour.',
+          text: 'In 2025 almost 2,800 unique vessels traveled faster than 15 knots while navigating through the Mediterranean\u2019s key whale habitats. <strong>Ship strikes are almost always fatal above that speed</strong>, about 28 kilometers per hour.',
         },
         {
           center: [2.45, 40.495], zoom: 6.4,
