@@ -38,18 +38,7 @@ const EMPTY = { type: 'FeatureCollection', features: [] };
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 
 // ---- the time clock ------------------------------------------------
-/**
- * A straight t0..t1 clock does not work with real tagging data. The twelve
- * whales transmit on 167 of the 1,234 days the record spans, in four short
- * summer bursts with year-long silences between them, so a linear reveal sits
- * frozen for most of the chapter and then lurches.
- *
- * So the clock is piecewise: the windows where a whale is actually
- * transmitting share most of the progress in proportion to their length, and
- * each silence gets a small fixed slice. The reveal stays continuous and the
- * date readout stays truthful; it simply sweeps through each winter quickly
- * instead of stopping dead. GAP_SHARE is that slice.
- */
+// The share of the scroll each silence in the record gets. See trackSpan.
 const GAP_SHARE = 0.04;   // adjust how fast the quiet months pass
 
 // When a pass is focused on one habitat, the share of the scroll spent inside

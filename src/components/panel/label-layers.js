@@ -18,8 +18,6 @@ const isLabel = (layer) => layer.type === 'symbol' && /label/i.test(layer.id);
 
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 
-// The opacities the style publishes, read once and treated as full strength,
-// so a chapter can never make a label more present than Studio says it is.
 // Whether the style's layers can be read yet.
 //
 // NOT map.isStyleLoaded(): that asks whether the style AND every source have
@@ -38,6 +36,8 @@ const styleLayers = (map) => {
   }
 };
 
+// The opacities the style publishes, read once and treated as full strength,
+// so a chapter can never make a label more present than Studio says it is.
 const baseCache = new WeakMap();
 const warned = new Set();
 

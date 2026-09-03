@@ -11,9 +11,10 @@
      - a stage, `type: 'stage'` plus a `stage` name from the registry
      - a PinnedPanel stage, which carries its own `steps`
 
-   The D3 globe that carried version 1 is gone from the app shell. Its
-   code is still in src/components/globe/ and the data it drew is still
-   in public/data, so nothing is lost if any of it is wanted back.
+   Version 1's D3 globe and its full-screen Mapbox machinery are gone,
+   along with the data they drew. They are in the history if any of it
+   is ever wanted back - the last commit that had them is tagged in the
+   log message that removed them.
    ------------------------------------------------------------------ */
 
 // The bands are 10-15 / 15-25 / >25 knots. There is no data below 10 knots at
