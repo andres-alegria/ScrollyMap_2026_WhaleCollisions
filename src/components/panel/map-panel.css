@@ -171,7 +171,9 @@
   .map-panel {
     --fs-body: 14px;
     --fs-furniture: 11px;
-    padding: 2.4vh 6vw;   /* adjust the side margin on small screens */
+    /* The whole side margin, now that the section runs to the screen edge and
+       the texture with it. ---- adjust the side margin on small screens ---- */
+    padding: 2.4vh 10vw;
   }
 
   /* stacked: map, then the text beneath it.

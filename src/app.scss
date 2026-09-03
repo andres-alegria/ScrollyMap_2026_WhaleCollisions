@@ -88,12 +88,11 @@ body {
   padding-top: 0;
 }
 
-@media (max-width: 750px) {
-  #features {
-    width: 90vw;
-    margin: 0 auto;
-  }
-}
+/* Version 1 held the story to 90vw on a phone, because its chapters were cards
+   that needed a margin around them. Every section here is full-bleed and sets
+   its own side padding, so that 5% strip did nothing but stop the panel's
+   background texture short of the screen edge and keep the full-screen map
+   from being full screen. The margins now come from each section's padding. */
 
 .light {
   color: #d5d5d5;
@@ -123,19 +122,4 @@ body {
 .footer-dark {
   color: #f8f8f8;
   background-color: #181818;
-}
-
-/* The fixed Mongabay mark. Bottom-right on a wide screen, where there is a
-   margin for it to sit in; centred on a narrow one, where pinning it to the
-   right leaves it hard against the edge and lopsided under a column of
-   centred furniture.
-   ---- adjust the small-screen breakpoint to match map-panel.css ---- */
-@media (max-width: 820px) {
-  .story-logos {
-    left: 0;
-    right: 0;
-    margin-left: 0;
-    margin-right: 0;
-    justify-content: center;
-  }
 }
