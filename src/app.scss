@@ -36,7 +36,12 @@ body {
    a frame. Same treatment as the panel's: no plate, muted ink. It stays
    because it has to - see the note in map-intro.js. */
 .mapboxgl-ctrl-attrib {
-  font-size: 9px;
+  /* ---- adjust attribution size ----
+     Deliberately tiny. A browser set to enforce a minimum font size will
+     floor it, which is fine: it has to stay legible to someone who goes
+     looking for it, and that is the only job it has here. */
+  font-size: 6px;
+  line-height: 1.4;
   background: none;
   padding: 0 4px 1px;
 }

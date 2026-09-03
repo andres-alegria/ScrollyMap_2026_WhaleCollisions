@@ -62,7 +62,8 @@
    the point of dropping the (i) button was to make it quiet, not invisible. */
 .map-panel__frame .mapboxgl-ctrl-bottom-right { z-index: 3; }
 .map-panel__frame .mapboxgl-ctrl-attrib {
-  font-size: 9px;
+  /* ---- adjust attribution size in the panel's frames ---- */
+  font-size: 6px;
   /* No plate behind it. The default control paints a white bar across the
      foot of the frame, which is louder than the button this replaced. The
      basemap is light enough that muted type on it stays legible. */
