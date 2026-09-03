@@ -14,6 +14,37 @@ gsap.registerPlugin(ScrollTrigger);
 if (typeof window !== 'undefined') window.__ST__ = ScrollTrigger;
 
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
+
+// The basin runs from Gibraltar to the Levant, about 42 degrees of longitude.
+// Rounded up so it does not sit hard against the edges of the frame.
+// ---- adjust how tightly the basin fills the frame ----
+//
+// CAUTION: the traffic tileset has a cliff at zoom 3. At zoom 3 and above it
+// serves all 24,932 cells; below it, Mapbox has decimated the tiles down to
+// 370, clustered in the western basin. On a narrow phone, fitting the whole
+// basin means arriving at about zoom 2.4, which is under that cliff - so the
+// card's claim about 24,254 patches of water lands over a sketch of a few
+// hundred. Raising this number zooms out further and makes that worse;
+// lowering it toward 30 keeps the cells but crops the ends off the sea.
+const BASIN_LON_SPAN = 46;
+
+/**
+ * The zoom at which the whole basin fits the frame's width.
+ *
+ * A fixed arrival zoom only works at one screen size: 3.5 frames the
+ * Mediterranean nicely on a desktop and cuts both ends off on a phone, which
+ * is the one section where the reader has to see the whole sea to know what
+ * the story is about. Mercator's world is 512 CSS px wide at zoom 0, so the
+ * width that shows a given span of longitude falls straight out of that.
+ *
+ * Capped at the target zoom, so a wide screen keeps the framing it had rather
+ * than pushing in closer than the piece was designed for.
+ */
+const zoomToFit = (widthPx, maxZoom) => {
+  if (!widthPx) return maxZoom;
+  const z = Math.log2((360 * widthPx) / (512 * BASIN_LON_SPAN));
+  return Math.min(maxZoom, z);
+};
 const lerp = (a, b, t) => a + (b - a) * t;
 // Decelerating: the descent should arrive rather than stop dead, and the last
 // stretch of a zoom is where a linear rate reads fastest.
@@ -51,6 +82,11 @@ const MapIntro = ({
   cardFrom = 0.34,     // adjust: pinned progress at which the type starts rising
   cardBy = 0.58,       // adjust: pinned progress at which it has arrived
   dwell = 1.8,         // adjust: screen-heights the section holds
+  // How far down the frame the map sits, in pixels. The card lands on the top
+  // edge, and without this the north coast of the basin runs right under it.
+  // Roughly two lines of body copy.
+  // ---- adjust how far the map drops clear of the card ----
+  dropBy = 52,
 }) => {
   const sectionRef = useRef(null);
   const mapNodeRef = useRef(null);
@@ -104,10 +140,16 @@ const MapIntro = ({
       ));
       const map = mapRef.current;
       if (!map) return;
+      const arrive = zoomToFit(map.getContainer().clientWidth, to.zoom);
       map.jumpTo({
         center: [lerp(from.center[0], to.center[0], k),
                  lerp(from.center[1], to.center[1], k)],
-        zoom: lerp(from.zoom, to.zoom, k),
+        zoom: lerp(from.zoom, arrive, k),
+        // Padding at the top moves the center point down by half of it, so the
+        // basin clears the card. Doing it here rather than by shifting the
+        // target latitude keeps the drop the same distance on screen at every
+        // zoom, and keeps `to.center` meaning the place it names.
+        padding: { top: dropBy * 2, bottom: 0, left: 0, right: 0 },
       });
     };
 
@@ -164,8 +206,17 @@ const MapIntro = ({
       },
     });
 
-    return () => { enterST.kill(); pinST.kill(); };
-  }, [from, to, enterShare, arriveBy, cardFrom, cardBy, dwell]);
+    // A rotated phone changes the fitting zoom, and nothing else would
+    // recompute it until the reader scrolls again.
+    const onResize = () => applyCamera();
+    window.addEventListener('resize', onResize);
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+      enterST.kill();
+      pinST.kill();
+    };
+  }, [from, to, enterShare, arriveBy, cardFrom, cardBy, dwell, dropBy]);
 
   return (
     <section className="map-intro" ref={sectionRef}>
