@@ -18,15 +18,16 @@ const clamp01 = (v) => Math.min(1, Math.max(0, v));
 // The basin runs from Gibraltar to the Levant, about 42 degrees of longitude.
 // Rounded up so it does not sit hard against the edges of the frame.
 // ---- adjust how tightly the basin fills the frame ----
-//
-// CAUTION: the traffic tileset has a cliff at zoom 3. At zoom 3 and above it
-// serves all 24,932 cells; below it, Mapbox has decimated the tiles down to
-// 370, clustered in the western basin. On a narrow phone, fitting the whole
-// basin means arriving at about zoom 2.4, which is under that cliff - so the
-// card's claim about 24,254 patches of water lands over a sketch of a few
-// hundred. Raising this number zooms out further and makes that worse;
-// lowering it toward 30 keeps the cells but crops the ends off the sea.
 const BASIN_LON_SPAN = 46;
+
+// The traffic tileset has a cliff here. At zoom 3 and above Mapbox serves all
+// 24,932 cells; below it the tiles are decimated to 370, clustered in the
+// western basin. The card claims 24,254 patches of water carried traffic, and
+// the cells beneath it are the evidence, so the camera must not arrive under
+// this line. It only constrains the arrival: nothing is drawn during the
+// descent, so the opening zoom is free to be as wide as it likes.
+// ---- do not lower without checking the tileset's minzoom ----
+const TILESET_FLOOR = 3;
 
 /**
  * The zoom at which the whole basin fits the frame's width.
@@ -37,13 +38,15 @@ const BASIN_LON_SPAN = 46;
  * the story is about. Mercator's world is 512 CSS px wide at zoom 0, so the
  * width that shows a given span of longitude falls straight out of that.
  *
- * Capped at the target zoom, so a wide screen keeps the framing it had rather
- * than pushing in closer than the piece was designed for.
+ * Bounded at both ends. Capped at the target zoom, so a wide screen keeps the
+ * framing it had rather than pushing in closer than the piece was designed
+ * for; floored at the tileset's, so a narrow one crops the ends off the sea
+ * rather than arriving somewhere the traffic cannot be drawn.
  */
-const zoomToFit = (widthPx, maxZoom) => {
-  if (!widthPx) return maxZoom;
+const zoomToFit = (widthPx, maxZoom, floor = TILESET_FLOOR) => {
+  if (!widthPx) return Math.max(floor, maxZoom);
   const z = Math.log2((360 * widthPx) / (512 * BASIN_LON_SPAN));
-  return Math.min(maxZoom, z);
+  return Math.max(floor, Math.min(maxZoom, z));
 };
 const lerp = (a, b, t) => a + (b - a) * t;
 // Decelerating: the descent should arrive rather than stop dead, and the last
