@@ -1,8 +1,10 @@
 import React from 'react';
 
 const Logos = ({ logos }) => {
+  // story-logos carries the small-screen override in app.scss; the Tailwind
+  // classes still place it bottom-right on a wide screen.
   return logos && logos.length ? (
-    <div className="fixed bottom-0 right-0 z-10 m-3 mb-6 flex items-center">
+    <div className="story-logos fixed bottom-0 right-0 z-10 m-3 mb-6 flex items-center">
       {logos.map((logo, i) => (
         <a
           key={logo.name}

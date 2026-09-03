@@ -171,18 +171,25 @@
   .map-panel {
     --fs-body: 14px;
     --fs-furniture: 11px;
-    padding: 2.4vh 5vw;
+    padding: 2.4vh 6vw;   /* adjust the side margin on small screens */
   }
 
-  /* stacked: map, then the text beneath it */
+  /* stacked: map, then the text beneath it.
+
+     Full width of the section's CONTENT box, not of the viewport. These were
+     min(90vw, 44vh), and 90vw is the whole section - so the column overflowed
+     the section's own side padding and the type ran to within a hair of the
+     screen edge. 100% respects the padding, which is what puts air either side
+     of the paragraph and the key.
+     ---- adjust the side margin via .map-panel's padding, below ---- */
   .map-panel__body { flex-direction: column; align-items: center; gap: 2vh; }
-  .map-panel__col { width: min(90vw, 44vh); }
+  .map-panel__col { width: 100%; max-width: 44vh; }
   /* Stacked under the map, so it is sized by its content again rather than
      stretched to a frame that is no longer beside it. */
   .map-panel__card {
     flex: 0 0 auto;
-    width: min(90vw, 44vh);
-    max-width: none;
+    width: 100%;
+    max-width: 44vh;
     align-self: auto;
   }
   .map-panel__prose { flex: 0 0 auto; }
