@@ -23,8 +23,13 @@ const loadLand = () => {
 /**
  * Small orthographic locator, bottom-right of a panel. The globe spins so the
  * subject faces the viewer and a red square marks it, the Mongabay convention.
+ *
+ * A step opts in. It answers "where in the world is this", which is a question
+ * the reader has once, at the start; repeating it on every box afterwards
+ * crowds the corner of a frame that is already carrying a scale bar and
+ * Mapbox's credits, for an answer nobody is still asking.
  */
-const LocatorGlobe = ({ center, place, size = 80 }) => {   // adjust locator size here
+const LocatorGlobe = ({ center, place, size = 80, opacity = 1 }) => {   // adjust locator size here
   const [land, setLand] = useState(null);
   useEffect(() => {
     let live = true;
@@ -48,10 +53,10 @@ const LocatorGlobe = ({ center, place, size = 80 }) => {   // adjust locator siz
     };
   }, [land, center, size]);
 
-  if (!center) return null;
+  if (!center || opacity <= 0) return null;
 
   return (
-    <div className="locator">
+    <div className="locator" style={{ opacity }} aria-hidden={opacity < 0.5}>
       {place && <span className="locator__place">{place}</span>}
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true">
         <path d={spherePath} className="locator__ocean" />

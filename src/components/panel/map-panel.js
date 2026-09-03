@@ -170,6 +170,8 @@ const MapPanel = ({
   const fitRef = useRef({ key: '', by: new Map() });
   // one opacity per key, so they cross rather than swap
   const [legend, setLegend] = useState({ speed: 0, tracks: 0 });
+  // the locator is opt-in per step; see LocatorGlobe
+  const [locatorOn, setLocatorOn] = useState(steps[0] && steps[0].locator ? 1 : 0);
 
   // --- the map itself, created once ---------------------------------
   useEffect(() => {
@@ -379,6 +381,9 @@ const MapPanel = ({
           const tr = lerp(key(a, 'tracks'), key(b, 'tracks'), f);
           setLegend((prev) => (prev.speed === sp && prev.tracks === tr
             ? prev : { speed: sp, tracks: tr }));
+
+          const loc = lerp(a.locator ? 1 : 0, b.locator ? 1 : 0, f);
+          setLocatorOn((prev) => (prev === loc ? prev : loc));
         }
 
         // Text: each step fades in AND out again. Fading in only would leave
@@ -410,11 +415,14 @@ const MapPanel = ({
           }
         }
 
-        const nearest = Math.round(p);
-        const s = steps[nearest];
-        if (s) {
-          if (s.center) setLocator(s.center);
-          setPlace(s.place || '');
+        // The globe takes its marker and label from the step that asked for
+        // it, not from whichever step is nearest. Otherwise it spends its fade
+        // out relabelled for the chapter arriving behind it - the Mediterranean
+        // globe was flipping to Spain on its way off screen.
+        const owner = (a.locator && a) || (b.locator && b) || steps[Math.round(p)];
+        if (owner) {
+          if (owner.center) setLocator(owner.center);
+          setPlace(owner.place || '');
         }
         // Only when the bar would actually look different. Setting a freshly
         // built object every frame re-renders the panel every frame, for a
@@ -454,7 +462,7 @@ const MapPanel = ({
             {/* Only on screen while the tracks are being revealed, so the
                 frame is not carrying furniture it does not need. */}
             {stamp !== null && <p className="map-panel__stamp">{stamp}</p>}
-            <LocatorGlobe center={locator} place={place} />
+            <LocatorGlobe center={locator} place={place} opacity={locatorOn} />
           </div>
         </div>
 

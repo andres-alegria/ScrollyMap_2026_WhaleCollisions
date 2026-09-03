@@ -130,6 +130,10 @@ const config = {
           center: [15.25, 38.0], zoom: 4.1,
           place: 'Mediterranean Sea',
           traffic: { slow: 0.75, mid: 1, fast: 1 },
+          // The inset globe, opt-in per step. Only this one carries it: it
+          // answers where in the world the story is, and the reader asks that
+          // once. Set `locator: true` on another step to bring it back there.
+          locator: true,
           // The key at the foot of the text column. The speed bands are
           // introduced here and used through the habitat chapters, so it holds
           // until the whale chapter puts its own key in the same slot.
