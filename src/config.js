@@ -234,7 +234,7 @@ const config = {
           tracks: 1, clock: 1,
           span: 0.7,            // adjust: length of the move to the next habitat
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, four years',
+          label: 'Twelve whales, three years and a half',
           text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
           note: 'One of the twelve tracked whales passed through the Hellenic Trench, between July and August 2024.',
         },
@@ -253,7 +253,7 @@ const config = {
           tracks: 1, clock: 0,
           span: 1.4,            // adjust: length of this replay
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, four years',
+          label: 'Twelve whales, three years and a half',
           text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
           note: 'Two of the twelve tracked whales passed through the sanctuary, between June and July 2023.',
         },
@@ -272,7 +272,7 @@ const config = {
           tracks: 1, clock: 1,
           span: 0.7,            // adjust: length of the move to the next habitat
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, four years',
+          label: 'Twelve whales, three years and a half',
           text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
           note: 'Two of the twelve tracked whales passed through the sanctuary, between June and July 2023.',
         },
@@ -291,7 +291,7 @@ const config = {
           tracks: 1, clock: 0,
           span: 1.4,            // adjust: length of this replay
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, four years',
+          label: 'Twelve whales, three years and a half',
           text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
           note: 'Nine of the twelve tracked whales passed through the corridor, between May 2021 and July 2023.',
         },
@@ -309,7 +309,7 @@ const config = {
           clockWindow: ['2021-05-10', '2023-07-29'],
           tracks: 1, clock: 1,
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, four years',
+          label: 'Twelve whales, three years and a half',
           text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
           note: 'Nine of the twelve tracked whales passed through the corridor, between May 2021 and July 2023.',
         },
