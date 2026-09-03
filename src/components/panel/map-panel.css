@@ -16,7 +16,26 @@
   justify-content: center;
   padding: 3vh 4vw;
   box-sizing: border-box;
+
+  /* A bathymetry texture behind the boxes, laid under a charcoal veil so it
+     reads as a surface rather than as a second map competing with the one in
+     the frame. The veil is what keeps it quiet.
+     ---- adjust: 1 is flat charcoal, 0 is the bare image ---- */
+  --texture-veil: 0.55;
+
   background-color: #181818;             /* adjust section ground (Charcoal) */
+  background-image:
+    linear-gradient(
+      rgba(24, 24, 24, var(--texture-veil)),
+      rgba(24, 24, 24, var(--texture-veil))
+    ),
+    /* Bundled from src rather than served from public: Create React App's
+       CSS loader resolves url() at build time and cannot see public/.
+       ---- adjust texture here ---- */
+    url('../../assets/sea-texture.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   transform-origin: 50% 40%;
   overflow: hidden;
 }
