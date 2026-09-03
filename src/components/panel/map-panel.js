@@ -84,6 +84,11 @@ const fitBox = (bbox, W, H, maxZoom) => {
   };
 };
 
+// How much of a move between habitats the tracks are off screen for. The rest
+// is the fade at either end: they go out as the camera leaves and come back
+// once it has arrived.
+const TRACKS_OFF = 0.2;   // adjust the fade at each end of a move
+
 // The tracks are revealed against a clock; month and year is as fine as the
 // reveal is honest, given how irregularly the tags reported.
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -371,9 +376,23 @@ const MapPanel = ({
           // cannot be interpolated - a clock is built from one - and the two
           // steps of a pass share theirs, so it only changes on a transit,
           // where the tracks have retracted and nothing is on screen to jump.
+          // A move between two habitats goes from the end of one replay to the
+          // start of the next, so interpolating the clock across it runs it
+          // backwards: the paths un-draw themselves and the date counts down,
+          // which reads as a fault rather than as a transition. So on a
+          // backwards interval the tracks are taken off screen for the move
+          // and the clock is held at whichever end the camera is nearer,
+          // rather than swept between them. They come back, from the start of
+          // the new window, once the camera has arrived.
+          const rewinding = (b.clock || 0) < (a.clock || 0);
+          const gate = rewinding
+            ? Math.max(clamp01(1 - f / TRACKS_OFF),
+                       clamp01((f - (1 - TRACKS_OFF)) / TRACKS_OFF))
+            : 1;
           const ms = setTracks(map, dataRef.current, {
-            amount: between('tracks'),
-            clock: between('clock'),
+            amount: between('tracks') * gate,
+            clock: rewinding ? (f < 0.5 ? (a.clock || 0) : (b.clock || 0))
+              : between('clock'),
             window: windowOf(f < 0.5 ? a : b),
           });
           const label = ms === null ? null : monthYear(ms);
