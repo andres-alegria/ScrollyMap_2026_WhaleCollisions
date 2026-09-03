@@ -23,7 +23,11 @@
   left: 0;
   right: 0;
   top: 0;
-  background-color: rgba(24, 24, 24, 0.94);   /* adjust card ground */
+  /* Solid. At 94% the map read through the band for the whole time it was
+     up, not just while it arrived, which left the type sitting on moving
+     water. The card fades in as a whole on the way up; that is the arrival.
+     ---- adjust card ground ---- */
+  background-color: #181818;
   border-bottom: 1px solid rgba(252, 252, 252, 0.12);
   color: #EEF0F0;
   padding: clamp(24px, 4vh, 40px) 4vw clamp(18px, 3.4vh, 34px);  /* adjust card depth */
