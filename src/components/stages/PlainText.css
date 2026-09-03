@@ -66,11 +66,11 @@
   margin: 0 0 24px 0;
 }
 
-/* If the last item in the scrolly is a PlainText stage, remove bottom gap */
-#features .step.step-stage:last-child .plain-article {
-  padding-bottom: 0;
-}
-
+/* The last PlainText stage in the piece sits straight on top of the credits,
+   so its paragraph should not carry a trailing margin into them. The article's
+   own padding stays, though: zeroing it as well left the closing line resting
+   on the bottom edge of its white box, with a full measure of space above it
+   and none below. The credits open with their own space beneath this. */
 #features .step.step-stage:last-child .plain-article p:last-child {
   margin-bottom: 0;
 }

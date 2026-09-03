@@ -102,8 +102,14 @@ const StageComponent = isStage ? STAGES[stage] : null;
 
 
 
+// `step-stage` matters: .step carries a 50vh bottom pad and a 120vh minimum,
+// which is the scroll room a plain card chapter needs to be read past. A stage
+// sets its own height and its own scroll length, so on top of that the pad is
+// dead space - it left 900px of nothing under the closing paragraph. The rule
+// that cancels it, and two in PlainText.css that close the last gap, were all
+// written against this class; it was never actually applied.
 const stepClasses = cx(
-  isStage ? "step w-full opacity-100" : "step max-w-md opacity-25",
+  isStage ? "step step-stage w-full opacity-100" : "step max-w-md opacity-25",
   stageProps?.tight && "step--tight"
 );
 
