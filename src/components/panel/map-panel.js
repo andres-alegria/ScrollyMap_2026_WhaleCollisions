@@ -3,7 +3,8 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { addTrafficLayers, setTraffic } from './traffic-layers';
+import { addTrafficLayers, setTraffic, trafficColors } from './traffic-layers';
+import TrafficLegend from './traffic-legend';
 import { loadStoryData, addStoryLayers, setHabitats, setTracks } from './story-layers';
 import ScaleBar from './scale-bar';
 import LocatorGlobe from './locator-globe';
@@ -94,6 +95,10 @@ const MapPanel = ({
   const [stamp, setStamp] = useState(null);
   // habitats and tracks arrive over the network; scroll may already be running
   const dataRef = useRef(null);
+  // the legend takes its swatch colors from the style, so it cannot disagree
+  // with the layers it describes
+  const [bandColors, setBandColors] = useState(null);
+  const [legend, setLegend] = useState(0);
 
   // --- the map itself, created once ---------------------------------
   useEffect(() => {
@@ -120,6 +125,8 @@ const MapPanel = ({
       // the layers start invisible, so paint the first step's state at once
       // rather than waiting for the first scroll
       if (steps[0] && steps[0].traffic) setTraffic(map, steps[0].traffic);
+      setBandColors(trafficColors(map));
+      setLegend(steps[0] && steps[0].legend ? 1 : 0);
       // The habitats and the tracks are fetched, so they land after the first
       // scroll frames have already run. Nothing is drawn until they do; the
       // next frame picks them up.
@@ -207,6 +214,9 @@ const MapPanel = ({
             amount: between('tracks'),
             clock: between('clock'),
           }));
+          // A step either carries the legend or it does not; crossing between
+          // them fades it rather than switching it on mid-move.
+          setLegend(lerp(a.legend ? 1 : 0, b.legend ? 1 : 0, f));
         }
 
         // Text: each step fades in AND out again. Fading in only would leave
@@ -285,6 +295,10 @@ const MapPanel = ({
               </div>
             ))}
           </div>
+
+          {/* Pushed to the foot of the column by the steps above it, so it
+              lands on the bottom edge of the map frame. */}
+          <TrafficLegend colors={bandColors} opacity={legend} />
         </div>
       </div>
     </section>

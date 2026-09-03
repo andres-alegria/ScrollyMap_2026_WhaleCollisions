@@ -56,16 +56,25 @@
 .map-panel__frame .mapboxgl-ctrl-bottom-right { z-index: 3; }
 .map-panel__frame .mapboxgl-ctrl-attrib { font-size: 9px; }
 
+/* The column matches the map frame's height, so anything at its foot lands on
+   the frame's bottom edge. The text stays vertically centred in whatever is
+   left above it. */
 .map-panel__card {
   flex: 0 1 clamp(320px, 30vw, 480px);   /* adjust text column width */
   max-width: clamp(320px, 30vw, 480px);
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
   color: #EEF0F0;
 }
 
 /* All steps occupy the same grid cell, so the column does not change height
-   as they swap and nothing below it moves. */
+   as they swap and nothing below it moves. It takes the space the legend does
+   not, and centres the paragraph within it. */
 .map-panel__steps {
+  flex: 1 1 auto;
   display: grid;
+  align-content: center;
 }
 
 .map-panel__step {
@@ -113,11 +122,15 @@
   /* stacked: map, then the text beneath it */
   .map-panel__body { flex-direction: column; align-items: center; gap: 2vh; }
   .map-panel__col { width: min(90vw, 44vh); }
+  /* Stacked under the map, so it is sized by its content again rather than
+     stretched to a frame that is no longer beside it. */
   .map-panel__card {
     flex: 0 0 auto;
     width: min(90vw, 44vh);
     max-width: none;
+    align-self: auto;
   }
+  .map-panel__steps { flex: 0 0 auto; }
 }
 
 /* The clock readout for the whale-track reveal. Sits in the corner opposite

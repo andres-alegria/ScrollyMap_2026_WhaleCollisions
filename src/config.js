@@ -129,6 +129,9 @@ const config = {
           center: [15.25, 38.0], zoom: 4.1,
           place: 'Mediterranean Sea',
           traffic: { slow: 0.75, mid: 1, fast: 1 },
+          // the speed key, at the foot of the text column. Only this chapter
+          // introduces the three bands, so only this one carries it.
+          legend: true,
           eyebrow: 'The Mediterranean',
           label: 'High speed traffic',
           text: 'In 2025 almost <strong>2,800 unique vessels</strong> traveled faster than 15 knots while navigating through the Mediterranean\u2019s key whale habitats. Ship strikes are almost always fatal above that speed, about 28 kilometers per hour.',

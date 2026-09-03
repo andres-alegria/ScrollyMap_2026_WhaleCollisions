@@ -61,6 +61,25 @@ export const addTrafficLayers = (map) => {
 };
 
 /**
+ * The color Studio gave each band, so a legend can label the bands without
+ * restating their colors. Hardcoding them somewhere else is how a legend comes
+ * to disagree with the map it belongs to.
+ *
+ * Returns null until the style has loaded.
+ */
+export const trafficColors = (map) => {
+  if (!map || !map.getStyle()) return null;
+  const out = {};
+  let found = false;
+  BANDS.forEach(({ key, id }) => {
+    if (!map.getLayer(id)) return;
+    const c = map.getPaintProperty(id, 'circle-color');
+    if (typeof c === 'string') { out[key] = c; found = true; }
+  });
+  return found ? out : null;
+};
+
+/**
  * Set how present each band is, 0 to 1, as a fraction of the strength Studio
  * gave it.
  */
