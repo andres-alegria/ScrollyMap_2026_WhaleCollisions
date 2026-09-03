@@ -68,13 +68,27 @@
   color: #EEF0F0;
 }
 
-/* All steps occupy the same grid cell, so the column does not change height
-   as they swap and nothing below it moves. It takes the space the legend does
-   not, and centres the paragraph within it. */
-.map-panel__steps {
+/* The prose takes the space the key does not, and centres itself in it. The
+   heading and the note are two stacks rather than one, because they change on
+   different beats - the whale chapter holds one heading while the note under
+   it changes once per habitat. */
+.map-panel__prose {
   flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Everything in one grid cell, so the column does not change height as the
+   steps swap and nothing below them moves. */
+.map-panel__steps,
+.map-panel__notes {
   display: grid;
-  align-content: center;
+}
+
+.map-panel__steps > *,
+.map-panel__notes > * {
+  grid-area: 1 / 1;
 }
 
 .map-panel__step {
@@ -130,7 +144,7 @@
     max-width: none;
     align-self: auto;
   }
-  .map-panel__steps { flex: 0 0 auto; }
+  .map-panel__prose { flex: 0 0 auto; }
 }
 
 /* The clock readout for the whale-track reveal. Sits in the corner opposite
@@ -156,6 +170,9 @@
    paragraph. Set apart so the reader can see which half changed. */
 .map-panel__note {
   margin: 0;
+  /* the fade is driven from JS; this only smooths the small moves between
+     scroll frames */
+  transition: opacity 90ms linear;
   padding-top: clamp(4px, 0.8vh, 10px);
   font-size: var(--fs-body);
   line-height: 1.6;

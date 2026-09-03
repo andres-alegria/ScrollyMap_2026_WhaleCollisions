@@ -258,6 +258,33 @@ export const tracksAt = (fc, ms) => {
   };
 };
 
+/**
+ * The bounding box of one habitat, as [west, south, east, north].
+ *
+ * Cached: the panel asks for this on every scroll frame to frame the camera,
+ * and walking a polygon's rings to answer is not something to do sixty times a
+ * second for a shape that never changes.
+ */
+const bboxCache = new Map();
+
+export const bboxOf = (habitats, title) => {
+  if (!habitats || !title) return null;
+  if (bboxCache.has(title)) return bboxCache.get(title);
+  const f = (habitats.features || []).find((x) => x.properties.title === title);
+  if (!f) return null;
+  const rings = f.geometry.type === 'Polygon'
+    ? f.geometry.coordinates
+    : f.geometry.coordinates.flat();
+  let w = 180; let s = 90; let e = -180; let n = -90;
+  rings.forEach((r) => r.forEach(([x, y]) => {
+    if (x < w) w = x; if (x > e) e = x;
+    if (y < s) s = y; if (y > n) n = y;
+  }));
+  const box = [w, s, e, n];
+  bboxCache.set(title, box);
+  return box;
+};
+
 // ---- loading -------------------------------------------------------
 // Fetched once per page, however many maps ask for it.
 let dataPromise = null;

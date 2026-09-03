@@ -6,7 +6,9 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { addTrafficLayers, setTraffic, trafficColors } from './traffic-layers';
 import { TRACK } from './story-layers';
 import Legend from './panel-legend';
-import { loadStoryData, addStoryLayers, setHabitats, setTracks } from './story-layers';
+import {
+  loadStoryData, addStoryLayers, setHabitats, setTracks, bboxOf,
+} from './story-layers';
 import ScaleBar from './scale-bar';
 import LocatorGlobe from './locator-globe';
 import './map-panel.css';
@@ -50,6 +52,37 @@ const refreshWhenSettled = () => {
  * Pick a round distance for the scale bar that lands near a target share of
  * the frame, so the bar keeps a sensible length as the camera zooms.
  */
+// ---- framing a habitat --------------------------------------------
+// Web Mercator's vertical coordinate. Latitude is not linear on the screen, so
+// the middle of a bounding box's latitude range is not the middle of the frame.
+const mercY = (lat) => Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360));
+const mercLat = (y) => ((2 * (Math.atan(Math.exp(y)) - Math.PI / 4)) * 180) / Math.PI;
+
+/**
+ * The camera that shows a whole habitat inside the frame.
+ *
+ * A zoom written into the config only frames a shape at one screen size: the
+ * frame is min(52vw, 76vh), so the same zoom shows less of the sea on a small
+ * window and cuts the ends off the polygon. Fitting it to the frame's actual
+ * pixels means the whole outline is visible wherever it is read.
+ *
+ * The configured zoom is kept as the closest the camera may come, so this can
+ * only pull back, never push in past what the story asked for.
+ */
+const PAD = 0.12;   // adjust the breathing room around a habitat outline
+
+const fitBox = (bbox, W, H, maxZoom) => {
+  if (!bbox || !W || !H) return null;
+  const [w, s, e, n] = bbox;
+  const zLon = Math.log2((360 * W) / (512 * (e - w) * (1 + PAD)));
+  const dy = (Math.abs(mercY(n) - mercY(s)) / (2 * Math.PI)) * (1 + PAD);
+  const zLat = dy > 0 ? Math.log2(H / (512 * dy)) : maxZoom;
+  return {
+    center: [(w + e) / 2, mercLat((mercY(n) + mercY(s)) / 2)],
+    zoom: Math.min(maxZoom, zLon, zLat),
+  };
+};
+
 // The tracks are revealed against a clock; month and year is as fine as the
 // reveal is honest, given how irregularly the tags reported.
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -122,6 +155,7 @@ const MapPanel = ({
   const mapNodeRef = useRef(null);
   const mapRef = useRef(null);
   const textRefs = useRef([]);
+  const noteRefs = useRef([]);
   const [scale, setScale] = useState(null);
   const [locator, setLocator] = useState(steps[0] ? steps[0].center : null);
   const [place, setPlace] = useState(steps[0] ? steps[0].place : '');
@@ -132,6 +166,8 @@ const MapPanel = ({
   // the legend takes its swatch colors from the style, so it cannot disagree
   // with the layers it describes
   const [bandColors, setBandColors] = useState(null);
+  // fitted cameras, keyed by habitat and frame size
+  const fitRef = useRef({ key: '', by: new Map() });
   // one opacity per key, so they cross rather than swap
   const [legend, setLegend] = useState({ speed: 0, tracks: 0 });
 
@@ -175,6 +211,8 @@ const MapPanel = ({
         setTracks(map, data, {
           amount: s0.tracks || 0, clock: s0.clock || 0, window: windowOf(s0),
         });
+        // the cameras could not be fitted until the outlines were here
+        ScrollTrigger.update();
       });
       setScale(scaleFor(map, frameRef.current ? frameRef.current.clientWidth : 0));
       // the section's height depends on nothing the map does, but its
@@ -186,6 +224,8 @@ const MapPanel = ({
     const ro = new ResizeObserver(() => {
       map.resize();
       setScale(scaleFor(map, frameRef.current ? frameRef.current.clientWidth : 0));
+      // the fitted cameras were computed against the old frame
+      ScrollTrigger.update();
     });
     if (frameRef.current) ro.observe(frameRef.current);
 
@@ -203,6 +243,35 @@ const MapPanel = ({
     const section = sectionRef.current;
     if (!section || !steps.length) return undefined;
 
+    // Consecutive steps can carry the same words: the whale chapter is six
+    // steps and one paragraph, because the map has six things to do while the
+    // text has one. Crossfading between them would dim the type six times over
+    // for a reader who is looking at a paragraph that never changes. So steps
+    // are grouped into runs by what they say, and a run is drawn once, by its
+    // first step, and stays up for as long as any step in it is current.
+    //
+    // The heading and the note are grouped separately, because they change on
+    // different beats: the whale chapter keeps one heading across all six of
+    // its steps while the note changes once per habitat. Grouped together, a
+    // note changing would have faded the heading with it.
+    const group = (keyOf) => {
+      const of = steps.map(() => 0);
+      const runs = [];
+      steps.forEach((st, k) => {
+        const prev = runs[runs.length - 1];
+        if (prev && keyOf(steps[k - 1]) === keyOf(st)) prev.last = k;
+        else runs.push({ first: k, last: k });
+        of[k] = runs.length - 1;
+      });
+      return { of, runs };
+    };
+    const heading = group((st) => `${st.eyebrow || ''}|${st.label || ''}|${st.text || ''}`);
+    const notes = group((st) => st.note || '');
+
+    // How present a run is: fully up anywhere inside it, fading either side.
+    const runOpacity = (run, p) => clamp01(1 - (p < run.first ? run.first - p
+      : p > run.last ? p - run.last : 0) / 0.55);
+
     // Each interval runs from one step to the next and gets its own share of
     // the scroll, taken from the step it starts at. Without this every
     // interval is the same length, so a transit between two habitats costs the
@@ -216,6 +285,25 @@ const MapPanel = ({
 
     const hold = total * dwell;
     section.style.marginBottom = `${hold * 100}vh`;
+
+    // A step that names a habitat is framed to show all of it; the rest use
+    // the camera written in the config. `fit: false` opts out.
+    const cameraFor = (step) => {
+      const data = dataRef.current;
+      const frame = frameRef.current;
+      if (!step.habitat || step.fit === false || !data || !frame) return step;
+      const W = frame.clientWidth;
+      const H = frame.clientHeight;
+      if (!W || !H) return step;
+      const key = `${W}x${H}`;
+      if (fitRef.current.key !== key) fitRef.current = { key, by: new Map() };
+      const cache = fitRef.current.by;
+      const id = `${step.habitat}@${step.zoom}`;
+      if (!cache.has(id)) {
+        cache.set(id, fitBox(bboxOf(data.habitats, step.habitat), W, H, step.zoom) || step);
+      }
+      return cache.get(id);
+    };
 
     let promoted = false;
     const st = ScrollTrigger.create({
@@ -239,12 +327,14 @@ const MapPanel = ({
         const p = i + f;
         const a = steps[i] || steps[0];
         const b = steps[i + 1] || a;
+        const ca = cameraFor(a);
+        const cb = cameraFor(b);
 
         const map = mapRef.current;
         if (map) {
           map.jumpTo({
-            center: [lerpLon(a.center[0], b.center[0], f), lerp(a.center[1], b.center[1], f)],
-            zoom: lerp(a.zoom, b.zoom, f),
+            center: [lerpLon(ca.center[0], cb.center[0], f), lerp(ca.center[1], cb.center[1], f)],
+            zoom: lerp(ca.zoom, cb.zoom, f),
             pitch: lerp(a.pitch || 0, b.pitch || 0, f),
             bearing: lerp(a.bearing || 0, b.bearing || 0, f),
           });
@@ -292,14 +382,23 @@ const MapPanel = ({
         // here, so it did not read as a rise - it read as the type trembling
         // under the reader's finger for the whole chapter. A block of running
         // text has to hold still to be read.
+        // Only the first step of a run draws it; the rest repeat the same
+        // words and would double-strike the type.
         for (let k = 0; k < n; k++) {
-          const d = Math.abs(p - k);
-          const o = clamp01(1 - d / 0.55);
           const el = textRefs.current[k];
           if (el) {
+            const run = heading.runs[heading.of[k]];
+            const o = run.first === k ? runOpacity(run, p) : 0;
             el.style.opacity = String(o);
             // an invisible paragraph must not swallow selection or clicks
             el.style.pointerEvents = o > 0.5 ? 'auto' : 'none';
+          }
+          const nel = noteRefs.current[k];
+          if (nel) {
+            const run = notes.runs[notes.of[k]];
+            const o = run.first === k ? runOpacity(run, p) : 0;
+            nel.style.opacity = String(o);
+            nel.style.pointerEvents = o > 0.5 ? 'auto' : 'none';
           }
         }
 
@@ -354,7 +453,8 @@ const MapPanel = ({
         {/* Steps are stacked in one grid cell so the column keeps a single
             height; only the current one is opaque. */}
         <div className="map-panel__card">
-          <div className="map-panel__steps">
+          <div className="map-panel__prose">
+            <div className="map-panel__steps">
             {steps.map((s, i) => (
               <div
                 // Index, not label: the whale chapter is two steps sharing one
@@ -380,14 +480,28 @@ const MapPanel = ({
                   <p className="map-panel__text"
                      dangerouslySetInnerHTML={{ __html: s.text }} />
                 )}
-                {/* What this particular pass is showing. The paragraph above
-                    holds across all three; this is the line that changes. */}
-                {s.note && (
-                  <p className="map-panel__note"
-                     dangerouslySetInnerHTML={{ __html: s.note }} />
-                )}
               </div>
             ))}
+            </div>
+
+            {/* The line saying what a particular pass is showing. Its own
+                stack, so it can change while the heading above it holds. */}
+            <div className="map-panel__notes">
+              {steps.map((s, i) => (s.note ? (
+                <p
+                  key={i}
+                  className="map-panel__note"
+                  ref={(el) => {
+                    noteRefs.current[i] = el;
+                    if (el && !el.dataset.ready) {
+                      el.dataset.ready = '1';
+                      el.style.opacity = '0';
+                    }
+                  }}
+                  dangerouslySetInnerHTML={{ __html: s.note }}
+                />
+              ) : null))}
+            </div>
           </div>
 
           {/* Pushed to the foot of the column by the steps above it, so it
