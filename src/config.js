@@ -63,7 +63,7 @@ const config = {
     title: 'Credits',
     people: [
       { role: 'Reporting', name: 'TBC' },
-      { role: 'Data Editor and Designer', name: 'Andrés Alegría' },
+      { role: 'Design and development', name: 'Andrés Alegría' },
     ],
     sourcesTitle: 'Sources',
     sources:
