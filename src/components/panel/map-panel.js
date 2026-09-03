@@ -253,13 +253,18 @@ const MapPanel = ({
         // Text: each step fades in AND out again. Fading in only would leave
         // every earlier paragraph sitting behind the current one - they are
         // transparent, so they stack rather than cover.
+        //
+        // Opacity only. The paragraphs used to rise a few pixels as they came
+        // in, but that offset is scrubbed to the scroll like everything else
+        // here, so it did not read as a rise - it read as the type trembling
+        // under the reader's finger for the whole chapter. A block of running
+        // text has to hold still to be read.
         for (let k = 0; k < n; k++) {
           const d = Math.abs(p - k);
           const o = clamp01(1 - d / 0.55);
           const el = textRefs.current[k];
           if (el) {
             el.style.opacity = String(o);
-            el.style.transform = `translateY(${(1 - o) * 10}px)`;
             // an invisible paragraph must not swallow selection or clicks
             el.style.pointerEvents = o > 0.5 ? 'auto' : 'none';
           }
