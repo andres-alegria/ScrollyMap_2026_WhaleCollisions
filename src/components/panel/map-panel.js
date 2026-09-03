@@ -4,7 +4,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { addTrafficLayers, setTraffic, trafficColors } from './traffic-layers';
-import TrafficLegend from './traffic-legend';
+import { TRACK } from './story-layers';
+import Legend from './panel-legend';
 import { loadStoryData, addStoryLayers, setHabitats, setTracks } from './story-layers';
 import ScaleBar from './scale-bar';
 import LocatorGlobe from './locator-globe';
@@ -46,6 +47,28 @@ const monthYear = (ms) => {
   const d = new Date(ms);
   return `${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 };
+
+// The knot thresholds are what the data was cut on, so they live here; the
+// colors come off the Mapbox style at runtime and are filled in below.
+const SPEED_ROWS = [
+  { band: 'slow', label: '10 to 15 knots' },
+  { band: 'mid', label: '15 to 25 knots' },
+  { band: 'fast', label: 'Above 25 knots' },
+];
+
+const speedItems = (colors) => (colors
+  ? SPEED_ROWS
+    .filter(({ band }) => colors[band])
+    .map(({ band, label }) => ({ mark: 'dot', color: colors[band], label }))
+  : null);
+
+// The head marks a whale still transmitting at the date on the clock; a track
+// that has gone quiet keeps its path and loses its dot. That distinction is
+// invisible unless the key names it.
+const TRACK_ITEMS = [
+  { mark: 'line', color: TRACK, label: 'Tracked whale path' },
+  { mark: 'dot', color: TRACK, label: 'Position on the date shown' },
+];
 
 const NICE = [10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000];
 const scaleFor = (map, widthPx, target = 0.22) => {
@@ -91,14 +114,15 @@ const MapPanel = ({
   const [scale, setScale] = useState(null);
   const [locator, setLocator] = useState(steps[0] ? steps[0].center : null);
   const [place, setPlace] = useState(steps[0] ? steps[0].place : '');
-  // the moment the whale-track clock is showing, or null when it is not running
+  // the month the whale-track clock is showing, or null when it is not running
   const [stamp, setStamp] = useState(null);
   // habitats and tracks arrive over the network; scroll may already be running
   const dataRef = useRef(null);
   // the legend takes its swatch colors from the style, so it cannot disagree
   // with the layers it describes
   const [bandColors, setBandColors] = useState(null);
-  const [legend, setLegend] = useState(0);
+  // one opacity per key, so they cross rather than swap
+  const [legend, setLegend] = useState({ speed: 0, tracks: 0 });
 
   // --- the map itself, created once ---------------------------------
   useEffect(() => {
@@ -126,7 +150,8 @@ const MapPanel = ({
       // rather than waiting for the first scroll
       if (steps[0] && steps[0].traffic) setTraffic(map, steps[0].traffic);
       setBandColors(trafficColors(map));
-      setLegend(steps[0] && steps[0].legend ? 1 : 0);
+      const k0 = steps[0] && steps[0].legend;
+      setLegend({ speed: k0 === 'speed' ? 1 : 0, tracks: k0 === 'tracks' ? 1 : 0 });
       // The habitats and the tracks are fetched, so they land after the first
       // scroll frames have already run. Nothing is drawn until they do; the
       // next frame picks them up.
@@ -210,13 +235,19 @@ const MapPanel = ({
           // The focused outline is the nearer step's, so it swaps once rather
           // than crossfading through a filter change mid-move.
           setHabitats(map, between('habitats'), (f < 0.5 ? a : b).habitat || null);
-          setStamp(setTracks(map, dataRef.current, {
+          const ms = setTracks(map, dataRef.current, {
             amount: between('tracks'),
             clock: between('clock'),
-          }));
-          // A step either carries the legend or it does not; crossing between
-          // them fades it rather than switching it on mid-move.
-          setLegend(lerp(a.legend ? 1 : 0, b.legend ? 1 : 0, f));
+          });
+          const label = ms === null ? null : monthYear(ms);
+          setStamp((prev) => (prev === label ? prev : label));
+          // A step names which key it carries, if any. Interpolating each one
+          // separately means a change of key crosses rather than blinks.
+          const key = (st, kind) => (st.legend === kind ? 1 : 0);
+          const sp = lerp(key(a, 'speed'), key(b, 'speed'), f);
+          const tr = lerp(key(a, 'tracks'), key(b, 'tracks'), f);
+          setLegend((prev) => (prev.speed === sp && prev.tracks === tr
+            ? prev : { speed: sp, tracks: tr }));
         }
 
         // Text: each step fades in AND out again. Fading in only would leave
@@ -240,7 +271,16 @@ const MapPanel = ({
           if (s.center) setLocator(s.center);
           setPlace(s.place || '');
         }
-        if (map) setScale(scaleFor(map, frameRef.current ? frameRef.current.clientWidth : 0));
+        // Only when the bar would actually look different. Setting a freshly
+        // built object every frame re-renders the panel every frame, for a
+        // readout that changes a handful of times in the whole story.
+        if (map) {
+          const next = scaleFor(map, frameRef.current ? frameRef.current.clientWidth : 0);
+          setScale((prev) => (
+            prev && next && prev.n === next.n
+              && Math.abs(prev.kmFrac - next.kmFrac) < 0.002 ? prev : next
+          ));
+        }
 
         const r = clamp01((self.progress - recedeFrom) / (1 - recedeFrom));
         const wantsLayer = r > 0;
@@ -268,9 +308,7 @@ const MapPanel = ({
             {scale && <ScaleBar {...scale} />}
             {/* Only on screen while the tracks are being revealed, so the
                 frame is not carrying furniture it does not need. */}
-            {stamp !== null && (
-              <p className="map-panel__stamp">{monthYear(stamp)}</p>
-            )}
+            {stamp !== null && <p className="map-panel__stamp">{stamp}</p>}
             <LocatorGlobe center={locator} place={place} />
           </div>
         </div>
@@ -281,10 +319,22 @@ const MapPanel = ({
           <div className="map-panel__steps">
             {steps.map((s, i) => (
               <div
-                key={s.label || i}
+                // Index, not label: the whale chapter is two steps sharing one
+                // camera and one heading, so labels are not unique and React
+                // would drop one of them.
+                key={i}
                 className="map-panel__step"
-                ref={(el) => { textRefs.current[i] = el; }}
-                style={{ opacity: i === 0 ? 1 : 0 }}
+                ref={(el) => {
+                  textRefs.current[i] = el;
+                  // Set once, on first paint. After that the scroll handler
+                  // owns this: as a React-controlled style prop it would be
+                  // reset to the first step on every re-render, which is a
+                  // race the handler loses roughly half the time.
+                  if (el && !el.dataset.ready) {
+                    el.dataset.ready = '1';
+                    el.style.opacity = i === 0 ? '1' : '0';
+                  }
+                }}
               >
                 {s.eyebrow && <p className="map-panel__eyebrow">{s.eyebrow}</p>}
                 {s.label && <h3 className="map-panel__label font-lora">{s.label}</h3>}
@@ -297,8 +347,20 @@ const MapPanel = ({
           </div>
 
           {/* Pushed to the foot of the column by the steps above it, so it
-              lands on the bottom edge of the map frame. */}
-          <TrafficLegend colors={bandColors} opacity={legend} />
+              lands on the bottom edge of the map frame. Both keys share the
+              slot, so swapping one for the other moves nothing. */}
+          <div className="panel-legend-stack">
+            <Legend
+              title="Vessel speed"
+              items={speedItems(bandColors)}
+              opacity={legend.speed}
+            />
+            <Legend
+              title="Tracked whales"
+              items={TRACK_ITEMS}
+              opacity={legend.tracks}
+            />
+          </div>
         </div>
       </div>
     </section>

@@ -19,8 +19,9 @@ const HABITAT_LINE = '#FCFCFC';
 // adjust habitat fill color (kept very faint; it is a location, not a value)
 const HABITAT_FILL = '#FCFCFC';
 // adjust whale track color. Matches the reading-progress bar, so the tracks
-// read as the thread running through the piece.
-const TRACK = '#BFECB1';
+// read as the thread running through the piece. Exported so the legend labels
+// the tracks in the color they are actually drawn in.
+export const TRACK = '#BFECB1';
 
 export const SRC_HABITATS = 'story-habitats';
 export const SRC_TRACKS = 'story-tracks';
@@ -198,7 +199,7 @@ export const loadStoryData = () => {
 // The first symbol layer in the style; place lines beneath it so place names
 // stay readable on top of them.
 const firstSymbol = (map) => {
-  const layers = map.getStyle().layers || [];
+  const layers = (map.getStyle() || {}).layers || [];
   const s = layers.find((l) => l.type === 'symbol');
   return s && s.id;
 };
@@ -208,7 +209,7 @@ const firstSymbol = (map) => {
  * style change would otherwise throw on the second source of the same name.
  */
 export const addStoryLayers = (map, data) => {
-  if (!map || !map.getStyle()) return;
+  if (!map || !map.isStyleLoaded()) return;
   const labels = firstSymbol(map);
   const add = (spec, before) => {
     if (map.getLayer(spec.id)) return;

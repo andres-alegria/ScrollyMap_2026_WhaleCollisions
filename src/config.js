@@ -129,9 +129,10 @@ const config = {
           center: [15.25, 38.0], zoom: 4.1,
           place: 'Mediterranean Sea',
           traffic: { slow: 0.75, mid: 1, fast: 1 },
-          // the speed key, at the foot of the text column. Only this chapter
-          // introduces the three bands, so only this one carries it.
-          legend: true,
+          // The key at the foot of the text column. The speed bands are
+          // introduced here and used through the habitat chapters, so it holds
+          // until the whale chapter puts its own key in the same slot.
+          legend: 'speed',
           eyebrow: 'The Mediterranean',
           label: 'High speed traffic',
           text: 'In 2025 almost <strong>2,800 unique vessels</strong> traveled faster than 15 knots while navigating through the Mediterranean\u2019s key whale habitats. Ship strikes are almost always fatal above that speed, about 28 kilometers per hour.',
@@ -142,6 +143,7 @@ const config = {
           traffic: { slow: 0.35, mid: 1, fast: 1 },
           habitats: 1,
           habitat: 'Pelagos Sanctuary',
+          legend: 'speed',
           eyebrow: 'Key whale habitat',
           label: 'Pelagos Sanctuary',
           text: 'France, Italy and Monaco manage the sanctuary together, under an agreement signed in 1999. It covers about <strong>96,500 km\u00b2</strong>. The heaviest shipping runs through the Piombino Channel off Elba, along the Ligurian coast off Nice, and through the Strait of Bonifacio.',
@@ -152,6 +154,7 @@ const config = {
           traffic: { slow: 0.35, mid: 1, fast: 1 },
           habitats: 1,
           habitat: 'Hellenic Trench',
+          legend: 'speed',
           eyebrow: 'Key whale habitat',
           label: 'Hellenic Trench',
           text: 'Off southern Greece, the trench is critical habitat for sperm whales, which rest at the surface where deep water comes close to shore. It covers about <strong>56,600 km\u00b2</strong>. Shipping concentrates where vessels round the southern Peloponnese, and in the Karpathos Strait.',
@@ -162,6 +165,7 @@ const config = {
           traffic: { slow: 0.35, mid: 1, fast: 1 },
           habitats: 1,
           habitat: 'Cetacean Migration Corridor',
+          legend: 'speed',
           eyebrow: 'Key whale habitat',
           label: 'Cetacean Migration Corridor',
           text: 'The corridor off eastern Spain protects a migration route between the Balearic Sea and the wider western Mediterranean. Spain declared it a marine protected area in 2018, covering about <strong>46,400 km\u00b2</strong>.',
@@ -172,6 +176,7 @@ const config = {
           // the traffic drops back so the tracks can be seen against it
           traffic: { slow: 0.2, mid: 0.4, fast: 0.7 },
           habitats: 0.5,
+          legend: 'tracks',
           tracks: 1, clock: 0,
           eyebrow: 'Tracked movements',
           label: 'Twelve whales, four years',
@@ -184,6 +189,7 @@ const config = {
           place: 'Mediterranean Sea',
           traffic: { slow: 0.2, mid: 0.4, fast: 0.7 },
           habitats: 0.5,
+          legend: 'tracks',
           tracks: 1, clock: 1,
           eyebrow: 'Tracked movements',
           label: 'Twelve whales, four years',
