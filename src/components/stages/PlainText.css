@@ -74,3 +74,21 @@
 #features .step.step-stage:last-child .plain-article p:last-child {
   margin-bottom: 0;
 }
+/* The closing line.
+   Scoped to the chapter rather than to .plain-article, because PlainText is a
+   template stage this piece happens to use once - a generic stage should not
+   inherit one chapter's voice.
+
+   It is the last thing the reader sees, so it is set larger and centred. The
+   measure comes down with it: centred text has no straight left edge for the
+   eye to return to, so it needs a shorter line than a ranged-left column to
+   stay readable, and a big type size on a 760px measure would give it a very
+   long one. The extra padding is the pause before the credits. */
+#closing .plain-article {
+  max-width: 620px;                            /* adjust closing measure */
+  font-size: clamp(19px, 1.9vw, 26px);         /* adjust closing size */
+  line-height: 1.45;
+  text-align: center;
+  padding-top: clamp(48px, 7vw, 96px);         /* adjust closing breathing room */
+  padding-bottom: clamp(48px, 7vw, 96px);
+}
