@@ -111,7 +111,7 @@ const speedItems = (colors) => (colors
 // that has gone quiet keeps its path and loses its dot. That distinction is
 // invisible unless the key names it.
 const TRACK_ITEMS = [
-  { mark: 'line', color: TRACK, label: 'Tracked whale path' },
+  { mark: 'line', color: TRACK, label: 'Tracked whale paths' },
   { mark: 'dot', color: TRACK, label: 'Position on the date shown' },
 ];
 
