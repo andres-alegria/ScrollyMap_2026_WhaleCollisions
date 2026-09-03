@@ -35,6 +35,12 @@
 }
 
 .map-panel__frame {
+  /* Mapbox's wordmark and attribution own the foot of the frame and may not be
+     covered - the scale bar sat on the wordmark and the locator globe on the
+     attribution. Both now clear this strip.
+     ---- adjust the room left for Mapbox's credits ---- */
+  --credit-strip: 22px;
+
   position: relative;
   width: 100%;
   overflow: hidden;
@@ -52,9 +58,24 @@
 }
 
 /* Attribution has to stay reachable, but it should not sit on the scale bar
-   in the corner opposite. */
+   in the corner opposite. Held back rather than hidden: it is required, and
+   the point of dropping the (i) button was to make it quiet, not invisible. */
 .map-panel__frame .mapboxgl-ctrl-bottom-right { z-index: 3; }
-.map-panel__frame .mapboxgl-ctrl-attrib { font-size: 9px; }
+.map-panel__frame .mapboxgl-ctrl-attrib {
+  font-size: 9px;
+  /* No plate behind it. The default control paints a white bar across the
+     foot of the frame, which is louder than the button this replaced. The
+     basemap is light enough that muted type on it stays legible. */
+  background: none;
+  padding: 0 4px 1px;
+}
+.map-panel__frame .mapboxgl-ctrl-attrib a,
+.map-panel__frame .mapboxgl-ctrl-attrib {
+  color: rgba(20, 34, 38, 0.62);           /* adjust attribution ink */
+}
+/* adjust the wordmark's presence; it must stay visible, per Mapbox's terms */
+.map-panel__frame .mapboxgl-ctrl-logo { opacity: 0.6; transform: scale(0.85);
+  transform-origin: left bottom; }
 
 /* The column matches the map frame's height, so anything at its foot lands on
    the frame's bottom edge. The text stays vertically centred in whatever is

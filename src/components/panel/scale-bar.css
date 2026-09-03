@@ -3,7 +3,8 @@
 .scalebar {
   position: absolute;
   left: 2.4%;
-  bottom: 2.4%;
+  /* clear of Mapbox's credits along the foot of the frame */
+  bottom: calc(2.4% + var(--credit-strip, 0px));
   /* MUST stay 100%. The bar lengths are percentages of this element, and they
      are computed as a fraction of the PANEL's ground width — so anything less
      than 100% silently shortens every scale bar by that factor. It was 30%,

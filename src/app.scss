@@ -32,8 +32,23 @@ body {
    should style this class; each map's own CSS owns its box.
    ---- adjust map box size in map-panel.css / map-intro.css ---- */
 
+/* The locating map's attribution, which sits over the basemap rather than in
+   a frame. Same treatment as the panel's: no plate, muted ink. It stays
+   because it has to - see the note in map-intro.js. */
 .mapboxgl-ctrl-attrib {
-  font-size: 8px;
+  font-size: 9px;
+  background: none;
+  padding: 0 4px 1px;
+}
+
+.mapboxgl-ctrl-attrib,
+.mapboxgl-ctrl-attrib a {
+  color: rgba(20, 34, 38, 0.62);   /* adjust attribution ink */
+}
+
+/* adjust the wordmark's presence; it must stay visible, per Mapbox's terms */
+.mapboxgl-ctrl-logo {
+  opacity: 0.6;
 }
 
 #header {

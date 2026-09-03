@@ -70,7 +70,8 @@ const config = {
       + 'at 0.1 degrees and split into three speed bands. Habitat boundaries '
       + 'come from the IUCN Marine Mammal Protected Areas Task Force (IMMA), '
       + 'the Pelagos Sanctuary and ACCOBAMS. Whale movements are Argos '
-      + 'satellite telemetry from twelve tagged animals, 2021 to 2024.',
+      + 'satellite telemetry from twelve tagged animals, 2021 to 2024. '
+      + 'Basemap \u00a9 Mapbox, \u00a9 OpenStreetMap contributors.',
   },
 
   chapters: [

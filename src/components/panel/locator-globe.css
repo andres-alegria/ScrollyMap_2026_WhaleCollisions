@@ -4,7 +4,8 @@
 .locator {
   position: absolute;
   right: 2.4%;
-  bottom: 2.4%;
+  /* clear of Mapbox's credits along the foot of the frame */
+  bottom: calc(2.4% + var(--credit-strip, 0px));
   display: flex;
   align-items: center;                 /* caption centred on the globe */
   gap: 0.7rem;                         /* adjust caption-to-globe gap */

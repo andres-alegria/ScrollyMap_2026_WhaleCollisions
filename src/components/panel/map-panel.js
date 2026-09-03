@@ -184,8 +184,16 @@ const MapPanel = ({
       pitch: first.pitch || 0,
       bearing: first.bearing || 0,
       interactive: false,        // the scroll drives it; a stray drag would fight
-      attributionControl: true,
+      // Attribution. The compact control puts an (i) button in the corner that
+      // has to be opened to read anything; switched off here and replaced with
+      // the plain text, which is quieter on the page and legible without a
+      // click. What it says is not ours to change: the basemap is OpenStreetMap
+      // under ODbL, which requires crediting OSM contributors wherever the map
+      // appears, and Mapbox's terms require their wordmark on the map itself.
+      // Removing either needs an agreement with Mapbox, not a code change.
+      attributionControl: false,
     });
+    map.addControl(new mapboxgl.AttributionControl({ compact: false }), 'bottom-right');
     mapRef.current = map;
     if (typeof window !== 'undefined') window.__MAP__ = map;
 
