@@ -86,6 +86,15 @@ const MapIntro = ({
   cardFrom = 0.34,     // adjust: pinned progress at which the type starts rising
   cardBy = 0.58,       // adjust: pinned progress at which it has arrived
   dwell = 1.8,         // adjust: screen-heights the section holds
+  // The pinned phase has a long tail after the card has arrived and before the
+  // panel reaches the top of the screen. The map is taken down to black across
+  // it, so the story arrives over solid ground rather than over the basin: the
+  // panel travels up for a whole screen-height before it pins, and until it
+  // does, everything above its top edge is still this map. Land in this style
+  // is nearly the panel's own ground colour, so it reads as the map ghosting
+  // through a translucent background rather than as the section it still is.
+  leaveFrom = 0.62,    // adjust: when the locating map starts going to black
+  leaveBy = 0.86,      // adjust: when it has got there
   // How far down the frame the map sits, in pixels. The card lands on the top
   // edge, and without this the north coast of the basin runs right under it.
   // Roughly two lines of body copy.
@@ -213,6 +222,17 @@ const MapIntro = ({
         if (innerRef.current) {
           innerRef.current.style.transform = `translateY(${(1 - c) * 100}%)`;
         }
+        // Down to black for the handoff. The section keeps its own dark
+        // ground, so this fades the map alone and lands on the same colour the
+        // panel arrives with.
+        // Finished well before the pin releases, not at the end of it: the
+        // panel is already climbing the screen by then, and the point is that
+        // it climbs over black rather than over the basin.
+        const leave = clamp01((self.progress - leaveFrom) / (leaveBy - leaveFrom));
+        if (mapNodeRef.current) {
+          mapNodeRef.current.style.opacity = String(1 - leave);
+        }
+
         const wantsLayer = c > 0 && c < 1;
         if (wantsLayer !== promoted) {
           promoted = wantsLayer;
@@ -232,7 +252,7 @@ const MapIntro = ({
       enterST.kill();
       pinST.kill();
     };
-  }, [from, to, enterShare, arriveBy, cardFrom, cardBy, dwell, dropBy]);
+  }, [from, to, enterShare, arriveBy, cardFrom, cardBy, dwell, dropBy, leaveFrom, leaveBy]);
 
   return (
     <section className="map-intro" ref={sectionRef}>
