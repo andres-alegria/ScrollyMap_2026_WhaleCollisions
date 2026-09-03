@@ -103,7 +103,7 @@ const MapPanel = ({
   accessToken,
   mapStyle,
   aspect = '4 / 3',
-  dwell = 1.6,          // adjust: screen-heights of scroll per step
+  dwell = 1.6,          // adjust: screen-heights of scroll per unit of span
   recedeFrom = 0.9,     // adjust: when the section starts giving way
 }) => {
   const sectionRef = useRef(null);
@@ -190,7 +190,18 @@ const MapPanel = ({
     const section = sectionRef.current;
     if (!section || !steps.length) return undefined;
 
-    const hold = Math.max(1, steps.length - 1) * dwell;
+    // Each interval runs from one step to the next and gets its own share of
+    // the scroll, taken from the step it starts at. Without this every
+    // interval is the same length, so a transit between two habitats costs the
+    // reader as much scrolling as a chapter - which is most of the section
+    // once the whale tracks replay three times.
+    const spans = steps.slice(0, -1)
+      .map((s) => (typeof s.span === 'number' && s.span > 0 ? s.span : 1));
+    const total = spans.reduce((a, b) => a + b, 0) || 1;
+    const starts = [];
+    spans.reduce((acc, w) => { starts.push(acc); return acc + w; }, 0);
+
+    const hold = total * dwell;
     section.style.marginBottom = `${hold * 100}vh`;
 
     let promoted = false;
@@ -205,10 +216,14 @@ const MapPanel = ({
       invalidateOnRefresh: true,
       onUpdate: (self) => {
         const n = steps.length;
-        // progress across the steps, before the section starts receding
-        const p = clamp01(self.progress / recedeFrom) * (n - 1);
-        const i = Math.min(n - 2, Math.floor(p));
-        const f = n > 1 ? clamp01(p - i) : 0;
+        // Progress along the weighted intervals, before the section starts
+        // receding, then expressed back in step-index space as i + f so the
+        // text crossfade below still reads in whole steps.
+        const u = clamp01(self.progress / recedeFrom) * total;
+        let i = 0;
+        while (i < spans.length - 1 && u >= starts[i] + spans[i]) i += 1;
+        const f = spans.length ? clamp01((u - starts[i]) / spans[i]) : 0;
+        const p = i + f;
         const a = steps[i] || steps[0];
         const b = steps[i + 1] || a;
 
