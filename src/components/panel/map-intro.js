@@ -15,11 +15,18 @@ gsap.registerPlugin(ScrollTrigger);
 if (typeof window !== 'undefined') window.__ST__ = ScrollTrigger;
 
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+// Decelerating: the descent should arrive rather than stop dead, and the last
+// stretch of a zoom is where a linear rate reads fastest.
+const easeOut = (t) => 1 - (1 - t) * (1 - t);
 
-// The basin runs from Gibraltar to the Levant, about 42 degrees of longitude.
-// Rounded up so it does not sit hard against the edges of the frame.
-// ---- adjust how tightly the basin fills the frame ----
-const BASIN_LON_SPAN = 46;
+// The basin's bounding box: Gibraltar to the Levant, the African coast to the
+// head of the Adriatic. The arrival is framed from this rather than from a
+// centre written by hand, so it lands on the Mediterranean whatever shape the
+// screen is. Padded so the sea does not sit hard against the edges.
+// ---- adjust the basin's framing ----
+const BASIN = { west: -6, south: 30, east: 36.5, north: 46 };
+const BASIN_PAD = 0.08;
 
 // The traffic tileset has a cliff here. At zoom 3 and above Mapbox serves all
 // 24,932 cells; below it the tiles are decimated to 370, clustered in the
@@ -30,47 +37,41 @@ const BASIN_LON_SPAN = 46;
 // ---- do not lower without checking the tileset's minzoom ----
 const TILESET_FLOOR = 3;
 
-/**
- * The zoom at which the whole basin fits the frame's width.
- *
- * A fixed arrival zoom only works at one screen size: 3.5 frames the
- * Mediterranean nicely on a desktop and cuts both ends off on a phone, which
- * is the one section where the reader has to see the whole sea to know what
- * the story is about. Mercator's world is 512 CSS px wide at zoom 0, so the
- * width that shows a given span of longitude falls straight out of that.
- *
- * Bounded at both ends. Capped at the target zoom, so a wide screen keeps the
- * framing it had rather than pushing in closer than the piece was designed
- * for; floored at the tileset's, so a narrow one crops the ends off the sea
- * rather than arriving somewhere the traffic cannot be drawn.
- */
-const zoomToFit = (widthPx, maxZoom, floor = TILESET_FLOOR) => {
-  if (!widthPx) return Math.max(floor, maxZoom);
-  const z = Math.log2((360 * widthPx) / (512 * BASIN_LON_SPAN));
-  return Math.max(floor, Math.min(maxZoom, z));
-};
-const lerp = (a, b, t) => a + (b - a) * t;
-// Decelerating: the descent should arrive rather than stop dead, and the last
-// stretch of a zoom is where a linear rate reads fastest.
-const easeOut = (t) => 1 - (1 - t) * (1 - t);
+// Web Mercator's vertical coordinate. Latitude is not linear on the screen, so
+// the middle of a latitude range is not the middle of the frame.
+const mercY = (lat) => Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360));
+const mercLat = (y) => ((2 * (Math.atan(Math.exp(y)) - Math.PI / 4)) * 180) / Math.PI;
 
 /**
- * The locating section: a full-screen map that starts on the world and closes
- * on the Mediterranean. Once the camera has arrived, a short full-width band
- * appears on the top edge and the copy rises up into it from below.
+ * The camera that shows the basin in a frame of this size.
  *
- * The descent begins the moment the section appears at the bottom of the
- * viewport, not when it reaches the top, so the map is already moving as the
- * section arrives rather than waiting a whole screen-height to start.
+ * A fixed arrival only works at one screen shape: 3.5 centred on 15.25E frames
+ * the Mediterranean on a desktop, and on a phone the same numbers put a third
+ * of the Atlantic on screen. Mercator's world is 512 CSS px at zoom 0, so both
+ * the zoom that fits a span and the centre of a box fall straight out of that.
  *
- * Deliberately the only full-screen map in the piece. Everything after this
- * happens inside the panel's frame, so this section is what establishes where
- * the story is before the frame takes over.
- *
- * The camera is interpolated against scroll rather than flown, for the same
- * reason as the panel: a flyTo would run on its own clock and fight the
- * scrub. Zoom is eased so the descent decelerates into place.
+ * Bounded at both ends. Capped at the target zoom, so a wide screen keeps the
+ * framing the piece was designed for rather than pushing in closer; floored at
+ * the tileset's, so a narrow one crops the ends off the sea rather than
+ * arriving somewhere the traffic cannot be drawn.
  */
+const frameBasin = (widthPx, heightPx, maxZoom) => {
+  const centre = [
+    (BASIN.west + BASIN.east) / 2,
+    mercLat((mercY(BASIN.north) + mercY(BASIN.south)) / 2),
+  ];
+  if (!widthPx || !heightPx) return { center: centre, zoom: maxZoom };
+  const lon = (BASIN.east - BASIN.west) * (1 + BASIN_PAD);
+  const zLon = Math.log2((360 * widthPx) / (512 * lon));
+  const dy = (Math.abs(mercY(BASIN.north) - mercY(BASIN.south)) / (2 * Math.PI))
+    * (1 + BASIN_PAD);
+  const zLat = dy > 0 ? Math.log2(heightPx / (512 * dy)) : maxZoom;
+  return {
+    center: centre,
+    zoom: Math.max(TILESET_FLOOR, Math.min(maxZoom, zLon, zLat)),
+  };
+};
+
 const MapIntro = ({
   accessToken,
   mapStyle,
@@ -165,11 +166,12 @@ const MapIntro = ({
       ));
       const map = mapRef.current;
       if (!map) return;
-      const arrive = zoomToFit(map.getContainer().clientWidth, to.zoom);
+      const node = map.getContainer();
+      const arrive = frameBasin(node.clientWidth, node.clientHeight, to.zoom);
       map.jumpTo({
-        center: [lerp(from.center[0], to.center[0], k),
-                 lerp(from.center[1], to.center[1], k)],
-        zoom: lerp(from.zoom, arrive, k),
+        center: [lerp(from.center[0], arrive.center[0], k),
+                 lerp(from.center[1], arrive.center[1], k)],
+        zoom: lerp(from.zoom, arrive.zoom, k),
         // Padding at the top moves the center point down by half of it, so the
         // basin clears the card. Doing it here rather than by shifting the
         // target latitude keeps the drop the same distance on screen at every
@@ -242,13 +244,29 @@ const MapIntro = ({
       },
     });
 
-    // A rotated phone changes the fitting zoom, and nothing else would
-    // recompute it until the reader scrolls again.
-    const onResize = () => applyCamera();
-    window.addEventListener('resize', onResize);
+    // The map was told its size once, at load. Nothing told it again: this
+    // handler only re-ran the camera. On a phone, where the address bar
+    // collapsing changes the viewport, that leaves Mapbox projecting against a
+    // stale size, so the camera lands somewhere other than where it was aimed.
+    // Both are needed - resize() for the projection, applyCamera() because the
+    // framing is computed from the frame's own pixels.
+    const remeasure = () => {
+      const map = mapRef.current;
+      if (!map) return;
+      map.resize();
+      applyCamera();
+    };
+    window.addEventListener('resize', remeasure);
+    window.addEventListener('orientationchange', remeasure);
+    // A window resize is not the only way this box changes size.
+    const ro = typeof ResizeObserver !== 'undefined'
+      ? new ResizeObserver(remeasure) : null;
+    if (ro && mapNodeRef.current) ro.observe(mapNodeRef.current);
 
     return () => {
-      window.removeEventListener('resize', onResize);
+      window.removeEventListener('resize', remeasure);
+      window.removeEventListener('orientationchange', remeasure);
+      if (ro) ro.disconnect();
       enterST.kill();
       pinST.kill();
     };
