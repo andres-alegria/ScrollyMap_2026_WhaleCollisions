@@ -14,8 +14,10 @@ import './panel-legend.css';
  * Mapbox style, the track color from the module that draws the tracks - so a
  * key can never end up describing something the map is not doing.
  *
- * `items` are { mark, color, label }, where mark is 'dot' for the layers drawn
- * as circles and 'line' for the ones drawn as lines.
+ * `items` are { mark, color, label, size }, where mark is 'dot' for the layers
+ * drawn as circles and 'line' for the ones drawn as lines. `size` is optional
+ * and only applies to a dot: it sets that swatch's diameter in pixels, for a
+ * band the map itself draws smaller.
  */
 const Legend = ({ title, items, opacity = 0 }) => {
   if (!items || !items.length) return null;
@@ -28,11 +30,13 @@ const Legend = ({ title, items, opacity = 0 }) => {
     >
       {title && <p className="panel-legend__title">{title}</p>}
       <ul className="panel-legend__list">
-        {items.map(({ mark, color, label }) => (
+        {items.map(({ mark, color, label, size }) => (
           <li className="panel-legend__row" key={label}>
             <span
               className={`panel-legend__mark panel-legend__mark--${mark}`}
-              style={{ backgroundColor: color }}
+              style={size
+                ? { backgroundColor: color, '--dot': `${size}px` }
+                : { backgroundColor: color }}
             />
             {label}
           </li>

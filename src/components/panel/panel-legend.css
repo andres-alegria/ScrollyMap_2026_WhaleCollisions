@@ -55,13 +55,19 @@
    labels start at the same place in either key. */
 .panel-legend__mark {
   flex: 0 0 auto;
-  width: 14px;                           /* adjust key swatch width */
+  --track: 14px;                         /* adjust key swatch width */
+  width: var(--track);
 }
 
+/* A dot can be sized per row - the slow band is drawn smaller on the map than
+   the other two, so its swatch is smaller here as well. The side margins take
+   up whatever the dot does not, so the labels stay on one left edge however
+   big each dot is. ---- adjust the default dot size ---- */
 .panel-legend__mark--dot {
-  width: 10px;
-  height: 10px;                          /* adjust dot size */
-  margin: 0 2px;
+  --dot: 10px;
+  width: var(--dot);
+  height: var(--dot);
+  margin: 0 calc((var(--track) - var(--dot)) / 2);
   border-radius: 50%;
 }
 

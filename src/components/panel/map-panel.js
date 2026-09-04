@@ -101,7 +101,9 @@ const monthYear = (ms) => {
 // The knot thresholds are what the data was cut on, so they live here; the
 // colors come off the Mapbox style at runtime and are filled in below.
 const SPEED_ROWS = [
-  { band: 'slow', label: '10 to 15 knots' },
+  // The slow band is drawn at a smaller radius than the other two on the map,
+  // so its swatch is smaller here too. ---- adjust the slow swatch ----
+  { band: 'slow', label: '10 to 15 knots', size: 5 },
   { band: 'mid', label: '15 to 25 knots' },
   { band: 'fast', label: 'Above 25 knots' },
 ];
@@ -109,7 +111,9 @@ const SPEED_ROWS = [
 const speedItems = (colors) => (colors
   ? SPEED_ROWS
     .filter(({ band }) => colors[band])
-    .map(({ band, label }) => ({ mark: 'dot', color: colors[band], label }))
+    .map(({ band, label, size }) => ({
+      mark: 'dot', color: colors[band], label, size,
+    }))
   : null);
 
 // The head marks a whale still transmitting at the date on the clock; a track
@@ -214,7 +218,22 @@ const MapPanel = ({
       // rather than waiting for the first scroll
       if (steps[0] && steps[0].traffic) setTraffic(map, steps[0].traffic);
       setLabels(map, (steps[0] && steps[0].labels) || 0);
-      setBandColors(trafficColors(map));
+      // Read once here, and again on `idle` until it answers. The style can
+      // arrive without the traffic layers - a cached copy, or one still
+      // settling - and a single attempt that came back empty left bandColors
+      // null for the session, which silently removed the speed key from the
+      // page altogether rather than just leaving it uncoloured.
+      const readColors = () => {
+        if (!alive) return true;
+        const c = trafficColors(map);
+        if (!c) return false;
+        setBandColors(c);
+        return true;
+      };
+      if (!readColors()) {
+        const retry = () => { if (readColors()) map.off('idle', retry); };
+        map.on('idle', retry);
+      }
       const k0 = steps[0] && steps[0].legend;
       setLegend({ speed: k0 === 'speed' ? 1 : 0, tracks: k0 === 'tracks' ? 1 : 0 });
       // The habitats and the tracks are fetched, so they land after the first
