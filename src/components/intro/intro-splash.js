@@ -38,6 +38,9 @@ const BASE_HEADING = { whale: -47, boat: 0 };
 const VARIANTS = {
   landscape: {
     viewBox: '0 0 1600 900',
+    // the height the two paths were drawn to meet at; shiftFor moves the
+    // artwork by the difference between this and where the X icon is
+    contact: 770,
     // ---- adjust icon sizes here (viewBox units) ----
     // A rotated icon's footprint is bigger than the icon: the whale's box is
     // 22 x 20 but arrives at an angle, so it occupies about 30 units of
@@ -105,6 +108,7 @@ const VARIANTS = {
   },
   portrait: {
     viewBox: '0 0 620 1342',
+    contact: 985,          // not shifted; here so the two variants read alike
     // Smaller than landscape in absolute terms so both icons plus a readable
     // gap fit in the band below the scroll cue without touching the bottom.
     size: { whale: { w: 52, h: 49 }, boat: { w: 68, h: 19 } },
@@ -159,12 +163,64 @@ const pickVariant = () =>
     ? 'portrait'
     : 'landscape';
 
+/* How far the artwork has to move for the encounter to meet the social icons.
+   ------------------------------------------------------------------------
+   Everything else in the intro is centred, so its height in viewBox units is
+   the same whatever the window does - the plate scales to cover the window
+   and the block's offsets from the middle divide by that scale, and the
+   window's height cancels out. The social icons are the exception: they hang
+   off the FOOT of the screen, so their height moves with the window, and no
+   fixed point in the plate can sit at it. At 1366x768 the X is at 765-784 in
+   viewBox units; at 1920x1080 it is at 804-818.
+
+   So the pair is nudged as a whole by the difference between the height the
+   paths were drawn to meet at and where the X actually is. The nudge is small
+   - about +5 at 768, +23 at 900, +41 at 1080 - and it moves the whole route
+   with it, which is why the tracks are drawn to arrive shallow: a few tens of
+   units up or down does not change where they run.
+
+   Landscape only. Portrait is left exactly where it was tuned. */
+const X_ABOVE_FOOT = 107;      // the X icon's centre, in px above the screen's foot
+const CUE_BELOW_MID = 243;     // the scroll cue's foot, in px below the middle
+const ICON_HALF = 15;          // half the encounter's height, in viewBox units
+
+const shiftFor = (variant, V) => {
+  if (variant !== 'landscape' || typeof window === 'undefined') return 0;
+  const [vbW, vbH] = V.viewBox.split(' ').slice(2).map(Number);
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+  if (!W || !H) return 0;
+  const s = Math.max(W / vbW, H / vbH);
+  const mid = vbH / 2;
+  const foot = mid + H / (2 * s);
+  const want = foot - X_ABOVE_FOOT / s;
+  // Never far enough up to touch the foot of the scroll cue, nor far enough
+  // down to put the pair under the bottom edge. On a window short enough to
+  // drop the headline to 40px the cue sits higher than this, so the first
+  // bound is conservative rather than wrong.
+  const highest = mid + CUE_BELOW_MID / s + ICON_HALF + 8;
+  const lowest = foot - ICON_HALF - 4;
+  const at = Math.max(Math.min(want, lowest), highest);
+  return Math.round(at - V.contact);
+};
+
 const IntroSplash = () => {
   const wrapRef = useRef(null);
   const [variant, setVariant] = useState(pickVariant);
+  // How far the route has to move so the encounter lands on the social icons,
+  // which are the one thing here anchored to the foot of the screen. Follows
+  // the window, not just the art direction, so it is its own state.
+  const [shift, setShift] = useState(() => {
+    const v = pickVariant();
+    return shiftFor(v, VARIANTS[v]);
+  });
 
   useEffect(() => {
-    const onResize = () => setVariant(pickVariant());
+    const onResize = () => {
+      const v = pickVariant();
+      setVariant(v);
+      setShift(shiftFor(v, VARIANTS[v]));
+    };
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
@@ -264,16 +320,23 @@ const IntroSplash = () => {
           </filter>
         </defs>
 
-        <path id="track-whale" className="intro-track intro-track--whale" d={V.tracks.whale} />
-        <path id="track-boat" className="intro-track intro-track--boat" d={V.tracks.boat} />
+        {/* Routes and icons together, so the nudge that lands the encounter
+            on the social icons cannot separate an icon from its track. The
+            grain below stays put: it covers the whole plate. The icons keep
+            setting their own transform inside this one, and getPointAtLength
+            reads the path in its own units, so neither is affected. */}
+        <g transform={`translate(0 ${shift})`}>
+          <path id="track-whale" className="intro-track intro-track--whale" d={V.tracks.whale} />
+          <path id="track-boat" className="intro-track intro-track--boat" d={V.tracks.boat} />
 
-        <g id="icon-whale" className="intro-icon">
-          <Whale width={V.size.whale.w} height={V.size.whale.h}
-                 preserveAspectRatio="xMidYMid meet" />
-        </g>
-        <g id="icon-boat" className="intro-icon">
-          <Boat width={V.size.boat.w} height={V.size.boat.h}
-                preserveAspectRatio="xMidYMid meet" />
+          <g id="icon-whale" className="intro-icon">
+            <Whale width={V.size.whale.w} height={V.size.whale.h}
+                   preserveAspectRatio="xMidYMid meet" />
+          </g>
+          <g id="icon-boat" className="intro-icon">
+            <Boat width={V.size.boat.w} height={V.size.boat.h}
+                  preserveAspectRatio="xMidYMid meet" />
+          </g>
         </g>
 
         {/* Above the artwork, below the headline - the layer order used in
