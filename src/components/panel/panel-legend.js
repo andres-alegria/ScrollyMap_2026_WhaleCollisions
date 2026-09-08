@@ -15,7 +15,9 @@ import './panel-legend.css';
  * key can never end up describing something the map is not doing.
  *
  * `items` are { mark, color, label, size }, where mark is 'dot' for the layers
- * drawn as circles and 'line' for the ones drawn as lines. `size` is optional
+ * drawn as circles, 'line' for the ones drawn as lines, and 'box' for an area,
+ * which is drawn the way an area is on the map: a faint wash inside a solid
+ * outline, both in the layer's own colour. `size` is optional
  * and only applies to a dot: it sets that swatch's diameter in pixels, for a
  * band the map itself draws smaller.
  *
@@ -23,6 +25,15 @@ import './panel-legend.css';
  * counting - a key that names three speed bands without saying what a mark
  * stands for leaves the reader to guess.
  */
+// An area swatch needs the fill and the outline to be the same hue at
+// different strengths, and the colour arrives as a hex string.
+const withAlpha = (hex, a) => {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex || '');
+  if (!m) return hex;
+  const n = parseInt(m[1], 16);
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
+};
+
 const Legend = ({ title, items, foot, opacity = 0 }) => {
   if (!items || !items.length) return null;
   return (
@@ -38,9 +49,11 @@ const Legend = ({ title, items, foot, opacity = 0 }) => {
           <li className="panel-legend__row" key={label}>
             <span
               className={`panel-legend__mark panel-legend__mark--${mark}`}
-              style={size
-                ? { backgroundColor: color, '--dot': `${size}px` }
-                : { backgroundColor: color }}
+              style={mark === 'box'
+                ? { backgroundColor: withAlpha(color, 0.3), borderColor: color }
+                : (size
+                  ? { backgroundColor: color, '--dot': `${size}px` }
+                  : { backgroundColor: color })}
             />
             {label}
           </li>

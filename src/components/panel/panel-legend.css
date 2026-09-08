@@ -92,3 +92,12 @@
   line-height: 1.4;
   color: #9FB2AE;                        /* adjust key footnote color */
 }
+
+/* An area: drawn the way the map draws one, a faint wash inside a solid
+   outline. Sized to the same track as the other marks so the labels align. */
+.panel-legend__mark--box {
+  height: 11px;                          /* adjust area swatch height */
+  border-radius: 2px;
+  border: 1.5px solid;                   /* colour comes from the layer */
+  box-sizing: border-box;
+}

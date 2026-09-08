@@ -23,8 +23,9 @@ const HABITAT_FILL = '#FCFCFC';
 // the tracks in the color they are actually drawn in.
 export const TRACK = '#BFECB1';
 // adjust PSSA color. Its own hue, not the habitats' white: the designation is
-// a different kind of thing from the habitats it contains.
-const PSSA = '#74ADB3';
+// a different kind of thing from the habitats it contains. Exported so its key
+// swatch is drawn in the colour the layer actually uses.
+export const PSSA = '#74ADB3';
 
 export const SRC_HABITATS = 'story-habitats';
 export const SRC_TRACKS = 'story-tracks';

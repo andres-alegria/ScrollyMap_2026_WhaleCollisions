@@ -318,8 +318,10 @@ const config = {
         /* --- The designation ---------------------------------------
            The one shape that answers the rest of the piece. Framed from its
            own bounding box rather than a hand-set camera, so it fits whatever
-           the frame is; the traffic stays up because the speeds the text
-           quotes are the point of it. */
+           the frame is. The traffic stays up because the speeds the text
+           quotes are the point of it, but without its key: the bands were
+           introduced and labelled four chapters ago, and this chapter is
+           about the boundary rather than about reading the cells. */
         {
           center: [5.4, 41.6], zoom: 5.6,
           fit: 'pssa',
@@ -327,7 +329,7 @@ const config = {
           traffic: { slow: 0.2, mid: 0.5, fast: 0.8 },
           labels: 1,
           pssa: 1,
-          legend: 'speed',
+          legend: 'pssa',
           eyebrow: 'Northwestern Mediterranean',
           label: 'Particularly Sensitive Sea Area',
           text: '<p>The International Maritime Organization (IMO) designated over 200,000 square kilometer (80,000 square mile) swathe of the northwestern Mediterranean a Particularly Sensitive Sea Area (PSSA) in 2023 to protect whales from traffic. It recommended speeds of 10-13 knots in the multinational marine area, which includes key cetacean habitats but also intense shipping traffic.</p><p>Research suggests 10 knots is the threshold for avoiding lethal strikes.</p>',

@@ -5,7 +5,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { addTrafficLayers, setTraffic, trafficColors } from './traffic-layers';
 import { addLabelLayers, setLabels } from './label-layers';
-import { TRACK } from './story-layers';
+import { TRACK, PSSA } from './story-layers';
 import Legend from './panel-legend';
 import {
   loadStoryData, addStoryLayers, setHabitats, setTracks, setPssa,
@@ -125,6 +125,12 @@ const TRACK_ITEMS = [
   { mark: 'dot', color: TRACK, label: 'Position in the month shown' },
 ];
 
+// The designation's own key. One shape, so one row; it says what the outline
+// is rather than repeating the chapter heading above it.
+const PSSA_ITEMS = [
+  { mark: 'box', color: PSSA, label: 'Boundary designated by the IMO, 2023' },
+];
+
 // What a traffic mark stands for. The bands are speed classes, not counts, so
 // a key naming three speeds without saying what a mark is leaves the reader to
 // guess whether it is an average, a maximum, or one ship.
@@ -186,7 +192,7 @@ const MapPanel = ({
   // fitted cameras, keyed by habitat and frame size
   const fitRef = useRef({ key: '', by: new Map() });
   // one opacity per key, so they cross rather than swap
-  const [legend, setLegend] = useState({ speed: 0, tracks: 0 });
+  const [legend, setLegend] = useState({ speed: 0, tracks: 0, pssa: 0 });
   // the locator is opt-in per step; see LocatorGlobe
   const [locatorOn, setLocatorOn] = useState(steps[0] && steps[0].locator ? 1 : 0);
 
@@ -242,7 +248,11 @@ const MapPanel = ({
         map.on('idle', retry);
       }
       const k0 = steps[0] && steps[0].legend;
-      setLegend({ speed: k0 === 'speed' ? 1 : 0, tracks: k0 === 'tracks' ? 1 : 0 });
+      setLegend({
+        speed: k0 === 'speed' ? 1 : 0,
+        tracks: k0 === 'tracks' ? 1 : 0,
+        pssa: k0 === 'pssa' ? 1 : 0,
+      });
       // The habitats and the tracks are fetched, so they land after the first
       // scroll frames have already run. Nothing is drawn until they do; the
       // next frame picks them up.
@@ -434,8 +444,9 @@ const MapPanel = ({
           const key = (st, kind) => (st.legend === kind ? 1 : 0);
           const sp = lerp(key(a, 'speed'), key(b, 'speed'), f);
           const tr = lerp(key(a, 'tracks'), key(b, 'tracks'), f);
+          const ps = lerp(key(a, 'pssa'), key(b, 'pssa'), f);
           setLegend((prev) => (prev.speed === sp && prev.tracks === tr
-            ? prev : { speed: sp, tracks: tr }));
+            && prev.pssa === ps ? prev : { speed: sp, tracks: tr, pssa: ps }));
 
           const loc = lerp(a.locator ? 1 : 0, b.locator ? 1 : 0, f);
           setLocatorOn((prev) => (prev === loc ? prev : loc));
@@ -598,6 +609,11 @@ const MapPanel = ({
               title="Tracked whales"
               items={TRACK_ITEMS}
               opacity={legend.tracks}
+            />
+            <Legend
+              title="Protected area"
+              items={PSSA_ITEMS}
+              opacity={legend.pssa}
             />
           </div>
         </div>
