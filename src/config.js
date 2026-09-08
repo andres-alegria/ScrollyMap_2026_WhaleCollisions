@@ -37,7 +37,7 @@ const config = {
     subtitle:
       "Why whales are dying in the Mediterranean's shipping lanes.",
     // Provisional: drop datePrefix once the publication date is fixed.
-    datePrefix: '(to be?)',
+    datePrefix: '',
     date: 'September 8, 2026',
     social: [
       { name: 'X', src: 'x.svg', href: 'https://x.com/mongabay' },
@@ -337,7 +337,7 @@ const config = {
           legend: 'pssa',
           eyebrow: 'Northwestern Mediterranean',
           label: 'Particularly Sensitive Sea Area',
-          text: '<p>The International Maritime Organization (IMO) designated over 200,000 square kilometer (80,000 square mile) swathe of the northwestern Mediterranean a Particularly Sensitive Sea Area (PSSA) in 2023 to protect whales from traffic. It recommended speeds of 10-13 knots in the multinational marine area, which includes key cetacean habitats but also intense shipping traffic.</p><p>Research suggests 10 knots is the threshold for avoiding lethal strikes.</p>',
+          text: '<p>The International Maritime Organization (IMO) designated over 200,000 square kilometer (80,000 square mile) swathe of the northwestern Mediterranean a Particularly Sensitive Sea Area (PSSA) in 2023 to protect whales from traffic. It recommended speeds of 10-13 knots in the multinational marine area, which includes key cetacean habitats but also intense shipping traffic.</p><p>Research suggests <strong>10 knots</strong> is the threshold for avoiding lethal strikes.</p>',
         },
       ],
     },
