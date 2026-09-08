@@ -99,6 +99,32 @@ const monthYear = (ms) => {
   return `${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 };
 
+/**
+ * Wrap capitalised words so automatic hyphenation leaves them alone.
+ *
+ * The prose is justified, which needs hyphens to keep the word spacing even on
+ * a column this narrow - but a name broken across a line reads as a mistake
+ * rather than as typesetting: Mediter-ranean, Bal-earic, Pela-gos.
+ *
+ * Every capitalised word rather than a list of names. A list would go stale
+ * the first time an editor wrote a new one, and silently: the name would just
+ * start breaking. The cost is that the first word of a sentence is not
+ * hyphenated either, which is one line break a reader will never miss.
+ *
+ * Tags are matched first and passed through untouched, so this cannot reach
+ * inside `<strong>` or rewrite an attribute.
+ */
+const NAME_OR_TAG = /(<[^>]*>)|(\b[A-Z][A-Za-z’'-]{3,})/g;
+const nameCache = new Map();
+const keepNamesWhole = (html) => {
+  if (typeof html !== 'string') return html;
+  if (!nameCache.has(html)) {
+    nameCache.set(html, html.replace(NAME_OR_TAG,
+      (m, tag, word) => (tag || `<span class="map-panel__name">${word}</span>`)));
+  }
+  return nameCache.get(html);
+};
+
 // The knot thresholds are what the data was cut on, so they live here; the
 // colors come off the Mapbox style at runtime and are filled in below.
 const SPEED_ROWS = [
@@ -629,7 +655,7 @@ const MapPanel = ({
                     paragraph, and a <p> cannot contain another. */}
                 {s.text && (
                   <div className="map-panel__text"
-                       dangerouslySetInnerHTML={{ __html: s.text }} />
+                       dangerouslySetInnerHTML={{ __html: keepNamesWhole(s.text) }} />
                 )}
               </div>
             ))}
@@ -649,7 +675,7 @@ const MapPanel = ({
                       el.style.opacity = '0';
                     }
                   }}
-                  dangerouslySetInnerHTML={{ __html: s.note }}
+                  dangerouslySetInnerHTML={{ __html: keepNamesWhole(s.note) }}
                 />
               ) : null))}
             </div>

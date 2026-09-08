@@ -196,6 +196,15 @@
   hyphens: auto;
 }
 
+/* A name, wrapped by keepNamesWhole in map-panel.js. `manual` rather than
+   `none`: a name that already carries a hyphen may still break at it, which is
+   where it would be broken by hand. Everything else about the word is
+   inherited, so this is invisible except at the end of a line. */
+.map-panel__name {
+  -webkit-hyphens: manual;
+  hyphens: manual;
+}
+
 /* A chapter may run to more than one paragraph; the space between them is a
    little tighter than the gap to the note below. */
 .map-panel__text p { margin: 0; }
