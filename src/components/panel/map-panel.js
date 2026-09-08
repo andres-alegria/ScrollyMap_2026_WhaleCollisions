@@ -175,6 +175,7 @@ const MapPanel = ({
 }) => {
   const sectionRef = useRef(null);
   const frameRef = useRef(null);
+  const cardRef = useRef(null);
   const mapNodeRef = useRef(null);
   const mapRef = useRef(null);
   const textRefs = useRef([]);
@@ -267,6 +268,7 @@ const MapPanel = ({
         setTracks(map, data, {
           amount: s0.tracks || 0, clock: s0.clock || 0, window: windowOf(s0),
         });
+        publishFrameHeight();
         // the cameras could not be fitted until the outlines were here
         ScrollTrigger.update();
       });
@@ -277,15 +279,27 @@ const MapPanel = ({
     };
     map.on('load', onLoad);
 
-    // The text column is taller than the map frame and is shifted up to meet
-    // its bottom edge (see .map-panel__card). CSS cannot read one box's height
-    // from another, so the frame's height is published here as a variable.
+    // The frame takes its height from the text column, so their top and bottom
+    // edges line up at any window size. CSS cannot read one box's height from
+    // another, and stretch plus a percentage height loops - the frame would
+    // resolve against a column the frame is itself stretching - so the column
+    // is measured here and published as a length.
+    //
+    // Only on the wide layout. Stacked, the frame has a shape of its own and
+    // the variable is cleared so the CSS aspect ratio applies.
+    const stackedQuery = window.matchMedia('(max-width: 820px)');
     const publishFrameHeight = () => {
-      const frame = frameRef.current;
+      const card = cardRef.current;
       const section = sectionRef.current;
-      if (frame && section) {
-        section.style.setProperty('--frame-h', `${frame.clientHeight}px`);
+      if (!card || !section) return;
+      if (stackedQuery.matches) {
+        section.style.removeProperty('--frame-h');
+        return;
       }
+      const h = Math.round(card.scrollHeight);
+      // A zero here means the column has not been laid out yet; publishing it
+      // would collapse the frame, and nothing would necessarily measure again.
+      if (h > 0) section.style.setProperty('--frame-h', `${h}px`);
     };
 
     const ro = new ResizeObserver(() => {
@@ -296,9 +310,22 @@ const MapPanel = ({
       ScrollTrigger.update();
     });
     if (frameRef.current) ro.observe(frameRef.current);
+    if (cardRef.current) ro.observe(cardRef.current);
+
+    // The observer alone is not enough. It can fire once while the pane is
+    // still narrow - the stacked branch then clears the variable - and never
+    // again if the column's own box does not change afterwards. So the height
+    // is also published on the next frame, on resize, and when the layout
+    // crosses the stacked breakpoint.
+    const frame = requestAnimationFrame(publishFrameHeight);
+    window.addEventListener('resize', publishFrameHeight);
+    stackedQuery.addEventListener('change', publishFrameHeight);
 
     return () => {
       alive = false;
+      cancelAnimationFrame(frame);
+      window.removeEventListener('resize', publishFrameHeight);
+      stackedQuery.removeEventListener('change', publishFrameHeight);
       ro.disconnect();
       map.off('load', onLoad);
       map.remove();
@@ -550,7 +577,7 @@ const MapPanel = ({
 
         {/* Steps are stacked in one grid cell so the column keeps a single
             height; only the current one is opaque. */}
-        <div className="map-panel__card">
+        <div className="map-panel__card" ref={cardRef}>
           <div className="map-panel__prose">
             <div className="map-panel__steps">
             {steps.map((s, i) => (

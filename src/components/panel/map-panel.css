@@ -40,8 +40,17 @@
   overflow: hidden;
 }
 
-/* The frame is centred in the section - it is the thing the reader looks at,
-   and it should sit in the middle of the screen. */
+/* Both columns are stretched to the same height, which is set by whichever is
+   taller - in practice always the text, since its prose block is sized by the
+   longest chapter. That makes the frame's top and bottom edges line up with
+   the paragraph and the key by construction, at any window size.
+
+   This replaces a fixed aspect ratio on the frame. A ratio can only match the
+   column at one window size: it was tuned at 1440x900 and drifted everywhere
+   else, riding the text higher the shorter the window got. It also cannot be
+   done with stretch and a percentage height - the frame's height would resolve
+   against a column that is itself being stretched by the frame, and the loop
+   runs away - so map-panel.js measures the column and publishes it. */
 .map-panel__body {
   display: flex;
   align-items: center;
@@ -52,11 +61,14 @@
 
 .map-panel__col {
   flex: 0 0 auto;
-  width: min(52vw, 76vh);                /* adjust panel size */
+  width: min(56vw, 80vh);                /* adjust panel size */
 }
 
 .map-panel__frame {
-  aspect-ratio: var(--aspect, 4 / 3);    /* config's `aspect`; see map-panel.js */
+  /* No aspect ratio on a wide screen: the height is the text column's, measured
+     and published by map-panel.js. `aspect` in the config governs the stacked
+     layout below, where there is no column to match. */
+  height: var(--frame-h, auto);
   /* Mapbox's wordmark and attribution own the foot of the frame and may not be
      covered - the scale bar sat on the wordmark and the locator globe on the
      attribution. Both now clear this strip.
@@ -116,7 +128,6 @@
   display: flex;
   flex-direction: column;
   color: #EEF0F0;
-  transform: translateY(calc((var(--frame-h, 100%) - 100%) / 2));
 }
 
 /* The prose takes the space the key does not, and centres itself in it. The
@@ -204,10 +215,10 @@
   .map-panel__body { flex-direction: column; align-items: center; gap: 2vh; }
   .map-panel__col { width: 100%; max-width: 44vh; }
 
-  /* Back to a wide box when stacked. The tall one is there to match the height
-     of the text column beside it on a wide screen; stacked there is no column
-     to match, and the extra height only pushes the key onto the fixed logo. */
-  .map-panel__frame { aspect-ratio: 4 / 3; }
+  /* Stacked, there is no column to take a height from, so the frame goes back
+     to a shape of its own - wide, which suits the basin and keeps the key off
+     the fixed Mongabay mark. */
+  .map-panel__frame { height: auto; aspect-ratio: 4 / 3; }
   /* Stacked under the map, so it is sized by its content again rather than
      stretched to a frame that is no longer beside it. */
   .map-panel__card {
