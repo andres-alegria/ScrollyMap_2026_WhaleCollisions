@@ -40,9 +40,15 @@
   overflow: hidden;
 }
 
+/* Bottom-aligned, not centred. The key sits at the foot of the text column and
+   has to land on the map frame's bottom edge; aligning the two boxes by their
+   bottoms is what guarantees that however tall either one gets. Centring them
+   only worked while the column was shorter than the frame, and it stopped
+   being so when the speed key gained its footnote - the key then hung 52px
+   below the frame. */
 .map-panel__body {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   gap: 3vw;
   width: 100%;
@@ -103,7 +109,6 @@
 .map-panel__card {
   flex: 0 1 clamp(320px, 30vw, 480px);   /* adjust text column width */
   max-width: clamp(320px, 30vw, 480px);
-  align-self: stretch;
   display: flex;
   flex-direction: column;
   color: #EEF0F0;
@@ -177,8 +182,10 @@
     --fs-body: 14px;
     --fs-furniture: 11px;
     /* The whole side margin, now that the section runs to the screen edge and
-       the texture with it. ---- adjust the side margin on small screens ---- */
-    padding: 2.4vh 10vw;
+       the texture with it. The bottom is deeper than the top: the Mongabay
+       mark is fixed in that corner, and stacked layout puts the key exactly
+       where it sits. ---- adjust the side margin on small screens ---- */
+    padding: 2.4vh 10vw 64px;
   }
 
   /* stacked: map, then the text beneath it.
