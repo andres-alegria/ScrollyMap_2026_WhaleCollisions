@@ -69,10 +69,11 @@ const config = {
     sourcesTitle: 'Sources',
     sources:
       'Vessel positions are from Global Fishing Watch, covering 2025, gridded '
-      + 'at 0.1 degrees and split into three speed bands. Habitat boundaries '
-      + 'come from the IUCN Marine Mammal Protected Areas Task Force (IMMA), '
-      + 'the Pelagos Sanctuary and ACCOBAMS. Whaletrack data suppliers '
-      + 'Tethys Research Institute and the EDMAKTUB Association.',
+      + 'at 0.1 degrees and split into three speed bands. Whale telemetry data provided by'
+      + 'Tethys Research Institute and Edmaktub. Vessel positions are from Global Fishing Watch, '
+      + 'covering 2025, gridded at 0.1 degrees. Habitat boundaries come from the '
+      + 'IUCN Marine Mammal Protected Areas Task Force (IMMA), the Pelagos Sanctuary and ACCOBAMS. '
+      + 'Designated PSSA boundaries based on provided IMO coordinates.',
   },
 
   chapters: [
@@ -146,7 +147,7 @@ const config = {
           legend: 'speed',
           eyebrow: 'The Mediterranean',
           label: 'High speed traffic',
-          text: 'In 2025 almost 2,800 unique vessels traveled faster than 15 knots while navigating through the Mediterranean\u2019s key whale habitats. <strong>Ship strikes are almost always fatal above that speed</strong>, about 28 kilometers per hour or 17 miles per hour.',
+          text: 'In 2025 almost 2,800 unique vessels traveled faster than 15 knots (27.78 km/h or 17.26 mp/h) while navigating through the Mediterranean\u2019s key whale habitats, according to data provided by Global Fishing Watch (GFW). <strong>Ship strikes at speeds exceeding 15 knot are almost always fatal.</strong>',
         },
         {
           center: [2.45, 40.495], zoom: 6.4,
@@ -160,7 +161,7 @@ const config = {
           // is already where it needs to be
           eyebrow: 'Key whale habitat',
           label: 'Cetacean Migration Corridor',
-          text: 'The corridor off eastern Spain protects a migration route between the Balearic Sea and the wider western Mediterranean. Spain declared it a marine protected area in 2018, covering about <strong>46,400 km\u00b2</strong> (17,900 square miles).',
+          text: 'The corridor off eastern Spain protects between the Balearic Sea and the wider western Mediterranean. Spain declared it a marine protected area in 2018, covering about <strong>46,400 km\u00b2</strong> (17,900 square miles).',
         },
         {
           center: [8.81, 42.625], zoom: 6.3,
@@ -350,8 +351,7 @@ const config = {
       alignment: 'left',
       title: '',
       html: `
-  <p>Placeholder for a short ending text of this visualization.</p>
-`,
+  <p>Despite the IMO’s recommendation that vessels reduce speed to 10-13 knots, thousands of vessels continued to travel through the northwest Mediterranean PSSA above 15 knots in 2025.</p><p>Some marine conservationists call for mandatory speed limits, while technological solutions, like acoustic warning systems and dynamic risk maps, are also being developed in the hope of  saving the Mediterranean’s endangered fin and sperm whales.</p>`,
     },
 
   ]
