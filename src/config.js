@@ -35,7 +35,7 @@ const config = {
   intro: {
     title: 'Collision course',
     subtitle:
-      'Why whales are dying in the Mediterranean shipping lanes.',
+      "Why whales are dying in the Mediterranean's shipping lanes.",
     // Provisional: drop datePrefix once the publication date is fixed.
     datePrefix: '(to be?)',
     date: 'August 31, 2026',
@@ -91,7 +91,7 @@ const config = {
       to: { center: [15.25, 38], zoom: 3.5 },
       eyebrow: 'The Mediterranean',
       label: 'A sea crossed by many ships',
-      text: 'Nearly every ship moving between the Atlantic and the Suez Canal crosses this sea end to end, and almost none of it is empty: of the roughly 25,200 patches of water ten kilometers across that make up the Mediterranean, <strong>24,254</strong> carried vessel traffic during 2025.',
+      text: 'Nearly every ship moving between the Atlantic and the Suez Canal crosses this sea end to end, and almost none of it is empty: of the roughly 25,200 patches of water ten kilometers by ten (six miles by six) that make up the Mediterranean, <strong>24,254</strong> carried vessel traffic during 2025.',
     },
 
     /* --- The story, in one box ---------------------------------------- */
@@ -140,7 +140,7 @@ const config = {
           legend: 'speed',
           eyebrow: 'The Mediterranean',
           label: 'High speed traffic',
-          text: 'In 2025 almost 2,800 unique vessels traveled faster than 15 knots while navigating through the Mediterranean\u2019s key whale habitats. <strong>Ship strikes are almost always fatal above that speed</strong>, about 28 kilometers per hour.',
+          text: 'In 2025 almost 2,800 unique vessels traveled faster than 15 knots while navigating through the Mediterranean\u2019s key whale habitats. <strong>Ship strikes are almost always fatal above that speed</strong>, about 28 kilometers per hour or 17 miles per hour.',
         },
         {
           center: [2.45, 40.495], zoom: 6.4,
@@ -154,7 +154,7 @@ const config = {
           // is already where it needs to be
           eyebrow: 'Key whale habitat',
           label: 'Cetacean Migration Corridor',
-          text: 'The corridor off eastern Spain protects a migration route between the Balearic Sea and the wider western Mediterranean. Spain declared it a marine protected area in 2018, covering about <strong>46,400 km\u00b2</strong>.',
+          text: 'The corridor off eastern Spain protects a migration route between the Balearic Sea and the wider western Mediterranean. Spain declared it a marine protected area in 2018, covering about <strong>46,400 km\u00b2</strong> (17,900 square miles).',
         },
         {
           center: [8.81, 42.625], zoom: 6.3,
@@ -166,7 +166,7 @@ const config = {
           legend: 'speed',
           eyebrow: 'Key whale habitat',
           label: 'Pelagos Sanctuary',
-          text: 'France, Italy and Monaco manage the sanctuary together, under an agreement signed in 1999. It covers about <strong>96,500 km\u00b2</strong>. The heaviest shipping runs through the Piombino Channel off Elba, along the Ligurian coast off Nice, and through the Strait of Bonifacio.',
+          text: 'France, Italy and Monaco manage the sanctuary together, under an agreement signed in 1999. It covers about <strong>96,500 km\u00b2</strong> (37,300 square miles).',
         },
         {
           center: [25.2, 36.445], zoom: 5.7,
@@ -179,7 +179,7 @@ const config = {
           span: 0.8,            // adjust: the handover into the first replay
           eyebrow: 'Key whale habitat',
           label: 'Hellenic Trench',
-          text: 'Off southern Greece, the trench is critical habitat for sperm whales, which rest at the surface where deep water comes close to shore. It covers about <strong>56,600 km\u00b2</strong>. Shipping concentrates where vessels round the southern Peloponnese, and in the Karpathos Strait.',
+          text: 'Off southern Greece the trench drops to more than 5,000 meters (16,400 feet), and is critical habitat for sperm whales, which rest at the surface where deep water comes close to shore. It covers about <strong>56,600 km\u00b2</strong> (21,900 square miles).',
         },
         /* --- The whale chapter, run three times ---------------------
            The same twelve tracks, replayed once in each habitat rather than
@@ -215,9 +215,9 @@ const config = {
           tracks: 1, clock: 0,
           span: 1.4,            // adjust: length of this replay
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, three years and a half',
-          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
-          note: 'One of the twelve tracked whales passed through the Hellenic Trench, between July and August 2024.',
+          label: 'Twelve whales, three and a half years',
+          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast ship traffic.',
+          note: 'One of the twelve tracked whales passed through the Hellenic Trench between July and August 2024.',
         },
         {
           center: [25.2, 36.445], zoom: 5.7,
@@ -234,9 +234,9 @@ const config = {
           tracks: 1, clock: 1,
           span: 0.7,            // adjust: length of the move to the next habitat
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, three years and a half',
-          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
-          note: 'One of the twelve tracked whales passed through the Hellenic Trench, between July and August 2024.',
+          label: 'Twelve whales, three and a half years',
+          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast ship traffic.',
+          note: 'One of the twelve tracked whales passed through the Hellenic Trench between July and August 2024.',
         },
         {
           center: [8.81, 42.625], zoom: 6.3,
@@ -253,9 +253,9 @@ const config = {
           tracks: 1, clock: 0,
           span: 1.4,            // adjust: length of this replay
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, three years and a half',
-          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
-          note: 'Two of the twelve tracked whales passed through the sanctuary, between June and July 2023.',
+          label: 'Twelve whales, three and a half years',
+          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast ship traffic.',
+          note: 'Two of the twelve tracked whales passed through the Pelagos Sanctuary between June and July 2023.',
         },
         {
           center: [8.81, 42.625], zoom: 6.3,
@@ -272,9 +272,9 @@ const config = {
           tracks: 1, clock: 1,
           span: 0.7,            // adjust: length of the move to the next habitat
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, three years and a half',
-          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
-          note: 'Two of the twelve tracked whales passed through the sanctuary, between June and July 2023.',
+          label: 'Twelve whales, three and a half years',
+          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast ship traffic.',
+          note: 'Two of the twelve tracked whales passed through the Pelagos Sanctuary between June and July 2023.',
         },
         {
           center: [2.45, 40.495], zoom: 6.4,
@@ -291,9 +291,9 @@ const config = {
           tracks: 1, clock: 0,
           span: 1.4,            // adjust: length of this replay
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, three years and a half',
-          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
-          note: 'Nine of the twelve tracked whales passed through the corridor, between May 2021 and July 2023.',
+          label: 'Twelve whales, three and a half years',
+          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast ship traffic.',
+          note: 'Nine of the twelve tracked whales passed through the Cetacean Migration Corridor between May 2021 and July 2023.',
         },
         {
           center: [2.45, 40.495], zoom: 6.4,
@@ -309,9 +309,9 @@ const config = {
           clockWindow: ['2021-05-10', '2023-07-29'],
           tracks: 1, clock: 1,
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, three years and a half',
-          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast traffic.',
-          note: 'Nine of the twelve tracked whales passed through the corridor, between May 2021 and July 2023.',
+          label: 'Twelve whales, three and a half years',
+          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast ship traffic.',
+          note: 'Nine of the twelve tracked whales passed through the Cetacean Migration Corridor between May 2021 and July 2023.',
         },
       ],
     },

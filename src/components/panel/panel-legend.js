@@ -18,8 +18,12 @@ import './panel-legend.css';
  * drawn as circles and 'line' for the ones drawn as lines. `size` is optional
  * and only applies to a dot: it sets that swatch's diameter in pixels, for a
  * band the map itself draws smaller.
+ *
+ * `foot` is an optional line under the rows, for saying what the marks are
+ * counting - a key that names three speed bands without saying what a mark
+ * stands for leaves the reader to guess.
  */
-const Legend = ({ title, items, opacity = 0 }) => {
+const Legend = ({ title, items, foot, opacity = 0 }) => {
   if (!items || !items.length) return null;
   return (
     <div
@@ -42,6 +46,7 @@ const Legend = ({ title, items, opacity = 0 }) => {
           </li>
         ))}
       </ul>
+      {foot && <p className="panel-legend__foot">{foot}</p>}
     </div>
   );
 };

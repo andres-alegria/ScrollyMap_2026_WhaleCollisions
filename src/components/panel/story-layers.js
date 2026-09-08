@@ -41,12 +41,6 @@ const clamp01 = (v) => Math.min(1, Math.max(0, v));
 // The share of the scroll each silence in the record gets. See trackSpan.
 const GAP_SHARE = 0.04;   // adjust how fast the quiet months pass
 
-// When a pass is focused on one habitat, the share of the scroll spent inside
-// that habitat's window. The rest winds forward through everything before and
-// after it, quickly but visibly, so the reader still watches the whales arrive
-// rather than finding them already there.
-const FOCUS_SHARE = 0.78;   // adjust how much of a pass is spent in the window
-
 const timesOf = (f) => (
   f.properties
   && f.properties.coordinateProperties
@@ -79,13 +73,14 @@ const splitAt = (segs, t) => {
  * stays continuous and the date readout stays truthful - it simply sweeps
  * through each winter quickly instead of stopping dead.
  *
- * `focus` narrows that further. The tracks are replayed once per habitat, and
- * the whales were not in all three at the same time: one reached the Hellenic
- * Trench, and only in the last weeks of a record spanning three years. Played
- * on the same clock as the rest, that pass is an empty sea for 95% of its
- * length. Given a focus window, most of the scroll goes to the stretch when
- * whales were actually inside that habitat, and the rest winds through the
- * years on either side.
+ * `focus` cuts the clock down to one habitat's own window. The tracks are
+ * replayed once per habitat and the whales were not in all three at the same
+ * time: one reached the Hellenic Trench, and only in the last weeks of a
+ * record spanning three years. Run across the whole record, that pass counted
+ * months in which nothing was drawn - the readout showed May 2021 over an
+ * empty sea - and then ran past its own window to September 2024, which
+ * contradicted the sentence beside it. Focused, it starts and ends on the
+ * dates the sentence names.
  *
  * Returns { t0, t1, at(progress) -> ms }.
  */
@@ -106,8 +101,8 @@ export const trackSpan = (fc, focus = null) => {
     else live.push([s, e]);
   });
 
-  const t0 = live[0][0];
-  const t1 = live[live.length - 1][1];
+  let t0 = live[0][0];
+  let t1 = live[live.length - 1][1];
 
   // one segment per transmitting window and per silence
   let segs = [];
@@ -116,39 +111,29 @@ export const trackSpan = (fc, focus = null) => {
     segs.push({ t0: s, t1: e, gap: false });
   });
 
-  // A focus boundary can fall in the middle of a segment, so cut there first
-  // and every segment is then wholly inside the window or wholly outside it.
-  const [f0, f1] = focus || [];
+  // A focus boundary can fall in the middle of a segment, so cut there first;
+  // every segment is then wholly inside the window or wholly outside it, and
+  // the outside ones are dropped. The window becomes the whole clock.
   if (focus) {
-    segs = splitAt(splitAt(segs, f0), f1);
-    segs.forEach((x) => { x.hot = x.t0 >= f0 && x.t1 <= f1; });
+    const [f0, f1] = focus;
+    segs = splitAt(splitAt(segs, f0), f1).filter((x) => x.t0 >= f0 && x.t1 <= f1);
+    if (!segs.length) return null;
+    t0 = f0;
+    t1 = f1;
   }
 
   // Silences cost a fixed slice each; the transmitting windows share what is
-  // left, in proportion to their length. With a focus, that remainder is split
-  // again between the window and everything outside it, so a short stretch
-  // inside the habitat still gets most of the scroll.
+  // left, in proportion to their length.
   const gaps = segs.filter((x) => x.gap);
   const gapTotal = Math.min(0.5, gaps.length * GAP_SHARE);
   const liveSegs = segs.filter((x) => !x.gap);
   const liveTotal = 1 - gapTotal;
-
-  const shareOf = (pool) => {
-    const ms = pool.reduce((n, x) => n + (x.t1 - x.t0), 0);
-    return (x) => (ms > 0 ? (x.t1 - x.t0) / ms : 1 / Math.max(1, pool.length));
-  };
-
-  if (focus && liveSegs.some((x) => x.hot) && liveSegs.some((x) => !x.hot)) {
-    const hot = liveSegs.filter((x) => x.hot);
-    const cold = liveSegs.filter((x) => !x.hot);
-    const hotShare = shareOf(hot);
-    const coldShare = shareOf(cold);
-    hot.forEach((x) => { x.w = liveTotal * FOCUS_SHARE * hotShare(x); });
-    cold.forEach((x) => { x.w = liveTotal * (1 - FOCUS_SHARE) * coldShare(x); });
-  } else {
-    const share = shareOf(liveSegs);
-    liveSegs.forEach((x) => { x.w = liveTotal * share(x); });
-  }
+  const liveMs = liveSegs.reduce((n, x) => n + (x.t1 - x.t0), 0);
+  liveSegs.forEach((x) => {
+    x.w = liveMs > 0
+      ? liveTotal * ((x.t1 - x.t0) / liveMs)
+      : liveTotal / Math.max(1, liveSegs.length);
+  });
   gaps.forEach((x) => { x.w = gaps.length ? gapTotal / gaps.length : 0; });
 
   let acc = 0;

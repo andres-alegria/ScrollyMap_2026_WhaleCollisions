@@ -82,3 +82,13 @@
   .panel-legend-stack { padding-top: 14px; }
   .panel-legend__list { gap: 5px; }
 }
+
+/* What the marks are counting. Smaller and dimmer than the rows: it is read
+   once, not scanned. */
+.panel-legend__foot {
+  margin: 10px 0 0;
+  max-width: 30rem;
+  font-size: var(--fs-furniture);
+  line-height: 1.4;
+  color: #9FB2AE;                        /* adjust key footnote color */
+}

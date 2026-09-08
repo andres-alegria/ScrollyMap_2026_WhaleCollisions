@@ -121,8 +121,14 @@ const speedItems = (colors) => (colors
 // invisible unless the key names it.
 const TRACK_ITEMS = [
   { mark: 'line', color: TRACK, label: 'Tracked whale paths' },
-  { mark: 'dot', color: TRACK, label: 'Position on the date shown' },
+  { mark: 'dot', color: TRACK, label: 'Position in the month shown' },
 ];
+
+// What a traffic mark stands for. The bands are speed classes, not counts, so
+// a key naming three speeds without saying what a mark is leaves the reader to
+// guess whether it is an average, a maximum, or one ship.
+const SPEED_FOOT = 'Each dot is a patch of sea ten kilometers across where '
+  + 'vessels were recorded travelling at that speed during 2025.';
 
 const NICE = [10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000];
 const scaleFor = (map, widthPx, target = 0.22) => {
@@ -569,6 +575,7 @@ const MapPanel = ({
             <Legend
               title="Vessel speed"
               items={speedItems(bandColors)}
+              foot={SPEED_FOOT}
               opacity={legend.speed}
             />
             <Legend
