@@ -47,8 +47,8 @@ const VARIANTS = {
     // go back up if the pair reads small.
     size: { whale: { w: 22, h: 20 }, boat: { w: 36, h: 10 } },
     tracks: {
-      /* Contact at about (802, 790): below the scroll cue, in the open water
-         between the foot of the type and the bottom of the screen.
+      /* Contact at about (802, 770): below the scroll cue, level with the X
+         in the social icons on a laptop-height window.
 
          It used to sit at y 445, in the gap between the subhead and the date
          rule. That band is too narrow to hold two rotated icons without them
@@ -66,33 +66,41 @@ const VARIANTS = {
              subhead     450 +  37/s .. 450 + 64/s
              cue foot    450 + 243/s        screen foot  450 + H/(2s)
 
+         The social icons are the exception: they hang off the foot of the
+         screen rather than the middle, so their height moves with the window
+         where everything else above does not. The X sits 115 to 99 above the
+         foot, which is 765-784 on a 768-tall window, 785-801 at 900 and
+         804-818 at 1080.
+
          The screen's foot is 900 for any window at 16:9 or squarer, because
          there s is set by the height. Wider than that it comes up: 850 at
          2:1, 788 at 21:9. The cue's foot runs the other way - 735 at
-         1024x768, 693 at 1440x900, 652 at 1920x1080 - so the clear band
-         between them is at its narrowest at both ends of that range. 790 is
-         about the only height that is below the cue on a 4:3 screen and still
-         above the foot on a wide one, and past roughly 2.1:1 there is no such
-         height at all: the encounter goes under the bottom edge. Moving it
-         back up means moving it back into the type.
+         1366x768, 693 at 1440x900, 652 at 1920x1080 - so the clear band
+         between the two closes from both ends, and 770 is inside it at every
+         window from 1024x768 to 3440x1440. It also lands on the X on the
+         short windows, where the icons ride highest; on a tall one they sink
+         with the bottom edge and the encounter stays where it is, above
+         them. Nothing fixed in the plate can follow them down.
 
          The whale comes in at the left edge level with the subhead (473 to
-         525 across that range) and works down and across, holding x <= 370
+         525 across that range) and works down and across, holding x <= 393
          until it is past the cue's foot, which keeps it outside the type's
-         left edge - 462 at its widest - all the way down. That also keeps it
+         left edge - 462 at its widest - all the way down. The last stretch
+         is nearly flat because of it: on a 768-tall window there are only 35
+         units between the cue's foot and the encounter to cross 300 in. That also keeps it
          well above the social icons in the corner it used to pass through.
 
          The ship holds x >= 1256 on the way down, right of the type's right
          edge at its widest (1138), and does not turn in until it is below
          the cue. */
       whale:
-        'M -30 496 C 96 516, 178 546, 240 588 C 300 630, 342 676, 368 730 C 392 780, 460 800, 560 800 C 646 800, 706 796, 748 796 C 764 796, 768 798, 785 794',
+        'M -30 496 C 96 516, 178 546, 240 588 C 300 630, 342 674, 372 716 C 400 754, 466 772, 560 774 C 646 776, 706 772, 748 772 C 764 772, 768 774, 785 770',
       // long straight legs, tight corners - a vessel holding a heading and
       // then altering course, not the whale's continuous meander.
       // The opening leg stays high to clear the landmass along the top of the
       // bathymetry plate, so the diagonal simply runs further.
       boat:
-        'M 1700 175 L 1380 175 Q 1342 175, 1324 208 L 1256 700 Q 1248 738, 1214 754 L 900 781 Q 866 784, 820 787'
+        'M 1700 175 L 1380 175 Q 1342 175, 1324 208 L 1256 680 Q 1248 718, 1214 734 L 900 761 Q 866 764, 820 767'
     }
   },
   portrait: {
