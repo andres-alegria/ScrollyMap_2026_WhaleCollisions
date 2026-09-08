@@ -47,44 +47,52 @@ const VARIANTS = {
     // go back up if the pair reads small.
     size: { whale: { w: 22, h: 20 }, boat: { w: 36, h: 10 } },
     tracks: {
-      /* Contact at about (802, 686): below the scroll cue, in the open water
+      /* Contact at about (802, 790): below the scroll cue, in the open water
          between the foot of the type and the bottom of the screen.
 
-         It used to sit at y 445, in the 34-unit gap between the subhead and
-         the date rule. That band is too narrow to hold two rotated icons
-         without them touching the type either side of it, so the encounter is
-         out of the type block altogether now.
+         It used to sit at y 445, in the gap between the subhead and the date
+         rule. That band is too narrow to hold two rotated icons without them
+         touching the type either side of it, so the encounter is out of the
+         type block altogether now.
 
-         WHERE THAT BAND IS, in viewBox units, is not fixed: the plate is
-         drawn with preserveAspectRatio slice, so it scales to cover the
-         window and the type does not scale with it. For a window W x H, with
-         s = max(W/1600, H/900), the centred block lands at
+         WHERE THE TYPE IS, in viewBox units, is not fixed: the plate is drawn
+         with preserveAspectRatio slice, so it scales to cover the window and
+         the type does not scale with it. The block is centred, so for a
+         window W x H with s = max(W/1600, H/900) every edge of it is
+         450 + (its offset from the middle of the screen)/s, and the window's
+         height cancels out:
 
-             cue bottom   450 + 153/s      type right edge   800 + 288/s
-             screen foot  450 + H/(2s)     title top         450 - 333/s
+             title top   450 - 243/s        type sides   800 +/- 288/s
+             subhead     450 +  37/s .. 450 + 64/s
+             cue foot    450 + 243/s        screen foot  450 + H/(2s)
 
-         - the window's height cancels out of the first two. Across 1024x768
-         to 2560x1440 the cue bottom runs 546 to 629 and the screen foot 787
-         to 900, so 686 sits in the clear at every one of them. Past about
-         21:9 the foot rises far enough to crop the encounter; that is the
-         limit of a fixed point, and the type would have to move for it.
+         The screen's foot is 900 for any window at 16:9 or squarer, because
+         there s is set by the height. Wider than that it comes up: 850 at
+         2:1, 788 at 21:9. The cue's foot runs the other way - 735 at
+         1024x768, 693 at 1440x900, 652 at 1920x1080 - so the clear band
+         between them is at its narrowest at both ends of that range. 790 is
+         about the only height that is below the cue on a 4:3 screen and still
+         above the foot on a wide one, and past roughly 2.1:1 there is no such
+         height at all: the encounter goes under the bottom edge. Moving it
+         back up means moving it back into the type.
 
-         The whale surfaces from below rather than entering from the left,
-         which is where it used to come in: at this height the left edge is
-         where the social icons are (they sit 115/s above the foot), and the
-         only path in that clears them is a flat one.
+         The whale comes in at the left edge level with the subhead (473 to
+         525 across that range) and works down and across, holding x <= 370
+         until it is past the cue's foot, which keeps it outside the type's
+         left edge - 462 at its widest - all the way down. That also keeps it
+         well above the social icons in the corner it used to pass through.
 
-         The ship holds x >= 1252 all the way down, right of the type's right
-         edge at its widest (1138 at 1024x768), and does not turn in until it
-         is below the cue. */
+         The ship holds x >= 1256 on the way down, right of the type's right
+         edge at its widest (1138), and does not turn in until it is below
+         the cue. */
       whale:
-        'M 300 940 C 340 878, 372 838, 428 800 C 478 766, 528 744, 588 726 C 646 708, 704 700, 744 694 C 762 695, 770 696, 785 690',
+        'M -30 496 C 96 516, 178 546, 240 588 C 300 630, 342 676, 368 730 C 392 780, 460 800, 560 800 C 646 800, 706 796, 748 796 C 764 796, 768 798, 785 794',
       // long straight legs, tight corners - a vessel holding a heading and
       // then altering course, not the whale's continuous meander.
       // The opening leg stays high to clear the landmass along the top of the
       // bathymetry plate, so the diagonal simply runs further.
       boat:
-        'M 1700 175 L 1380 175 Q 1342 175, 1324 208 L 1252 588 Q 1244 624, 1210 640 L 900 677 Q 866 680, 820 683'
+        'M 1700 175 L 1380 175 Q 1342 175, 1324 208 L 1256 700 Q 1248 738, 1214 754 L 900 781 Q 866 784, 820 787'
     }
   },
   portrait: {
