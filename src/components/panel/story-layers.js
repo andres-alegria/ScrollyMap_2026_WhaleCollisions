@@ -360,7 +360,8 @@ export const addStoryLayers = (map, data) => {
     type: 'line',
     source: SRC_PSSA,
     layout: { 'line-join': 'round', 'line-cap': 'round' },
-    paint: { 'line-color': PSSA, 'line-width': 1.6, 'line-opacity': 0 },
+    // adjust PSSA outline weight
+    paint: { 'line-color': PSSA, 'line-width': 2.4, 'line-opacity': 0 },
   }, labels);
 
   // The fill goes under the traffic: the habitat is the ground the story is
