@@ -5,8 +5,11 @@ import './locator-globe.css';
 
 // Loaded once and shared by every panel that shows a locator.
 //
-// This reads the same land-110m.json the rest of the story uses, which is
-// TopoJSON rather than the GeoJSON the reference repo loads. world-atlas
+// This inset is now the only thing that reads land-110m.json. Version 1's D3
+// globe drew it too; with that gone, the file stays in public/data for this
+// alone - do not remove it on the assumption that nothing uses it.
+//
+// It is TopoJSON rather than the GeoJSON the reference repo loads. world-atlas
 // topology is ALREADY wound for d3-geo: rewinding it turns the holes into
 // giant exteriors and land floods the whole globe. Convert and leave it alone.
 let landPromise = null;
