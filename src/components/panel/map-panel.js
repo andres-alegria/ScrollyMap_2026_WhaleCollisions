@@ -225,6 +225,7 @@ const MapPanel = ({
     let alive = true;
     const onLoad = () => {
       map.resize();
+      publishFrameHeight();
       addTrafficLayers(map);
       addLabelLayers(map);
       // the layers start invisible, so paint the first step's state at once
@@ -276,8 +277,20 @@ const MapPanel = ({
     };
     map.on('load', onLoad);
 
+    // The text column is taller than the map frame and is shifted up to meet
+    // its bottom edge (see .map-panel__card). CSS cannot read one box's height
+    // from another, so the frame's height is published here as a variable.
+    const publishFrameHeight = () => {
+      const frame = frameRef.current;
+      const section = sectionRef.current;
+      if (frame && section) {
+        section.style.setProperty('--frame-h', `${frame.clientHeight}px`);
+      }
+    };
+
     const ro = new ResizeObserver(() => {
       map.resize();
+      publishFrameHeight();
       setScale(scaleFor(map, frameRef.current ? frameRef.current.clientWidth : 0));
       // the fitted cameras were computed against the old frame
       ScrollTrigger.update();
