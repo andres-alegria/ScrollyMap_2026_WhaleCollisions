@@ -362,6 +362,13 @@ const MapPanel = ({
     };
     const heading = group((st) => `${st.eyebrow || ''}|${st.label || ''}|${st.text || ''}`);
     const notes = group((st) => st.note || '');
+    // The keys are grouped the same way, and for the same reason: a key has to
+    // leave on the same beat as the chapter that owns it. Crossfading them
+    // linearly across the interval instead left the speed key still on screen
+    // - at nearly half strength - while the whale chapter's heading was
+    // already fading in, because the text finishes its change in the first
+    // 0.55 of a step while a linear fade takes the whole of it.
+    const keys = group((st) => st.legend || '');
 
     // How present a run is: fully up anywhere inside it, fading either side.
     const runOpacity = (run, p) => clamp01(1 - (p < run.first ? run.first - p
@@ -479,15 +486,6 @@ const MapPanel = ({
           });
           const label = ms === null ? null : monthYear(ms);
           setStamp((prev) => (prev === label ? prev : label));
-          // A step names which key it carries, if any. Interpolating each one
-          // separately means a change of key crosses rather than blinks.
-          const key = (st, kind) => (st.legend === kind ? 1 : 0);
-          const sp = lerp(key(a, 'speed'), key(b, 'speed'), f);
-          const tr = lerp(key(a, 'tracks'), key(b, 'tracks'), f);
-          const ps = lerp(key(a, 'pssa'), key(b, 'pssa'), f);
-          setLegend((prev) => (prev.speed === sp && prev.tracks === tr
-            && prev.pssa === ps ? prev : { speed: sp, tracks: tr, pssa: ps }));
-
           const loc = lerp(a.locator ? 1 : 0, b.locator ? 1 : 0, f);
           setLocatorOn((prev) => (prev === loc ? prev : loc));
         }
@@ -520,6 +518,25 @@ const MapPanel = ({
             nel.style.pointerEvents = o > 0.5 ? 'auto' : 'none';
           }
         }
+
+        // The keys, on the same beat as the text above them. A kind is as
+        // present as its strongest run, so a key that comes back later in the
+        // story is not dimmed by the runs it is absent from. Outside the map
+        // block: a key describes the chapter, not the map, and should not stop
+        // updating on a frame where the map is not ready.
+        const legendOpacity = (kind) => {
+          let m = 0;
+          keys.runs.forEach((run) => {
+            if ((steps[run.first].legend || '') !== kind) return;
+            m = Math.max(m, runOpacity(run, p));
+          });
+          return m;
+        };
+        const sp = legendOpacity('speed');
+        const tr = legendOpacity('tracks');
+        const ps = legendOpacity('pssa');
+        setLegend((prev) => (prev.speed === sp && prev.tracks === tr
+          && prev.pssa === ps ? prev : { speed: sp, tracks: tr, pssa: ps }));
 
         // The globe takes its marker and label from the step that asked for
         // it, not from whichever step is nearest. Otherwise it spends its fade
