@@ -38,7 +38,7 @@ const config = {
       "Why whales are dying in the Mediterranean's shipping lanes.",
     // Provisional: drop datePrefix once the publication date is fixed.
     datePrefix: '(to be?)',
-    date: 'August 31, 2026',
+    date: 'September 8, 2026',
     social: [
       { name: 'X', src: 'x.svg', href: 'https://x.com/mongabay' },
       { name: 'facebook', src: 'facebook.svg', href: 'https://www.facebook.com/mongabay/' }
@@ -62,7 +62,8 @@ const config = {
     backToStart: 'Back to the start',
     title: 'Credits',
     people: [
-      { role: 'Reporting', name: 'TBC' },
+      { role: 'Reporting', name: 'Clea Skopeliti, Federica Rossi and Wouter Massink' },
+      { role: 'Story editor', name: 'Rebecca Kessler' },
       { role: 'Design and development', name: 'Andrés Alegría' },
     ],
     sourcesTitle: 'Sources',
@@ -70,8 +71,8 @@ const config = {
       'Vessel positions are from Global Fishing Watch, covering 2025, gridded '
       + 'at 0.1 degrees and split into three speed bands. Habitat boundaries '
       + 'come from the IUCN Marine Mammal Protected Areas Task Force (IMMA), '
-      + 'the Pelagos Sanctuary and ACCOBAMS. Whale movements are Argos '
-      + 'satellite telemetry from twelve tagged animals, 2021 to 2024.',
+      + 'the Pelagos Sanctuary and ACCOBAMS. Whaletrack data suppliers '
+      + 'Tethys Research Institute and the EDMAKTUB Association.',
   },
 
   chapters: [
@@ -215,7 +216,7 @@ const config = {
           tracks: 1, clock: 0,
           span: 2.4,            // adjust: length of this replay
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, three and a half years',
+          label: 'Twelve whales, <br />three and a half years',
           text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast ship traffic.',
           note: 'One of the twelve tracked whales passed through the Hellenic Trench between July and August 2024.',
         },
@@ -234,7 +235,7 @@ const config = {
           tracks: 1, clock: 1,
           span: 0.7,            // adjust: length of the move to the next habitat
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, three and a half years',
+          label: 'Twelve whales, <br />three and a half years',
           text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast ship traffic.',
           note: 'One of the twelve tracked whales passed through the Hellenic Trench between July and August 2024.',
         },
@@ -253,7 +254,7 @@ const config = {
           tracks: 1, clock: 0,
           span: 2.4,            // adjust: length of this replay
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, three and a half years',
+          label: 'Twelve whales, <br />three and a half years',
           text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast ship traffic.',
           note: 'Two of the twelve tracked whales passed through the Pelagos Sanctuary between June and July 2023.',
         },
@@ -272,7 +273,7 @@ const config = {
           tracks: 1, clock: 1,
           span: 0.7,            // adjust: length of the move to the next habitat
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, three and a half years',
+          label: 'Twelve whales, <br />three and a half years',
           text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast ship traffic.',
           note: 'Two of the twelve tracked whales passed through the Pelagos Sanctuary between June and July 2023.',
         },
@@ -291,7 +292,7 @@ const config = {
           tracks: 1, clock: 0,
           span: 2.4,            // adjust: length of this replay
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, three and a half years',
+          label: 'Twelve whales, <br />three and a half years',
           text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast ship traffic.',
           note: 'Nine of the twelve tracked whales passed through the Cetacean Migration Corridor between May 2021 and July 2023.',
         },
@@ -310,7 +311,7 @@ const config = {
           tracks: 1, clock: 1,
           span: 0.7,               // adjust: the move to the PSSA chapter
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, three and a half years',
+          label: 'Twelve whales, <br />three and a half years',
           text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast ship traffic.',
           note: 'Nine of the twelve tracked whales passed through the Cetacean Migration Corridor between May 2021 and July 2023.',
         },
@@ -327,9 +328,9 @@ const config = {
           labels: 1,
           pssa: 1,
           legend: 'speed',
-          eyebrow: 'A protected area',
+          eyebrow: 'Northwestern Mediterranean',
           label: 'Particularly Sensitive Sea Area',
-          text: '<p>Following a proposal by Spain, Italy, France and Monaco, the International Maritime Organization (IMO) designated over 200,000 square kilometer (80,000 square mile) swathe of the northwestern Mediterranean a Particularly Sensitive Sea Area (PSSA) in 2023 to protect whales from traffic. It recommended speeds of 10-13 knots in the multinational marine area stretching from Valencia to Genoa, which includes key cetacean habitats \u2014 the Pelagos Sanctuary, the Gulf of Lions and the Cetacean Migration Corridor \u2014 but also intense shipping traffic.</p><p>Research suggests 10 knots is the threshold for avoiding lethal strikes.</p>',
+          text: '<p>The International Maritime Organization (IMO) designated over 200,000 square kilometer (80,000 square mile) swathe of the northwestern Mediterranean a Particularly Sensitive Sea Area (PSSA) in 2023 to protect whales from traffic. It recommended speeds of 10-13 knots in the multinational marine area, which includes key cetacean habitats but also intense shipping traffic.</p><p>Research suggests 10 knots is the threshold for avoiding lethal strikes.</p>',
         },
       ],
     },

@@ -546,7 +546,14 @@ const MapPanel = ({
                 }}
               >
                 {s.eyebrow && <p className="map-panel__eyebrow">{s.eyebrow}</p>}
-                {s.label && <h3 className="map-panel__label font-lora">{s.label}</h3>}
+                {/* Markup, like the text and the note below it: a heading
+                    sometimes needs its own line break, and where it falls is
+                    an editorial call rather than whatever the column width
+                    happens to do. */}
+                {s.label && (
+                  <h3 className="map-panel__label font-lora"
+                      dangerouslySetInnerHTML={{ __html: s.label }} />
+                )}
                 {/* A div, not a p: a chapter may run to more than one
                     paragraph, and a <p> cannot contain another. */}
                 {s.text && (
