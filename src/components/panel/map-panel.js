@@ -535,7 +535,10 @@ const MapPanel = ({
     <section className="map-panel" ref={sectionRef}>
       <div className="map-panel__body">
         <div className="map-panel__col">
-          <div className="map-panel__frame" ref={frameRef} style={{ aspectRatio: aspect }}>
+          {/* The shape goes in as a variable, not as aspectRatio directly, so
+              the stacked layout can override it - the tall frame exists to
+              match the text column beside it, and stacked there is none. */}
+          <div className="map-panel__frame" ref={frameRef} style={{ '--aspect': aspect }}>
             <div className="map-panel__map" ref={mapNodeRef} />
             {scale && <ScaleBar {...scale} />}
             {/* Only on screen while the tracks are being revealed, so the

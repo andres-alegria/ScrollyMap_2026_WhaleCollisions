@@ -110,7 +110,12 @@ const config = {
       stage: 'MapPanel',
       accessToken: MAPBOX_TOKEN,
       mapStyle: MAPBOX_STYLE,
-      aspect: '4 / 3',
+      // 10/9, not 4/3. The text column beside the frame is taller than a 4:3
+      // box by about 100px - the prose block is sized by the longest chapter -
+      // so a 4:3 frame could not have both the paragraph in its old place and
+      // the key on its bottom edge. A taller box gives the column the room and
+      // the map more vertical space. ---- adjust the map box's shape ----
+      aspect: '10 / 9',
       dwell: 1.6,              // adjust: screen-heights of scroll per step
       // Each step's `traffic` block says how present each speed band is, as a
       // fraction of the strength the Mapbox style gives it. Color, radius and

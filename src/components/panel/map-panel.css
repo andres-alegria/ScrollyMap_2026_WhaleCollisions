@@ -56,6 +56,7 @@
 }
 
 .map-panel__frame {
+  aspect-ratio: var(--aspect, 4 / 3);    /* config's `aspect`; see map-panel.js */
   /* Mapbox's wordmark and attribution own the foot of the frame and may not be
      covered - the scale bar sat on the wordmark and the locator globe on the
      attribution. Both now clear this strip.
@@ -202,6 +203,11 @@
      ---- adjust the side margin via .map-panel's padding, below ---- */
   .map-panel__body { flex-direction: column; align-items: center; gap: 2vh; }
   .map-panel__col { width: 100%; max-width: 44vh; }
+
+  /* Back to a wide box when stacked. The tall one is there to match the height
+     of the text column beside it on a wide screen; stacked there is no column
+     to match, and the extra height only pushes the key onto the fixed logo. */
+  .map-panel__frame { aspect-ratio: 4 / 3; }
   /* Stacked under the map, so it is sized by its content again rather than
      stretched to a frame that is no longer beside it. */
   .map-panel__card {
