@@ -671,7 +671,7 @@ const MapPanel = ({
               opacity={legend.tracks}
             />
             <Legend
-              title="Protected area"
+              title="PSSA"
               items={PSSA_ITEMS}
               opacity={legend.pssa}
             />
