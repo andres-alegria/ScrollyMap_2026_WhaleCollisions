@@ -8,7 +8,8 @@ import { addLabelLayers, setLabels } from './label-layers';
 import { TRACK } from './story-layers';
 import Legend from './panel-legend';
 import {
-  loadStoryData, addStoryLayers, setHabitats, setTracks, bboxOf,
+  loadStoryData, addStoryLayers, setHabitats, setTracks, setPssa,
+  bboxOf, bboxOfAll,
 } from './story-layers';
 import ScaleBar from './scale-bar';
 import LocatorGlobe from './locator-globe';
@@ -251,6 +252,7 @@ const MapPanel = ({
         addStoryLayers(map, data);
         const s0 = steps[0] || {};
         setHabitats(map, s0.habitats || 0, s0.habitat || null);
+        setPssa(map, s0.pssa || 0);
         setTracks(map, data, {
           amount: s0.tracks || 0, clock: s0.clock || 0, window: windowOf(s0),
         });
@@ -334,16 +336,20 @@ const MapPanel = ({
     const cameraFor = (step) => {
       const data = dataRef.current;
       const frame = frameRef.current;
-      if (!step.habitat || step.fit === false || !data || !frame) return step;
+      const wants = step.fit === 'pssa' ? 'pssa' : (step.habitat || null);
+      if (!wants || step.fit === false || !data || !frame) return step;
       const W = frame.clientWidth;
       const H = frame.clientHeight;
       if (!W || !H) return step;
       const key = `${W}x${H}`;
       if (fitRef.current.key !== key) fitRef.current = { key, by: new Map() };
       const cache = fitRef.current.by;
-      const id = `${step.habitat}@${step.zoom}`;
+      const id = `${wants}@${step.zoom}`;
       if (!cache.has(id)) {
-        cache.set(id, fitBox(bboxOf(data.habitats, step.habitat), W, H, step.zoom) || step);
+        const box = wants === 'pssa'
+          ? bboxOfAll(data.pssa)
+          : bboxOf(data.habitats, step.habitat);
+        cache.set(id, fitBox(box, W, H, step.zoom) || step);
       }
       return cache.get(id);
     };
@@ -396,6 +402,7 @@ const MapPanel = ({
           // The focused outline is the nearer step's, so it swaps once rather
           // than crossfading through a filter change mid-move.
           setHabitats(map, between('habitats'), (f < 0.5 ? a : b).habitat || null);
+          setPssa(map, between('pssa'));
           setLabels(map, between('labels'));
           // The window belongs to whichever step the reader is nearer. It
           // cannot be interpolated - a clock is built from one - and the two
@@ -540,9 +547,11 @@ const MapPanel = ({
               >
                 {s.eyebrow && <p className="map-panel__eyebrow">{s.eyebrow}</p>}
                 {s.label && <h3 className="map-panel__label font-lora">{s.label}</h3>}
+                {/* A div, not a p: a chapter may run to more than one
+                    paragraph, and a <p> cannot contain another. */}
                 {s.text && (
-                  <p className="map-panel__text"
-                     dangerouslySetInnerHTML={{ __html: s.text }} />
+                  <div className="map-panel__text"
+                       dangerouslySetInnerHTML={{ __html: s.text }} />
                 )}
               </div>
             ))}

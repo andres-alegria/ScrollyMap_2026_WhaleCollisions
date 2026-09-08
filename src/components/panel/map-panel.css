@@ -167,6 +167,11 @@
   text-align: left;
 }
 
+/* A chapter may run to more than one paragraph; the space between them is a
+   little tighter than the gap to the note below. */
+.map-panel__text p { margin: 0; }
+.map-panel__text p + p { margin-top: 0.8em; }
+
 @media (max-width: 820px) {
   .map-panel {
     --fs-body: 14px;

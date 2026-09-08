@@ -22,9 +22,13 @@ const HABITAT_FILL = '#FCFCFC';
 // read as the thread running through the piece. Exported so the legend labels
 // the tracks in the color they are actually drawn in.
 export const TRACK = '#BFECB1';
+// adjust PSSA color. Its own hue, not the habitats' white: the designation is
+// a different kind of thing from the habitats it contains.
+const PSSA = '#74ADB3';
 
 export const SRC_HABITATS = 'story-habitats';
 export const SRC_TRACKS = 'story-tracks';
+export const SRC_PSSA = 'story-pssa';
 
 const LYR = {
   habitatFill: 'story-habitat-fill',
@@ -32,6 +36,8 @@ const LYR = {
   habitatFocus: 'story-habitat-focus',
   trackLine: 'story-track-line',
   trackHead: 'story-track-head',
+  pssaFill: 'story-pssa-fill',
+  pssaLine: 'story-pssa-line',
 };
 
 const EMPTY = { type: 'FeatureCollection', features: [] };
@@ -241,6 +247,21 @@ export const tracksAt = (fc, ms) => {
  */
 const bboxCache = new Map();
 
+export const bboxOfAll = (fc) => {
+  if (!fc || !fc.features || !fc.features.length) return null;
+  let w = 180; let s = 90; let e = -180; let n = -90;
+  fc.features.forEach((f) => {
+    const rings = f.geometry.type === 'Polygon'
+      ? f.geometry.coordinates
+      : f.geometry.coordinates.flat();
+    rings.forEach((r) => r.forEach(([x, y]) => {
+      if (x < w) w = x; if (x > e) e = x;
+      if (y < s) s = y; if (y > n) n = y;
+    }));
+  });
+  return [w, s, e, n];
+};
+
 export const bboxOf = (habitats, title) => {
   if (!habitats || !title) return null;
   if (bboxCache.has(title)) return bboxCache.get(title);
@@ -273,14 +294,16 @@ export const loadStoryData = () => {
   dataPromise = Promise.all([
     get('/data/habitats.geojson'),
     get('/data/whale_tracks.geojson'),
-  ]).then(([habitats, tracks]) => ({
+    get('/data/pssa.geojson'),
+  ]).then(([habitats, tracks, pssa]) => ({
     habitats,
     tracks,
+    pssa,
     clock: trackSpan(tracks),
   })).catch((e) => {
     dataPromise = null;          // let a later map retry
     console.warn('[story-layers] could not load the data:', e.message);
-    return { habitats: EMPTY, tracks: EMPTY, clock: null };
+    return { habitats: EMPTY, tracks: EMPTY, pssa: EMPTY, clock: null };
   });
   return dataPromise;
 };
@@ -319,6 +342,26 @@ export const addStoryLayers = (map, data) => {
   if (!map.getSource(`${SRC_TRACKS}-heads`)) {
     map.addSource(`${SRC_TRACKS}-heads`, { type: 'geojson', data: EMPTY });
   }
+  if (!map.getSource(SRC_PSSA)) {
+    map.addSource(SRC_PSSA, { type: 'geojson', data: data.pssa || EMPTY });
+  }
+
+  // The PSSA sits under everything the story draws: it is the largest shape on
+  // the map by far, and the traffic it is meant to govern has to read on top.
+  add({
+    id: LYR.pssaFill,
+    type: 'fill',
+    source: SRC_PSSA,
+    paint: { 'fill-color': PSSA, 'fill-opacity': 0 },
+  }, map.getLayer('Slow_traffic') ? 'Slow_traffic' : labels);
+
+  add({
+    id: LYR.pssaLine,
+    type: 'line',
+    source: SRC_PSSA,
+    layout: { 'line-join': 'round', 'line-cap': 'round' },
+    paint: { 'line-color': PSSA, 'line-width': 1.6, 'line-opacity': 0 },
+  }, labels);
 
   // The fill goes under the traffic: the habitat is the ground the story is
   // about, and the vessels have to read on top of it.
@@ -380,6 +423,16 @@ export const addStoryLayers = (map, data) => {
       'circle-stroke-opacity': 0,
     },
   }, labels);
+};
+
+/**
+ * How present the PSSA is. One shape, so one number.
+ */
+export const setPssa = (map, amount = 0) => {
+  if (!map || !map.getLayer(LYR.pssaLine)) return;
+  const a = clamp01(amount);
+  map.setPaintProperty(LYR.pssaFill, 'fill-opacity', a * 0.16);
+  map.setPaintProperty(LYR.pssaLine, 'line-opacity', a * 0.9);
 };
 
 /**
