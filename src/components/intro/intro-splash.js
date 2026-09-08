@@ -39,36 +39,52 @@ const VARIANTS = {
   landscape: {
     viewBox: '0 0 1600 900',
     // ---- adjust icon sizes here (viewBox units) ----
-    // The encounter has to fit a 34-unit band, and a rotated icon's footprint
-    // is bigger than the icon: the whale's box is 25 x 23 but arrives at an
-    // angle, so it occupies about 33 units of height. These were sized down
-    // from 31 x 29 / 48 x 14 when the subhead lost a line and the gaps in the
-    // type closed up.
+    // A rotated icon's footprint is bigger than the icon: the whale's box is
+    // 22 x 20 but arrives at an angle, so it occupies about 30 units of
+    // height. Sized down from 31 x 29 / 48 x 14 when the encounter still had
+    // to fit the 34-unit gap between the subhead and the date rule. There is
+    // more room below the type than there ever was inside it, so these could
+    // go back up if the pair reads small.
     size: { whale: { w: 22, h: 20 }, boat: { w: 36, h: 10 } },
     tracks: {
-      // Contact at about (804, 445), centered, in the clear band between the
-      // subhead (bottom 428) and the date rule (top 462).
-      //
-      // It used to sit between the title and the subhead. That gap was 36
-      // units when the subhead ran to two lines; at one line the whole block
-      // shifts down and the title's second line now ends at 373, so the old
-      // contact point at y 364 landed on the word "course". The band below
-      // the subhead is the only clear one left that is wide enough.
-      //
-      // The whale enters low on the left, above the social icons (y 654-713),
-      // and climbs to the band well left of the subhead's left edge (x 560).
-      // The final approach is shallow, about -12 and 177 degrees, so neither
-      // icon tilts far enough to grow out of the band. The boat's descent is
-      // steeper than it looks it needs to be: it has to be below y 428 by the
-      // time it reaches x 1040, or it clips the end of the subhead line.
+      /* Contact at about (802, 686): below the scroll cue, in the open water
+         between the foot of the type and the bottom of the screen.
+
+         It used to sit at y 445, in the 34-unit gap between the subhead and
+         the date rule. That band is too narrow to hold two rotated icons
+         without them touching the type either side of it, so the encounter is
+         out of the type block altogether now.
+
+         WHERE THAT BAND IS, in viewBox units, is not fixed: the plate is
+         drawn with preserveAspectRatio slice, so it scales to cover the
+         window and the type does not scale with it. For a window W x H, with
+         s = max(W/1600, H/900), the centred block lands at
+
+             cue bottom   450 + 153/s      type right edge   800 + 288/s
+             screen foot  450 + H/(2s)     title top         450 - 333/s
+
+         - the window's height cancels out of the first two. Across 1024x768
+         to 2560x1440 the cue bottom runs 546 to 629 and the screen foot 787
+         to 900, so 686 sits in the clear at every one of them. Past about
+         21:9 the foot rises far enough to crop the encounter; that is the
+         limit of a fixed point, and the type would have to move for it.
+
+         The whale surfaces from below rather than entering from the left,
+         which is where it used to come in: at this height the left edge is
+         where the social icons are (they sit 115/s above the foot), and the
+         only path in that clears them is a flat one.
+
+         The ship holds x >= 1252 all the way down, right of the type's right
+         edge at its widest (1138 at 1024x768), and does not turn in until it
+         is below the cue. */
       whale:
-        'M 100 620 C 230 590, 320 545, 372 500 C 412 462, 448 448, 500 444 C 584 434, 668 432, 722 436 C 748 438, 762 450, 785 445',
+        'M 300 940 C 340 878, 372 838, 428 800 C 478 766, 528 744, 588 726 C 646 708, 704 700, 744 694 C 762 695, 770 696, 785 690',
       // long straight legs, tight corners - a vessel holding a heading and
       // then altering course, not the whale's continuous meander.
-      // The opening leg stays at y=150 to clear the landmass along the top of
-      // the bathymetry plate, so the diagonal simply runs further.
+      // The opening leg stays high to clear the landmass along the top of the
+      // bathymetry plate, so the diagonal simply runs further.
       boat:
-        'M 1690 150 L 1350 150 Q 1312 150, 1294 182 L 1150 396 Q 1132 424, 1096 430 L 894 437 Q 860 440, 818 438'
+        'M 1700 175 L 1380 175 Q 1342 175, 1324 208 L 1252 588 Q 1244 624, 1210 640 L 900 677 Q 866 680, 820 683'
     }
   },
   portrait: {
@@ -82,21 +98,36 @@ const VARIANTS = {
       // (viewBox x 296-324, y 678-757) instead of running through it - the
       // diagonal sits around x 395-455 crossing that band.
       //
-      // Contact point is (310, 907), just below the cue block. It sat 35 units
-      // higher until the phone headline went to 56px: the taller title pushes
-      // the whole centred block down, and the ship's nose ended up flush
-      // against the bottom of "Scroll down, but not too fast".
+      // Contact point is (310, 985), clear below the cue block. It was at 907
+      // and the ship's hull was still crossing the last few units of "Scroll
+      // down, but not too fast" - measured at 402x874, the icon's top was 5px
+      // above the foot of that block. The whole encounter moved down 78 units;
+      // the curves are otherwise the ones that were tuned before.
+      //
+      // The cue block's foot lands at 671 + 120/s in viewBox units, where
+      // s = max(W/620, H/1342), and the foot of the screen at 671 + H/(2s).
+      // Across phones and portrait tablets that puts the block's foot between
+      // 767 and 872 and the screen's between 1084 and 1342, so the pair sits
+      // in the clear at either end.
+      //
+      // The ship's track still crosses the type on the way down. In portrait
+      // it has to: the headline and subhead run the full width of a phone,
+      // so unlike the landscape frame there is no clear corridor down either
+      // side. It is routed to miss the mouse glyph (x 296-324, y 706-760),
+      // which is the one piece of the cue with ink all the way through.
       //
       // Icons are centered on their path endpoints, so each endpoint is set
       // back along its own heading by half the icon's length:
-      //   ship  heading 126 deg, 68 long -> endpoint (330, 880)
-      //   whale heading -54 deg, 52 long -> endpoint (288, 938), set back a
+      //   ship  heading 126 deg, 68 long -> endpoint (330, 958)
+      //   whale heading -54 deg, 52 long -> endpoint (288, 1016), set back a
       //     further ~12 units so the silhouettes meet nose to nose rather
       //     than the hull overlapping the whale's body
       whale:
-        'M 110 1400 C 176 1330, 206 1270, 212 1185 C 219 1093, 236 1025, 262 989 C 272 975, 274 957, 288 938',
+        'M 110 1478 C 176 1408, 206 1348, 212 1263 C 219 1171, 236 1103, 262 1067 C 272 1053, 274 1035, 288 1016',
+      // The opening leg is longer rather than shifted, so the ship still
+      // starts above the top edge and steams in.
       boat:
-        'M 470 -40 L 470 300 Q 470 336, 496 358 L 540 396 Q 562 416, 556 448 L 534 570 Q 528 606, 508 630 L 330 880'
+        'M 470 -40 L 470 378 Q 470 414, 496 436 L 540 474 Q 562 494, 556 526 L 534 648 Q 528 684, 508 708 L 330 958'
     }
   }
 };
