@@ -165,64 +165,77 @@ const pickVariant = () =>
 
 /* How far the artwork has to move for the encounter to meet the social icons.
    ------------------------------------------------------------------------
-   Everything else in the intro is centred, so its height in viewBox units is
-   the same whatever the window does - the plate scales to cover the window
-   and the block's offsets from the middle divide by that scale, and the
-   window's height cancels out. The social icons are the exception: they hang
-   off the FOOT of the screen, so their height moves with the window, and no
-   fixed point in the plate can sit at it. At 1366x768 the X is at 765-784 in
-   viewBox units; at 1920x1080 it is at 804-818.
+   Measured, not calculated. Two things make the arithmetic version wrong:
 
-   So the pair is nudged as a whole by the difference between the height the
-   paths were drawn to meet at and where the X actually is. The nudge is small
-   - about +5 at 768, +23 at 900, +41 at 1080 - and it moves the whole route
-   with it, which is why the tracks are drawn to arrive shallow: a few tens of
-   units up or down does not change where they run.
+   - The plate is NOT the viewport. .intro carries the `step` class, and
+     chapter.scss gives every step min-height: 120vh, which beats the
+     height: 100vh .intro sets for itself. So the SVG is a fifth taller than
+     the window and its lower fifth is below the fold, while .intro-content
+     - and all the type in it - is 100vh and centred in the part you can see.
+     The two boxes do not share a centre, and a fixed point in the plate is
+     nowhere in particular on the screen.
+
+   - The social icons hang off the FOOT of the window rather than its middle,
+     so their height moves with the window even relative to the type.
+
+   Both go away if the position is read off the rendered page: getScreenCTM
+   turns a screen coordinate into viewBox units whatever the plate's box has
+   turned out to be, and the X icon and the scroll cue are simply asked where
+   they are. The artwork is then nudged by the difference between where the
+   paths were drawn to meet and where the X actually is.
 
    Landscape only. Portrait is left exactly where it was tuned. */
-const X_ABOVE_FOOT = 107;      // the X icon's centre, in px above the screen's foot
-const CUE_BELOW_MID = 243;     // the scroll cue's foot, in px below the middle
-const ICON_HALF = 15;          // half the encounter's height, in viewBox units
+const ICON_HALF = 15;    // half the encounter's height, in viewBox units
+const AIR = 8;           // what to keep between it and the scroll cue
+const X_ABOVE_FOOT = 107;  // the X icon's middle, if the icons are not rendered
 
 const shiftFor = (variant, V) => {
-  if (variant !== 'landscape' || typeof window === 'undefined') return 0;
-  const [vbW, vbH] = V.viewBox.split(' ').slice(2).map(Number);
-  const W = window.innerWidth;
-  const H = window.innerHeight;
-  if (!W || !H) return 0;
-  const s = Math.max(W / vbW, H / vbH);
-  const mid = vbH / 2;
-  const foot = mid + H / (2 * s);
-  const want = foot - X_ABOVE_FOOT / s;
-  // Never far enough up to touch the foot of the scroll cue, nor far enough
-  // down to put the pair under the bottom edge. On a window short enough to
-  // drop the headline to 40px the cue sits higher than this, so the first
-  // bound is conservative rather than wrong.
-  const highest = mid + CUE_BELOW_MID / s + ICON_HALF + 8;
-  const lowest = foot - ICON_HALF - 4;
-  const at = Math.max(Math.min(want, lowest), highest);
+  if (variant !== 'landscape' || typeof document === 'undefined') return 0;
+  const svg = document.querySelector('.intro-splash__svg');
+  const m = svg && svg.getScreenCTM();
+  if (!m || !m.d) return 0;                 // not laid out yet; a later pass gets it
+  const vb = (screenY) => (screenY - m.f) / m.d;
+
+  const x = document.querySelector('.intro-content img[src$="x.svg"]');
+  const xr = x && x.getBoundingClientRect();
+  const want = vb(xr && xr.height ? (xr.top + xr.bottom) / 2
+                                  : window.innerHeight - X_ABOVE_FOOT);
+
+  // Bounds: clear of the foot of the scroll cue, and inside the bottom edge.
+  // Staying on screen wins if a window is too squat to allow both.
+  const cues = document.querySelectorAll('.intro-content .container');
+  const cue = cues.length ? cues[cues.length - 1].getBoundingClientRect() : null;
+  const highest = cue ? vb(cue.bottom) + ICON_HALF + AIR : -Infinity;
+  const lowest = vb(window.innerHeight) - ICON_HALF - 4;
+
+  let at = want;
+  if (at < highest) at = highest;
+  if (at > lowest) at = lowest;
   return Math.round(at - V.contact);
 };
 
 const IntroSplash = () => {
   const wrapRef = useRef(null);
   const [variant, setVariant] = useState(pickVariant);
-  // How far the route has to move so the encounter lands on the social icons,
-  // which are the one thing here anchored to the foot of the screen. Follows
-  // the window, not just the art direction, so it is its own state.
-  const [shift, setShift] = useState(() => {
-    const v = pickVariant();
-    return shiftFor(v, VARIANTS[v]);
-  });
+  // How far the route has to move so the encounter lands on the social icons.
+  // Read off the page rather than worked out, so it is its own state: it
+  // cannot be known until there is a page to measure.
+  const [shift, setShift] = useState(0);
 
   useEffect(() => {
-    const onResize = () => {
+    const measure = () => {
       const v = pickVariant();
       setVariant(v);
       setShift(shiftFor(v, VARIANTS[v]));
     };
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+    // Once now, once after the fonts land - they reflow the type, and the
+    // scroll cue's foot is one of the things being measured.
+    measure();
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => requestAnimationFrame(measure));
+    }
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
   }, []);
 
   const V = VARIANTS[variant];
