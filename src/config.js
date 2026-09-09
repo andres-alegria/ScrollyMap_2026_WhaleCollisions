@@ -69,9 +69,8 @@ const config = {
     sourcesTitle: 'Sources',
     sources:
       'Vessel positions are from Global Fishing Watch, covering 2025, gridded '
-      + 'at 0.1 degrees and split into three speed bands. Whale telemetry data provided by'
-      + 'Tethys Research Institute and Edmaktub. Vessel positions are from Global Fishing Watch, '
-      + 'covering 2025, gridded at 0.1 degrees. Habitat boundaries come from the '
+      + 'at 0.1 degrees and split into three speed bands. Whale telemetry data provided by '
+      + 'Tethys Research Institute and Edmaktub. Habitat boundaries come from the '
       + 'IUCN Marine Mammal Protected Areas Task Force (IMMA), the Pelagos Sanctuary and ACCOBAMS. '
       + 'Designated PSSA boundaries based on provided IMO coordinates.',
   },
@@ -147,7 +146,7 @@ const config = {
           legend: 'speed',
           eyebrow: 'The Mediterranean',
           label: 'High speed traffic',
-          text: 'In 2025 almost 2,800 unique vessels traveled faster than 15 knots (27.78 km/h or 17.26 mp/h) while navigating through the Mediterranean\u2019s key whale habitats, according to data provided by Global Fishing Watch (GFW). <strong>Ship strikes at speeds exceeding 15 knot are almost always fatal.</strong>',
+          text: 'In 2025 almost 2,800 unique vessels traveled faster than 15 knots (27.78 km/h or 17.26 mp/h) while navigating through the Mediterranean\u2019s key whale habitats, according to data provided by Global Fishing Watch (GFW). <strong>Ship strikes at speeds exceeding 15 knots are almost always fatal.</strong>',
         },
         {
           center: [2.45, 40.495], zoom: 6.4,
@@ -161,7 +160,7 @@ const config = {
           // is already where it needs to be
           eyebrow: 'Key whale habitat',
           label: 'Cetacean Migration Corridor',
-          text: 'The corridor off eastern Spain protects between the Balearic Sea and the wider western Mediterranean. Spain declared it a marine protected area in 2018, covering about <strong>46,400 km\u00b2</strong> (17,900 square miles).',
+          text: 'The corridor off eastern Spain stretches between the Balearic Sea and the wider western Mediterranean. Spain declared it a marine protected area in 2018, covering about <strong>46,400 km\u00b2</strong> (17,900 square miles).',
         },
         {
           center: [8.81, 42.625], zoom: 6.3,
@@ -222,9 +221,9 @@ const config = {
           tracks: 1, clock: 0,
           span: 2.4,            // adjust: length of this replay
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, <br />three and a half years',
-          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast ship traffic.',
-          note: 'One of the twelve tracked whales passed through the Hellenic Trench between July and August 2024.',
+          label: '12 whales, <br />three and a half years',
+          text: 'Scientists tracked 12 whales in the Mediterranean between May 2021 and September 2024 \u2014 11 fin whales and one sperm whale. Their routes run through the same water as the fast ship traffic.',
+          note: 'A sperm whale, one of the 12, passed through the Hellenic Trench between July and August 2024.',
         },
         {
           center: [25.2, 36.445], zoom: 5.7,
@@ -241,9 +240,9 @@ const config = {
           tracks: 1, clock: 1,
           span: 0.7,            // adjust: length of the move to the next habitat
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, <br />three and a half years',
-          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast ship traffic.',
-          note: 'One of the twelve tracked whales passed through the Hellenic Trench between July and August 2024.',
+          label: '12 whales, <br />three and a half years',
+          text: 'Scientists tracked 12 whales in the Mediterranean between May 2021 and September 2024 \u2014 11 fin whales and one sperm whale. Their routes run through the same water as the fast ship traffic.',
+          note: 'A sperm whale, one of the 12, passed through the Hellenic Trench between July and August 2024.',
         },
         {
           center: [8.81, 42.625], zoom: 6.3,
@@ -260,9 +259,9 @@ const config = {
           tracks: 1, clock: 0,
           span: 2.4,            // adjust: length of this replay
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, <br />three and a half years',
-          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast ship traffic.',
-          note: 'Two of the twelve tracked whales passed through the Pelagos Sanctuary between June and July 2023.',
+          label: '12 whales, <br />three and a half years',
+          text: 'Scientists tracked 12 whales in the Mediterranean between May 2021 and September 2024 \u2014 11 fin whales and one sperm whale. Their routes run through the same water as the fast ship traffic.',
+          note: 'Two fin whales passed through the Pelagos Sanctuary between June and July 2023.',
         },
         {
           center: [8.81, 42.625], zoom: 6.3,
@@ -279,9 +278,9 @@ const config = {
           tracks: 1, clock: 1,
           span: 0.7,            // adjust: length of the move to the next habitat
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, <br />three and a half years',
-          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast ship traffic.',
-          note: 'Two of the twelve tracked whales passed through the Pelagos Sanctuary between June and July 2023.',
+          label: '12 whales, <br />three and a half years',
+          text: 'Scientists tracked 12 whales in the Mediterranean between May 2021 and September 2024 \u2014 11 fin whales and one sperm whale. Their routes run through the same water as the fast ship traffic.',
+          note: 'Two fin whales passed through the Pelagos Sanctuary between June and July 2023.',
         },
         {
           center: [2.45, 40.495], zoom: 6.4,
@@ -298,9 +297,9 @@ const config = {
           tracks: 1, clock: 0,
           span: 2.4,            // adjust: length of this replay
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, <br />three and a half years',
-          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast ship traffic.',
-          note: 'Nine of the twelve tracked whales passed through the Cetacean Migration Corridor between May 2021 and July 2023.',
+          label: '12 whales, <br />three and a half years',
+          text: 'Scientists tracked 12 whales in the Mediterranean between May 2021 and September 2024 \u2014 11 fin whales and one sperm whale. Their routes run through the same water as the fast ship traffic.',
+          note: 'Nine fin whales passed through the Cetacean Migration Corridor between May 2021 and July 2023.',
         },
         {
           center: [2.45, 40.495], zoom: 6.4,
@@ -317,9 +316,9 @@ const config = {
           tracks: 1, clock: 1,
           span: 0.7,               // adjust: the move to the PSSA chapter
           eyebrow: 'Tracked movements',
-          label: 'Twelve whales, <br />three and a half years',
-          text: 'Twelve whales were tracked in the Mediterranean between May 2021 and September 2024. Their routes run through the same water as the fast ship traffic.',
-          note: 'Nine of the twelve tracked whales passed through the Cetacean Migration Corridor between May 2021 and July 2023.',
+          label: '12 whales, <br />three and a half years',
+          text: 'Scientists tracked 12 whales in the Mediterranean between May 2021 and September 2024 \u2014 11 fin whales and one sperm whale. Their routes run through the same water as the fast ship traffic.',
+          note: 'Nine fin whales passed through the Cetacean Migration Corridor between May 2021 and July 2023.',
         },
         /* --- The designation ---------------------------------------
            The one shape that answers the rest of the piece. Framed from its
@@ -335,10 +334,16 @@ const config = {
           traffic: { slow: 0.2, mid: 0.5, fast: 0.8 },
           labels: 1,
           pssa: 1,
+          // The habitat outlines stay up under the designation, because the
+          // paragraph's claim is that the PSSA contains them - the corridor
+          // and Pelagos are both inside this frame, and the reader should be
+          // able to see that rather than take it on trust. No `habitat` key,
+          // so none is picked out: they are context here, not the subject.
+          habitats: 1,
           legend: 'pssa',
           eyebrow: 'Northwestern Mediterranean',
           label: 'Particularly Sensitive Sea Area',
-          text: '<p>The International Maritime Organization (IMO) designated over 200,000 square kilometer (80,000 square mile) swathe of the northwestern Mediterranean a Particularly Sensitive Sea Area (PSSA) in 2023 to protect whales from traffic. It recommended speeds of 10-13 knots in the multinational marine area, which includes key cetacean habitats but also intense shipping traffic.</p><p>Research suggests <strong>10 knots</strong> is the threshold for avoiding lethal strikes.</p>',
+          text: '<p>The International Maritime Organization (IMO) designated more than 200,000 square kilometers (80,000 square miles) of the northwestern Mediterranean a Particularly Sensitive Sea Area (PSSA) in 2023 to protect whales from ship traffic. It recommended speeds of 10-13 knots in the multinational marine area, which includes key cetacean habitats but also intense shipping traffic.</p><p>Research suggests <strong>10 knots</strong> is the threshold for avoiding lethal strikes.</p>',
         },
       ],
     },

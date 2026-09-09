@@ -14,8 +14,9 @@
  */
 
 // ---- appearance ----------------------------------------------------
-// adjust habitat outline color
-const HABITAT_LINE = '#FCFCFC';
+// adjust habitat outline color. Exported so a key can draw its swatch in the
+// colour the outlines actually are.
+export const HABITAT_LINE = '#FCFCFC';
 // adjust habitat fill color (kept very faint; it is a location, not a value)
 const HABITAT_FILL = '#FCFCFC';
 // adjust whale track color. Matches the reading-progress bar, so the tracks

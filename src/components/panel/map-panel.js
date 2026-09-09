@@ -5,7 +5,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { addTrafficLayers, setTraffic, trafficColors } from './traffic-layers';
 import { addLabelLayers, setLabels } from './label-layers';
-import { TRACK, PSSA } from './story-layers';
+import { TRACK, PSSA, HABITAT_LINE } from './story-layers';
 import Legend from './panel-legend';
 import {
   loadStoryData, addStoryLayers, setHabitats, setTracks, setPssa,
@@ -155,13 +155,27 @@ const TRACK_ITEMS = [
 // is rather than repeating the chapter heading above it.
 const PSSA_ITEMS = [
   { mark: 'box', color: PSSA, label: 'Boundary designated by the IMO, 2023' },
+  // The habitat outlines are held on this map so the reader can see the
+  // designation contain them, which is what the paragraph claims. Two kinds
+  // of outline on one map need two rows, or the second reads as a mistake.
+  { mark: 'box', color: HABITAT_LINE, label: 'Key whale habitat' },
 ];
 
 // What a traffic mark stands for. The bands are speed classes, not counts, so
 // a key naming three speeds without saying what a mark is leaves the reader to
 // guess whether it is an average, a maximum, or one ship.
-const SPEED_FOOT = 'Each dot is a patch of sea ten kilometers across where '
-  + 'vessels were recorded travelling at that speed during 2025.';
+//
+// The second sentence is the one that matters. The three bands are separate
+// attributes on the same cell, and the layers stack: a cell that carries fast
+// traffic almost always carries slower traffic too, and is drawn in all the
+// bands it qualifies for, so what the reader sees is the topmost - the
+// fastest. Of 7,006 cells sampled off the tileset, every single one carrying
+// the 15-25 or 25+ attribute carried the 10-15 one as well. Without saying so,
+// a red dot reads as "only fast ships came through here".
+const SPEED_FOOT = 'Each dot is a patch of sea ten kilometers across, colored '
+  + 'by the fastest speed band recorded there during 2025. Slower vessels '
+  + 'crossed the same water as well. From Global Fishing Watch vessel '
+  + 'presence hours.';
 
 const NICE = [10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000];
 const scaleFor = (map, widthPx, target = 0.22) => {
@@ -462,6 +476,26 @@ const MapPanel = ({
         const ca = cameraFor(a);
         const cb = cameraFor(b);
 
+        // The keys, on the same beat as the text above them. A kind is as
+        // present as its strongest run, so a key that comes back later in the
+        // story is not dimmed by the runs it is absent from. Computed here,
+        // ahead of the map, because a key describes the chapter rather than
+        // the map - and because the date readout below is gated on the whale
+        // chapter's key being the one on screen.
+        const legendOpacity = (kind) => {
+          let m = 0;
+          keys.runs.forEach((run) => {
+            if ((steps[run.first].legend || '') !== kind) return;
+            m = Math.max(m, runOpacity(run, p));
+          });
+          return m;
+        };
+        const sp = legendOpacity('speed');
+        const tr = legendOpacity('tracks');
+        const ps = legendOpacity('pssa');
+        setLegend((prev) => (prev.speed === sp && prev.tracks === tr
+          && prev.pssa === ps ? prev : { speed: sp, tracks: tr, pssa: ps }));
+
         const map = mapRef.current;
         if (map) {
           map.jumpTo({
@@ -510,7 +544,14 @@ const MapPanel = ({
               : between('clock'),
             window: windowOf(f < 0.5 ? a : b),
           });
-          const label = ms === null ? null : monthYear(ms);
+          // Only while the whale chapter is the one being read. The tracks
+          // start fading in during the handover out of the Hellenic Trench
+          // chapter, and setTracks returns a date the moment they are drawn at
+          // all - so the readout used to appear over the habitat chapter,
+          // showing May 2021 against a paragraph about the trench. Gated on
+          // the same run that decides the key, so it arrives with the chapter
+          // that owns it.
+          const label = (ms === null || tr <= 0.5) ? null : monthYear(ms);
           setStamp((prev) => (prev === label ? prev : label));
           const loc = lerp(a.locator ? 1 : 0, b.locator ? 1 : 0, f);
           setLocatorOn((prev) => (prev === loc ? prev : loc));
@@ -544,25 +585,6 @@ const MapPanel = ({
             nel.style.pointerEvents = o > 0.5 ? 'auto' : 'none';
           }
         }
-
-        // The keys, on the same beat as the text above them. A kind is as
-        // present as its strongest run, so a key that comes back later in the
-        // story is not dimmed by the runs it is absent from. Outside the map
-        // block: a key describes the chapter, not the map, and should not stop
-        // updating on a frame where the map is not ready.
-        const legendOpacity = (kind) => {
-          let m = 0;
-          keys.runs.forEach((run) => {
-            if ((steps[run.first].legend || '') !== kind) return;
-            m = Math.max(m, runOpacity(run, p));
-          });
-          return m;
-        };
-        const sp = legendOpacity('speed');
-        const tr = legendOpacity('tracks');
-        const ps = legendOpacity('pssa');
-        setLegend((prev) => (prev.speed === sp && prev.tracks === tr
-          && prev.pssa === ps ? prev : { speed: sp, tracks: tr, pssa: ps }));
 
         // The globe takes its marker and label from the step that asked for
         // it, not from whichever step is nearest. Otherwise it spends its fade
