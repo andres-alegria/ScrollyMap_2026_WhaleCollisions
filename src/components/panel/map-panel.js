@@ -163,15 +163,15 @@ const PSSA_ITEMS = [
 
 // What a traffic mark stands for. The bands are speed classes, not counts, so
 // a key naming three speeds without saying what a mark is leaves the reader to
-// guess whether it is an average, a maximum, or one ship. "A maximum of" is
-// the phrase doing that work: the three bands are separate attributes on the
-// same cell and the layers stack, so a cell is drawn in every band it
-// qualifies for and what shows is the topmost. Of 7,006 cells sampled off the
-// tileset, all 1,835 carrying the 15-25 or 25+ attribute carried the 10-15 one
-// as well - slower traffic crossed nearly every cell on the map.
-const SPEED_FOOT = 'Each dot represents a patch of sea 10 km by 10 km where '
-  + 'vessels were recorded traveling at a maximum of the indicated speed '
-  + 'during 2025';
+// guess whether it is an average, a maximum, or one ship. "Peak" is the word
+// doing that work: the three bands are separate attributes on the same cell
+// and the layers stack, so a cell is drawn in every band it qualifies for and
+// what shows is the topmost. Of 7,006 cells sampled off the tileset, all 1,835
+// carrying the 15-25 or 25+ attribute carried the 10-15 one as well - slower
+// traffic crossed nearly every cell on the map.
+const SPEED_FOOT = 'Each dot represents a 10 km by 10 km patch of sea showing '
+  + 'the peak vessel speed category recorded during 2025, as measured by '
+  + 'Global Fishing Watch cumulative presence hours.';
 
 const NICE = [10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000];
 const scaleFor = (map, widthPx, target = 0.22) => {
