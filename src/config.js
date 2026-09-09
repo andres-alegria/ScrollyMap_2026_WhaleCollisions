@@ -72,7 +72,7 @@ const config = {
       + 'at 0.1 degrees and split into three speed bands. Whale telemetry data provided by '
       + 'Tethys Research Institute and Edmaktub. Habitat boundaries come from the '
       + 'IUCN Marine Mammal Protected Areas Task Force (IMMA), the Pelagos Sanctuary and ACCOBAMS. '
-      + 'Designated PSSA boundaries based on provided IMO coordinates.',
+      + 'Designated PSSA marine area boundaries based on provided IMO coordinates.',
   },
 
   chapters: [
