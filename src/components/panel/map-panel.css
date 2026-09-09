@@ -222,7 +222,7 @@
        (see .site-logos below), which is the only way the key fits on a short
        phone. At 375x667 the column ran 145px past the bottom of the screen and
        the key was cut in half. */
-    padding: 1vh 10vw 10px;
+    padding: 1vh 10vw 22px;
   }
 
   /* Every gap in the stack is tighter here than on a wide screen. None of them
@@ -292,7 +292,7 @@
    share 667px. Anything taller - a 375x812 phone included - keeps the 14px
    body. ---- adjust the short-screen body size here ---- */
 @media (max-width: 820px) and (max-height: 720px) {
-  .map-panel { --fs-body: 13px; }
+  .map-panel { --fs-body: 13px; --fs-furniture: 10px; }
   .map-panel__note { line-height: 1.5; }
 }
 
