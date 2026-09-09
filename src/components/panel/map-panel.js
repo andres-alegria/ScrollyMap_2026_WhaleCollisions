@@ -163,19 +163,15 @@ const PSSA_ITEMS = [
 
 // What a traffic mark stands for. The bands are speed classes, not counts, so
 // a key naming three speeds without saying what a mark is leaves the reader to
-// guess whether it is an average, a maximum, or one ship.
-//
-// The second sentence is the one that matters. The three bands are separate
-// attributes on the same cell, and the layers stack: a cell that carries fast
-// traffic almost always carries slower traffic too, and is drawn in all the
-// bands it qualifies for, so what the reader sees is the topmost - the
-// fastest. Of 7,006 cells sampled off the tileset, every single one carrying
-// the 15-25 or 25+ attribute carried the 10-15 one as well. Without saying so,
-// a red dot reads as "only fast ships came through here".
-const SPEED_FOOT = 'Each dot is a patch of sea ten kilometers across, colored '
-  + 'by the fastest speed band recorded there during 2025. Slower vessels '
-  + 'crossed the same water as well. From Global Fishing Watch vessel '
-  + 'presence hours.';
+// guess whether it is an average, a maximum, or one ship. "A maximum of" is
+// the phrase doing that work: the three bands are separate attributes on the
+// same cell and the layers stack, so a cell is drawn in every band it
+// qualifies for and what shows is the topmost. Of 7,006 cells sampled off the
+// tileset, all 1,835 carrying the 15-25 or 25+ attribute carried the 10-15 one
+// as well - slower traffic crossed nearly every cell on the map.
+const SPEED_FOOT = 'Each dot represents a patch of sea 10 km by 10 km where '
+  + 'vessels were recorded traveling at a maximum of the indicated speed '
+  + 'during 2025';
 
 const NICE = [10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000];
 const scaleFor = (map, widthPx, target = 0.22) => {
