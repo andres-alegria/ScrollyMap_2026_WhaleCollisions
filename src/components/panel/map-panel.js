@@ -263,6 +263,7 @@ const MapPanel = ({
     const onLoad = () => {
       map.resize();
       publishFrameHeight();
+      publishProseHeight();
       addTrafficLayers(map);
       addLabelLayers(map);
       // the layers start invisible, so paint the first step's state at once
@@ -305,6 +306,7 @@ const MapPanel = ({
           amount: s0.tracks || 0, clock: s0.clock || 0, window: windowOf(s0),
         });
         publishFrameHeight();
+        publishProseHeight();
         // the cameras could not be fitted until the outlines were here
         ScrollTrigger.update();
       });
@@ -324,6 +326,52 @@ const MapPanel = ({
     // Only on the wide layout. Stacked, the frame has a shape of its own and
     // the variable is cleared so the CSS aspect ratio applies.
     const stackedQuery = window.matchMedia('(max-width: 820px)');
+
+    /**
+     * How tall the prose block has to be, stacked.
+     *
+     * On a phone the heading and the note stop being two rows and share one
+     * cell, the heading at its top and the note at its foot. Two rows reserved
+     * the tallest heading AND the tallest note on every chapter, including the
+     * five that have no note - 73px of nothing, which on a 667px screen was
+     * part of why the key was cut in half.
+     *
+     * Overlaid, the cell only has to be as tall as the tallest heading, except
+     * where a chapter has both: there it has to be the heading's own text plus
+     * the note under it. Measured rather than guessed, because both depend on
+     * how the type wraps at this width - the whale chapters' text ends 6px
+     * below where a bottom-aligned note would start at 375px wide, and that
+     * margin changes with every screen.
+     */
+    const NOTE_GAP = 8;     // adjust the space between a paragraph and its note
+    const publishProseHeight = () => {
+      const section = sectionRef.current;
+      if (!section) return;
+      if (!stackedQuery.matches) {
+        section.style.removeProperty('--prose-h');
+        return;
+      }
+      const stepsCell = section.querySelector('.map-panel__steps');
+      const notesCell = section.querySelector('.map-panel__notes');
+      if (!stepsCell) return;
+      let need = stepsCell.getBoundingClientRect().height;
+      const notesH = notesCell ? notesCell.getBoundingClientRect().height : 0;
+      if (notesH > 0) {
+        const top = stepsCell.getBoundingClientRect().top;
+        steps.forEach((step, k) => {
+          if (!step.note) return;
+          // The steps share a cell, so a step's own box is the cell's height;
+          // its last child is where its text actually ends.
+          const el = textRefs.current[k];
+          const last = el && el.lastElementChild;
+          if (!last) return;
+          const bottom = last.getBoundingClientRect().bottom - top;
+          need = Math.max(need, bottom + NOTE_GAP + notesH);
+        });
+      }
+      if (need > 0) section.style.setProperty('--prose-h', `${Math.ceil(need)}px`);
+    };
+
     const publishFrameHeight = () => {
       const card = cardRef.current;
       const section = sectionRef.current;
@@ -341,6 +389,7 @@ const MapPanel = ({
     const ro = new ResizeObserver(() => {
       map.resize();
       publishFrameHeight();
+      publishProseHeight();
       setScale(scaleFor(map, frameRef.current ? frameRef.current.clientWidth : 0));
       // the fitted cameras were computed against the old frame
       ScrollTrigger.update();
@@ -353,15 +402,16 @@ const MapPanel = ({
     // again if the column's own box does not change afterwards. So the height
     // is also published on the next frame, on resize, and when the layout
     // crosses the stacked breakpoint.
-    const frame = requestAnimationFrame(publishFrameHeight);
-    window.addEventListener('resize', publishFrameHeight);
-    stackedQuery.addEventListener('change', publishFrameHeight);
+    const publishHeights = () => { publishFrameHeight(); publishProseHeight(); };
+    const frame = requestAnimationFrame(publishHeights);
+    window.addEventListener('resize', publishHeights);
+    stackedQuery.addEventListener('change', publishHeights);
 
     return () => {
       alive = false;
       cancelAnimationFrame(frame);
-      window.removeEventListener('resize', publishFrameHeight);
-      stackedQuery.removeEventListener('change', publishFrameHeight);
+      window.removeEventListener('resize', publishHeights);
+      stackedQuery.removeEventListener('change', publishHeights);
       ro.disconnect();
       map.off('load', onLoad);
       map.remove();
@@ -457,6 +507,14 @@ const MapPanel = ({
       anticipatePin: 1,
       scrub: true,
       invalidateOnRefresh: true,
+      // The fixed Mongabay mark sits in the corner the key needs on a small
+      // screen. It is marked here rather than hidden outright, so the mark
+      // still holds the intro and the foot of the piece; only the pinned
+      // chapters take it down, and only where the room is actually short -
+      // which is the media query's call, not this one's.
+      onToggle: (self) => {
+        document.body.classList.toggle('map-panel-pinned', self.isActive);
+      },
       onUpdate: (self) => {
         const n = steps.length;
         // Progress along the weighted intervals, before the section starts
@@ -614,7 +672,10 @@ const MapPanel = ({
     });
 
     refreshWhenSettled();
-    return () => { st.kill(); };
+    return () => {
+      document.body.classList.remove('map-panel-pinned');
+      st.kill();
+    };
   }, [steps, dwell, recedeFrom]);
 
   if (!steps.length) return null;

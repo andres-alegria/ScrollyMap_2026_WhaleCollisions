@@ -215,11 +215,21 @@
     --fs-body: 14px;
     --fs-furniture: 11px;
     /* The whole side margin, now that the section runs to the screen edge and
-       the texture with it. The bottom is deeper than the top: the Mongabay
-       mark is fixed in that corner, and stacked layout puts the key exactly
-       where it sits. ---- adjust the side margin on small screens ---- */
-    padding: 2.4vh 10vw 64px;
+       the texture with it. ---- adjust the side margin on small screens ----
+
+       The foot used to be 64px, to clear the fixed Mongabay mark. It does not
+       have to any more: the mark is taken down while this section is pinned
+       (see .site-logos below), which is the only way the key fits on a short
+       phone. At 375x667 the column ran 145px past the bottom of the screen and
+       the key was cut in half. */
+    padding: 1vh 10vw 10px;
   }
+
+  /* Every gap in the stack is tighter here than on a wide screen. None of them
+     is doing anything but separating; on a 667px-tall phone the key is what
+     they were costing. */
+  .map-panel__step { gap: clamp(6px, 1vh, 10px); }
+  .map-panel__text p + p { margin-top: 0.55em; }
 
   /* stacked: map, then the text beneath it.
 
@@ -229,7 +239,7 @@
      screen edge. 100% respects the padding, which is what puts air either side
      of the paragraph and the key.
      ---- adjust the side margin via .map-panel's padding, below ---- */
-  .map-panel__body { flex-direction: column; align-items: center; gap: 2vh; }
+  .map-panel__body { flex-direction: column; align-items: center; gap: 1vh; }
   .map-panel__col { width: 100%; max-width: 44vh; }
 
   /* Stacked, there is no column to take a height from, so the frame goes back
@@ -245,7 +255,45 @@
     align-self: auto;
     transform: none;                     /* nothing to align to when stacked */
   }
-  .map-panel__prose { flex: 0 0 auto; }
+  /* The heading and the note share one cell here, the heading at the top and
+     the note at the foot, rather than sitting in two rows. Two rows reserved
+     the tallest heading AND the tallest note on every chapter, including the
+     five with no note at all - and that reservation, not the map, was what
+     pushed the key off the bottom of a 667px screen. --prose-h is the height
+     the pair actually needs, measured and published by map-panel.js, because
+     the only chapters with both are the whale ones and where their text ends
+     depends on how it wraps. */
+  .map-panel__prose {
+    flex: 0 0 auto;
+    display: grid;
+    min-height: var(--prose-h, auto);
+  }
+  .map-panel__steps { grid-area: 1 / 1; align-self: start; }
+  .map-panel__notes { grid-area: 1 / 1; align-self: end; }
+
+  /* The mark is fixed in the corner the key needs. It stays on the intro and
+     on the foot of the piece; only the pinned chapters take it down, and only
+     here - on a wide screen there is room for both. The class is put on the
+     body by the panel's ScrollTrigger. ---- adjust the mark's behaviour on
+     small screens here ---- */
+  body.map-panel-pinned .site-logos {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+/* Faded rather than hidden, so it comes and goes with the section instead of
+   blinking at the boundary. */
+.site-logos { transition: opacity 200ms linear; }
+
+/* Short phones. Everything above already assumes a stacked layout; this only
+   buys the last of the headroom on a screen the height of an iPhone SE, where
+   a 220px map, the longest chapter and a three-row key with a footnote have to
+   share 667px. Anything taller - a 375x812 phone included - keeps the 14px
+   body. ---- adjust the short-screen body size here ---- */
+@media (max-width: 820px) and (max-height: 720px) {
+  .map-panel { --fs-body: 13px; }
+  .map-panel__note { line-height: 1.5; }
 }
 
 /* The clock readout for the whale-track reveal. Sits in the corner opposite

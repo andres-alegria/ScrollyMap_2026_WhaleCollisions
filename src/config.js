@@ -343,7 +343,7 @@ const config = {
           legend: 'pssa',
           eyebrow: 'Northwestern Mediterranean',
           label: 'Particularly Sensitive Sea Area',
-          text: '<p>The International Maritime Organization (IMO) designated more than 200,000 square kilometers (80,000 square miles) of the northwestern Mediterranean a Particularly Sensitive Sea Area (PSSA) in 2023 to protect whales from ship traffic. It recommended speeds of 10-13 knots in the multinational marine area, which includes key cetacean habitats but also intense shipping traffic.</p><p>Research suggests <strong>10 knots</strong> is the threshold for avoiding lethal strikes.</p>',
+          text: '<p>The International Maritime Organization (IMO) designated more than 200,000 square kilometers (80,000 square miles) as Particularly Sensitive Sea Area (PSSA) in 2023 to protect whales from ship traffic. It recommended speeds of 10-13 knots in the multinational marine area, which includes key cetacean habitats but also intense shipping traffic.</p>',
         },
       ],
     },
@@ -356,7 +356,7 @@ const config = {
       alignment: 'left',
       title: '',
       html: `
-  <p>Despite the IMO’s recommendation that vessels reduce speed to 10-13 knots, thousands of vessels continued to travel through the northwest Mediterranean PSSA above 15 knots in 2025.</p><p>Some marine conservationists call for mandatory speed limits, while technological solutions, like acoustic warning systems and dynamic risk maps, are also being developed in the hope of  saving the Mediterranean’s endangered fin and sperm whales.</p>`,
+  <p>Research suggests <strong>10 knots</strong> is the threshold for avoiding lethal strikes.</p><p>Despite the IMO’s recommendation that vessels reduce speed to 10-13 knots, thousands of vessels continued to travel through the northwest Mediterranean PSSA above 15 knots in 2025.</p><p>Some marine conservationists call for mandatory speed limits, while technological solutions, like acoustic warning systems and dynamic risk maps, are also being developed in the hope of  saving the Mediterranean’s endangered fin and sperm whales.</p>`,
     },
 
   ]
