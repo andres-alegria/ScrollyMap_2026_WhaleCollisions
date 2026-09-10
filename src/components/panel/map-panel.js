@@ -130,9 +130,9 @@ const keepNamesWhole = (html) => {
 const SPEED_ROWS = [
   // The slow band is drawn at a smaller radius than the other two on the map,
   // so its swatch is smaller here too. ---- adjust the slow swatch ----
-  { band: 'slow', label: '10 to 15 knots', size: 5 },
-  { band: 'mid', label: '15 to 25 knots' },
-  { band: 'fast', label: 'Above 25 knots' },
+  { band: 'slow', label: '10-15 knots (18.5-28 km/h)', size: 5 },
+  { band: 'mid', label: '15-25 knots (28-46 km/h)' },
+  { band: 'fast', label: '>25 knots (>46 km/h)' },
 ];
 
 const speedItems = (colors) => (colors
@@ -169,9 +169,9 @@ const PSSA_ITEMS = [
 // what shows is the topmost. Of 7,006 cells sampled off the tileset, all 1,835
 // carrying the 15-25 or 25+ attribute carried the 10-15 one as well - slower
 // traffic crossed nearly every cell on the map.
-const SPEED_FOOT = 'Each dot represents a 10 km by 10 km patch of sea showing '
-  + 'the peak vessel speed category recorded during 2025, as measured by '
-  + 'Global Fishing Watch cumulative presence hours.';
+const SPEED_FOOT = 'Each dot represents a 10-by-10-km patch of sea showing the '
+  + 'peak vessel speed category recorded in 2025, as measured by Global Fishing '
+  + 'Watch cumulative presence hours.';
 
 const NICE = [10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000];
 const scaleFor = (map, widthPx, target = 0.22) => {

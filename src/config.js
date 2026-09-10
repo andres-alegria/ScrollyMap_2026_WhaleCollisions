@@ -38,7 +38,7 @@ const config = {
       "Why whales are dying in the Mediterranean's shipping lanes.",
     // Provisional: drop datePrefix once the publication date is fixed.
     datePrefix: '',
-    date: 'September 10, 2026',
+    date: 'Sept. 10, 2026',
     social: [
       { name: 'X', src: 'x.svg', href: 'https://x.com/mongabay' },
       { name: 'facebook', src: 'facebook.svg', href: 'https://www.facebook.com/mongabay/' }
@@ -92,7 +92,7 @@ const config = {
       to: { center: [15.25, 38], zoom: 3.5 },
       eyebrow: 'The Mediterranean',
       label: 'A sea crossed by many ships',
-      text: 'Nearly every ship moving between the Atlantic and the Suez Canal crosses this sea end to end, and almost none of it is empty: of the roughly 25,200 patches of water ten kilometers by ten (six miles by six) that make up the Mediterranean, <strong>24,254</strong> carried vessel traffic during 2025.',
+      text: 'Nearly every ship moving between the Atlantic Ocean and the Suez Canal crosses this sea end to end, covering almost all of it. If we break down the Mediterranean into a grid of 10-by-10-kilometer dots, we would have roughly 25,200 dots \u2014 of which <strong>24,254</strong> carried vessel traffic in 2025.',
     },
 
     /* --- The story, in one box ---------------------------------------- */
@@ -145,8 +145,8 @@ const config = {
           // until the whale chapter puts its own key in the same slot.
           legend: 'speed',
           eyebrow: 'The Mediterranean',
-          label: 'High speed traffic',
-          text: 'In 2025 almost 2,800 unique vessels traveled faster than 15 knots (27.78 km/h or 17.26 mp/h) while navigating through the Mediterranean\u2019s key whale habitats, according to data provided by Global Fishing Watch (GFW). <strong>Ship strikes at speeds exceeding 15 knots are almost always fatal.</strong>',
+          label: 'High-speed traffic',
+          text: 'In 2025, almost 2,800 unique vessels traveled faster than 15 knots (28 km/h) while sailing through the Mediterranean\u2019s key whale habitats, according to data provided by Global Fishing Watch (GFW). <strong>Ship strikes at speeds exceeding 15 knots are almost always fatal to whales.</strong>',
         },
         {
           center: [2.45, 40.495], zoom: 6.4,
@@ -160,7 +160,7 @@ const config = {
           // is already where it needs to be
           eyebrow: 'Key whale habitat',
           label: 'Cetacean Migration Corridor',
-          text: 'The corridor off eastern Spain stretches between the Balearic Sea and the wider western Mediterranean. Spain declared it a marine protected area in 2018, covering about <strong>46,400 km\u00b2</strong> (17,900 square miles).',
+          text: 'The corridor off eastern Spain stretches between the Balearic Sea and the wider western Mediterranean. Spain declared it a marine protected area in 2018, covering about <strong>46,400 km\u00b2</strong> (17,900 mi\u00b2).',
         },
         {
           center: [8.81, 42.625], zoom: 6.3,
@@ -172,7 +172,7 @@ const config = {
           legend: 'speed',
           eyebrow: 'Key whale habitat',
           label: 'Pelagos Sanctuary',
-          text: 'France, Italy and Monaco manage the sanctuary together, under an agreement signed in 1999. It covers about <strong>96,500 km\u00b2</strong> (37,300 square miles).',
+          text: 'France, Italy and Monaco manage this sanctuary together under an agreement signed in 1999. It covers about <strong>96,500 km\u00b2</strong> (37,300 mi\u00b2).',
         },
         {
           center: [25.2, 36.445], zoom: 5.7,
@@ -185,7 +185,7 @@ const config = {
           span: 0.8,            // adjust: the handover into the first replay
           eyebrow: 'Key whale habitat',
           label: 'Hellenic Trench',
-          text: 'Off southern Greece the trench drops to more than 5,000 meters (16,400 feet), and is critical habitat for sperm whales, which rest at the surface where deep water comes close to shore. It covers about <strong>56,600 km\u00b2</strong> (21,900 square miles).',
+          text: 'Off southern Greece, the trench drops to a depth of more than 5,000 meters (16,400 feet), and is critical habitat for sperm whales, which rest at the surface where deep water comes close to shore. It covers about <strong>56,600 km\u00b2</strong> (21,900 mi\u00b2).',
         },
         /* --- The whale chapter, run three times ---------------------
            The same twelve tracks, replayed once in each habitat rather than
@@ -222,8 +222,8 @@ const config = {
           span: 2.4,            // adjust: length of this replay
           eyebrow: 'Tracked movements',
           label: '12 whales, <br />three and a half years',
-          text: 'Scientists tracked 12 whales in the Mediterranean between May 2021 and September 2024 \u2014 11 fin whales and one sperm whale. Their routes run through the same water as the fast ship traffic.',
-          note: 'A sperm whale, one of the 12, passed through the Hellenic Trench between July and August 2024.',
+          text: 'Scientists tracked 11 fin whales and one sperm whale in the Mediterranean between May 2021 and September 2024. Their routes ran through the same waters as the fast ship traffic.',
+          note: 'The sperm whale passed through the Hellenic Trench between July and August 2024.',
         },
         {
           center: [25.2, 36.445], zoom: 5.7,
@@ -241,8 +241,8 @@ const config = {
           span: 0.7,            // adjust: length of the move to the next habitat
           eyebrow: 'Tracked movements',
           label: '12 whales, <br />three and a half years',
-          text: 'Scientists tracked 12 whales in the Mediterranean between May 2021 and September 2024 \u2014 11 fin whales and one sperm whale. Their routes run through the same water as the fast ship traffic.',
-          note: 'A sperm whale, one of the 12, passed through the Hellenic Trench between July and August 2024.',
+          text: 'Scientists tracked 11 fin whales and one sperm whale in the Mediterranean between May 2021 and September 2024. Their routes ran through the same waters as the fast ship traffic.',
+          note: 'The sperm whale passed through the Hellenic Trench between July and August 2024.',
         },
         {
           center: [8.81, 42.625], zoom: 6.3,
@@ -260,7 +260,7 @@ const config = {
           span: 2.4,            // adjust: length of this replay
           eyebrow: 'Tracked movements',
           label: '12 whales, <br />three and a half years',
-          text: 'Scientists tracked 12 whales in the Mediterranean between May 2021 and September 2024 \u2014 11 fin whales and one sperm whale. Their routes run through the same water as the fast ship traffic.',
+          text: 'Scientists tracked 11 fin whales and one sperm whale in the Mediterranean between May 2021 and September 2024. Their routes ran through the same waters as the fast ship traffic.',
           note: 'Two fin whales passed through the Pelagos Sanctuary between June and July 2023.',
         },
         {
@@ -279,7 +279,7 @@ const config = {
           span: 0.7,            // adjust: length of the move to the next habitat
           eyebrow: 'Tracked movements',
           label: '12 whales, <br />three and a half years',
-          text: 'Scientists tracked 12 whales in the Mediterranean between May 2021 and September 2024 \u2014 11 fin whales and one sperm whale. Their routes run through the same water as the fast ship traffic.',
+          text: 'Scientists tracked 11 fin whales and one sperm whale in the Mediterranean between May 2021 and September 2024. Their routes ran through the same waters as the fast ship traffic.',
           note: 'Two fin whales passed through the Pelagos Sanctuary between June and July 2023.',
         },
         {
@@ -298,7 +298,7 @@ const config = {
           span: 2.4,            // adjust: length of this replay
           eyebrow: 'Tracked movements',
           label: '12 whales, <br />three and a half years',
-          text: 'Scientists tracked 12 whales in the Mediterranean between May 2021 and September 2024 \u2014 11 fin whales and one sperm whale. Their routes run through the same water as the fast ship traffic.',
+          text: 'Scientists tracked 11 fin whales and one sperm whale in the Mediterranean between May 2021 and September 2024. Their routes ran through the same waters as the fast ship traffic.',
           note: 'Nine fin whales passed through the Cetacean Migration Corridor between May 2021 and July 2023.',
         },
         {
@@ -317,7 +317,7 @@ const config = {
           span: 0.7,               // adjust: the move to the PSSA chapter
           eyebrow: 'Tracked movements',
           label: '12 whales, <br />three and a half years',
-          text: 'Scientists tracked 12 whales in the Mediterranean between May 2021 and September 2024 \u2014 11 fin whales and one sperm whale. Their routes run through the same water as the fast ship traffic.',
+          text: 'Scientists tracked 11 fin whales and one sperm whale in the Mediterranean between May 2021 and September 2024. Their routes ran through the same waters as the fast ship traffic.',
           note: 'Nine fin whales passed through the Cetacean Migration Corridor between May 2021 and July 2023.',
         },
         /* --- The designation ---------------------------------------
@@ -343,7 +343,7 @@ const config = {
           legend: 'pssa',
           eyebrow: 'Northwestern Mediterranean',
           label: 'Particularly Sensitive Sea Area',
-          text: '<p>The International Maritime Organization (IMO) designated more than 200,000 square kilometers (80,000 square miles) as a Particularly Sensitive Sea Area (PSSA) in 2023 to protect whales from ship traffic. It recommended speeds of 10-13 knots in the multinational marine area, which includes key cetacean habitats but also intense shipping traffic.</p>',
+          text: '<p>The International Maritime Organization (IMO) designated more than 200,000 km\u00b2 (80,000 mi\u00b2), or about 2,000 of the dots on our grid, as a Particularly Sensitive Sea Area (PSSA) in 2023 to protect whales from ship traffic. It recommended speeds of 10-13 knots (18.5-24 km/h) in the multinational marine area, which includes key cetacean habitats but also intense shipping traffic.</p>',
         },
       ],
     },
@@ -356,7 +356,7 @@ const config = {
       alignment: 'left',
       title: '',
       html: `
-  <p>Research suggests <strong>10 knots</strong> is the threshold for avoiding lethal strikes.</p><p>Despite the IMO’s recommendation that vessels reduce speed to 10-13 knots, thousands of vessels continued to travel through the northwest Mediterranean PSSA above 15 knots in 2025.</p><p>Some marine conservationists call for mandatory speed limits, while technological solutions, like acoustic warning systems and dynamic risk maps, are also being developed in the hope of  saving the Mediterranean’s endangered fin and sperm whales.</p>`,
+  <p>Research suggests <strong>10 knots</strong> is the threshold for avoiding lethal strikes.</p><p>Despite the IMO’s recommendation that vessels reduce speed to 10-13 knots, thousands of vessels continued to travel through the northwest Mediterranean PSSA faster than 15 knots in 2025.</p><p>Some marine conservationists call for mandatory speed limits, while technological solutions, like acoustic warning systems and dynamic risk maps, are also being developed in the hope of  saving the Mediterranean’s endangered fin and sperm whales.</p>`,
     },
 
   ]
