@@ -70,8 +70,8 @@ const config = {
     sources:
       'Vessel positions are from Global Fishing Watch, covering 2025, gridded '
       + 'at 0.1 degrees and split into three speed bands. Whale telemetry data provided by '
-      + 'Tethys Research Institute and Edmaktub. Habitat boundaries come from the '
-      + 'IUCN Marine Mammal Protected Areas Task Force (IMMA), the Pelagos Sanctuary and ACCOBAMS. '
+      + 'Tethys Research Institute and Edmaktub. Habitat boundaries come from the IUCN Marine Mammal'
+      + 'Protected Areas Task Force (IMMA), the Pelagos Sanctuary, the World Database on Protected Areas (WDPA), and ACCOBAMS. '
       + 'Designated PSSA marine area boundaries based on provided IMO coordinates.',
   },
 
